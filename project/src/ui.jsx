@@ -108,4 +108,14 @@ function ImgPlaceholder({ src, tone='#3b6a4e', ink='#0f2e1f', accent='#e8d9a9', 
 
 function inr(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
 
-Object.assign(window, { T, Ico, Btn, ImgPlaceholder, inr });
+function useIsMobile(breakpoint=768) {
+  const [m, setM] = React.useState(typeof window !== 'undefined' && window.innerWidth < breakpoint);
+  React.useEffect(() => {
+    const onR = () => setM(window.innerWidth < breakpoint);
+    window.addEventListener('resize', onR);
+    return () => window.removeEventListener('resize', onR);
+  }, [breakpoint]);
+  return m;
+}
+
+Object.assign(window, { T, Ico, Btn, ImgPlaceholder, inr, useIsMobile });
