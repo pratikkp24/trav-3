@@ -49,31 +49,37 @@ function SupportPage({ onBack }) {
 function SupportHero({ isMobile, onBack }) {
   const pad = isMobile ? 16 : 36;
   return (
-    <div style={{ background:`linear-gradient(135deg, #F0FAF4 0%, #E7F2FB 60%, ${T.offWhite} 100%)`, borderBottom:`1px solid ${T.greyLight}`, padding:`${isMobile?20:32}px ${pad}px ${isMobile?28:40}px`, position:'relative', overflow:'hidden' }}>
-      <div style={{ position:'absolute', right:isMobile?-60:-80, top:-60, width:isMobile?220:340, height:isMobile?220:340, borderRadius:'50%', background:`radial-gradient(circle, ${T.green}22 0%, transparent 70%)`, pointerEvents:'none' }}/>
-      <div style={{ maxWidth:1180, margin:'0 auto', position:'relative' }}>
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:isMobile?18:24 }}>
-          <Btn kind="ghost" size="sm" icon="arrow-left" onClick={onBack}>{isMobile?'Back':'Back to home'}</Btn>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8, fontSize:11, color:T.greenDeep, fontWeight:700, letterSpacing:'.12em', background:'#fff', padding:'5px 10px 5px 8px', borderRadius:999, border:`1px solid ${T.green}33` }}>
-            <span style={{ position:'relative', width:8, height:8 }}>
+    <div style={{ background:T.offWhite, borderBottom:`1px solid ${T.greyLight}`, padding:`0 ${pad}px` }}>
+      <div style={{ maxWidth:1180, margin:'0 auto' }}>
+        <div style={{ height:32, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <button onClick={onBack} className="sup-link" style={{ background:'transparent', border:'none', padding:0, cursor:'pointer', color:T.grey, fontSize:12, fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:6 }}>
+            <span style={{ fontSize:13, lineHeight:1 }}>{'\u2190'}</span> {isMobile?'Back':'Back to home'}
+          </button>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, fontSize:11, color:T.grey, fontWeight:700, letterSpacing:'.14em' }}>
+            <span style={{ position:'relative', width:7, height:7 }}>
               <span style={{ position:'absolute', inset:0, borderRadius:'50%', background:T.green, animation:'sup-pulse 1.6s ease-out infinite' }}/>
               <span style={{ position:'absolute', inset:0, borderRadius:'50%', background:T.green }}/>
             </span>
             ALL CHANNELS LIVE
           </div>
         </div>
-        <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'5px 12px', borderRadius:999, background:'#fff', color:T.greenDeep, fontSize:10.5, fontWeight:800, letterSpacing:'.14em', border:`1px solid ${T.green}33`, marginBottom:isMobile?10:14 }}>
-          <Ico name="spark" size={11} color={T.greenDeep}/> WE'RE HERE
+        <div style={{ padding:`${isMobile?20:36}px 0 ${isMobile?32:48}px`, maxWidth:800 }}>
+          <div style={{ display:'inline-flex', alignItems:'center', padding:'5px 14px', borderRadius:999, background:'#F0FAF4', color:T.greenDeep, fontSize:10.5, fontWeight:800, letterSpacing:'.14em', border:`1px solid ${T.green}33`, marginBottom:isMobile?14:20 }}>
+            WE'RE HERE
+          </div>
+          <h1 style={{ fontSize:isMobile?34:54, fontWeight:700, color:T.ink, letterSpacing:'-.028em', margin:0, fontFamily:'Fraunces, serif', lineHeight:1.05 }}>
+            Need a hand? <span style={{ color:T.green, fontStyle:'italic' }}>We're on it.</span>
+          </h1>
+          <p style={{ fontSize:isMobile?15:17, color:T.inkSoft, marginTop:isMobile?12:18, lineHeight:1.55, maxWidth:580, marginBottom:0 }}>
+            Real humans on WhatsApp. Avg response 28 minutes. Let's get you back to your trip.
+          </p>
         </div>
-        <h1 style={{ fontSize:isMobile?34:48, fontWeight:700, color:T.ink, letterSpacing:'-.03em', margin:0, fontFamily:'Fraunces, serif', lineHeight:1.05 }}>
-          Need a hand? <span style={{ color:T.green, fontStyle:'italic' }}>We're on it.</span>
-        </h1>
-        <p style={{ fontSize:isMobile?14.5:17, color:T.inkSoft, marginTop:isMobile?10:14, lineHeight:1.5, maxWidth:560, marginBottom:0 }}>
-          Real humans on WhatsApp. Avg response 28 minutes. Let's get you back to your trip.
-        </p>
       </div>
       <style>{`
         @keyframes sup-pulse { 0% { transform: scale(1); opacity:.55 } 80% { transform: scale(2.4); opacity:0 } 100% { transform: scale(2.4); opacity:0 } }
+        .sup-link { transition: opacity .15s ease; } .sup-link:hover { opacity:.78; }
+        .sup-card { transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+        .sup-card:hover { border-color:${T.green}; box-shadow:0 10px 26px rgba(15,30,46,.08); transform:translateY(-2px); }
       `}</style>
     </div>
   );
@@ -91,12 +97,12 @@ function QuickActions({ isMobile }) {
     { icon:'pin',      label:'Pickup details' },
   ];
   return (
-    <div style={{ marginTop:isMobile?-14:-22, marginBottom:isMobile?16:22 }}>
-      <div style={{ fontSize:10.5, fontWeight:800, color:T.grey, letterSpacing:'.14em', marginBottom:8 }}>QUICK FIXES</div>
+    <div style={{ marginTop:isMobile?20:32, marginBottom:isMobile?18:26 }}>
+      <div style={{ fontSize:11, fontWeight:800, color:T.greenDeep, letterSpacing:'.18em', marginBottom:10 }}>QUICK FIXES</div>
       <div className={isMobile?'scroll-x':''} style={{ display:'flex', gap:8, overflowX:isMobile?'auto':'visible', flexWrap:isMobile?'nowrap':'wrap', margin:isMobile?'0 -16px':0, padding:isMobile?'0 16px':0 }}>
         {items.map(it => (
           <button key={it.label} className={isMobile?'snap':''} style={{
-            flexShrink:0, height:38, padding:'0 14px', borderRadius:999,
+            flexShrink:0, height:40, padding:'0 14px', borderRadius:999,
             background:'#fff', color:T.ink, border:`1px solid ${T.greyLight}`,
             fontSize:12.5, fontWeight:600, cursor:'pointer', fontFamily:'inherit',
             display:'inline-flex', alignItems:'center', gap:7,
@@ -113,62 +119,43 @@ function QuickActions({ isMobile }) {
 
 function ChannelCards({ isMobile }) {
   const cards = [
-    {
-      kind:'primary', icon:'whatsapp', tone:T.green,
-      title:'Chat on WhatsApp',
-      sub:'Priyank usually replies in 30 min',
-      cta:'Open WhatsApp',
-      meta:{ chip:'FASTEST · LIVE NOW', tone:T.green },
-    },
-    {
-      kind:'outline', icon:'send', tone:T.greenDeep,
-      title:'Email us',
-      sub:'For invoices, refunds, anything written',
-      cta:'support@trav.guide',
-      meta:{ chip:'REPLIES IN 4 HRS', tone:T.greenDeep },
-    },
-    {
-      kind:'outline', icon:'phone', tone:'#2d6a84',
-      title:'Call us',
-      sub:'For urgent issues during an active trip',
-      cta:'+91 98xxx xxxxx',
-      meta:{ chip:'TRIP IN PROGRESS ONLY', tone:'#2d6a84' },
-    },
+    { icon:'whatsapp', primary:true,  title:'Chat on WhatsApp', sub:'Priyank usually replies in 30 min',  cta:'Open WhatsApp',       chip:'FASTEST · LIVE NOW' },
+    { icon:'send',     primary:false, title:'Email us',         sub:'For invoices, refunds, anything written', cta:'support@trav.guide',  chip:'REPLIES IN 4 HRS' },
+    { icon:'phone',    primary:false, title:'Call us',          sub:'For urgent issues during an active trip', cta:'+91 98xxx xxxxx',     chip:'TRIP IN PROGRESS ONLY' },
   ];
   return (
-    <div className={isMobile?'scroll-x':''} style={{ display:isMobile?'flex':'grid', gridTemplateColumns:isMobile?undefined:'repeat(3,1fr)', gap:isMobile?12:16, overflowX:isMobile?'auto':'visible', margin:isMobile?'0 -16px':0, padding:isMobile?'0 16px':0 }}>
-      {cards.map(c => (
-        <div key={c.title} className={isMobile?'snap':''} style={{
-          minWidth:isMobile?280:'auto', flexShrink:0,
-          background: c.kind==='primary' ? `linear-gradient(135deg, ${T.green} 0%, ${T.greenDeep} 100%)` : '#fff',
-          color: c.kind==='primary' ? '#fff' : T.ink,
-          borderRadius:18, padding:isMobile?20:22,
-          border: c.kind==='primary' ? 'none' : `1px solid ${T.greyLight}`,
-          boxShadow: c.kind==='primary' ? `0 14px 32px ${T.green}55` : '0 4px 14px rgba(15,30,46,.05)',
-          position:'relative', overflow:'hidden',
-        }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
-            <div style={{ width:42, height:42, borderRadius:12, background: c.kind==='primary' ? 'rgba(255,255,255,.18)' : `${c.tone}18`, display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <Ico name={c.icon} size={18} color={c.kind==='primary' ? '#fff' : c.tone}/>
-            </div>
-            <div style={{ fontSize:9.5, fontWeight:800, letterSpacing:'.14em', color: c.kind==='primary' ? 'rgba(255,255,255,.85)' : c.tone }}>
-              {c.meta.chip}
-            </div>
-          </div>
-          <div style={{ fontSize:isMobile?17:19, fontWeight:700, fontFamily:'Fraunces, serif', letterSpacing:'-.015em', marginBottom:4 }}>{c.title}</div>
-          <div style={{ fontSize:13, color: c.kind==='primary' ? 'rgba(255,255,255,.85)' : T.grey, marginBottom:16, lineHeight:1.45, minHeight:34 }}>{c.sub}</div>
-          <button style={{
-            width:'100%', height:42, borderRadius:10,
-            background: c.kind==='primary' ? '#fff' : '#fff',
-            color: c.kind==='primary' ? T.greenDeep : T.ink,
-            border: c.kind==='primary' ? 'none' : `1.5px solid ${T.greyLight}`,
-            fontFamily:'inherit', fontSize:13.5, fontWeight:700, cursor:'pointer',
-            display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8,
+    <div style={{ marginTop:isMobile?4:8 }}>
+      <div style={{ fontSize:11, fontWeight:800, color:T.greenDeep, letterSpacing:'.18em', marginBottom:isMobile?10:14 }}>REACH US DIRECTLY</div>
+      <div className={isMobile?'scroll-x':''} style={{ display:isMobile?'flex':'grid', gridTemplateColumns:isMobile?undefined:'repeat(3,1fr)', gap:isMobile?12:14, overflowX:isMobile?'auto':'visible', margin:isMobile?'0 -16px':0, padding:isMobile?'0 16px':0 }}>
+        {cards.map(c => (
+          <div key={c.title} className={`sup-card ${isMobile?'snap':''}`} style={{
+            minWidth:isMobile?280:'auto', flexShrink:0,
+            background:'#fff', borderRadius:16, padding:isMobile?18:20,
+            border:`1px solid ${T.greyLight}`,
+            boxShadow: c.primary ? '0 8px 28px rgba(29,191,115,.12)' : '0 1px 2px rgba(15,30,46,.03)',
+            position:'relative',
           }}>
-            {c.cta} {c.kind==='primary' && <Ico name="arrow-right" size={13} color={T.greenDeep} stroke={2.4}/>}
-          </button>
-        </div>
-      ))}
+            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10 }}>
+              <div style={{ width:34, height:34, borderRadius:10, background:'#F0FAF4', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <Ico name={c.icon} size={15} color={T.greenDeep}/>
+              </div>
+              <div style={{ fontSize:9.5, fontWeight:800, letterSpacing:'.14em', color:T.greenDeep }}>{c.chip}</div>
+            </div>
+            <div style={{ fontFamily:'Fraunces, serif', fontSize:isMobile?17:18, fontWeight:700, color:T.ink, letterSpacing:'-.015em', marginBottom:4 }}>{c.title}</div>
+            <div style={{ fontSize:13, color:T.grey, marginBottom:14, lineHeight:1.5, minHeight:isMobile?'auto':34 }}>{c.sub}</div>
+            <button style={{
+              width:'100%', height:40, borderRadius:10,
+              background: c.primary ? T.green : '#fff',
+              color: c.primary ? '#fff' : T.ink,
+              border: c.primary ? 'none' : `1.5px solid ${T.greyLight}`,
+              fontFamily:'inherit', fontSize:13, fontWeight:700, cursor:'pointer',
+              display:'inline-flex', alignItems:'center', justifyContent:'center', gap:6,
+            }}>
+              {c.cta} {c.primary && <Ico name="arrow-right" size={12} color="#fff" stroke={2.4}/>}
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -356,22 +343,19 @@ function RightRail({ isMobile, openFaq, setOpenFaq }) {
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
       {/* AI assist */}
-      <div style={{ background:`linear-gradient(135deg, ${T.ink} 0%, ${T.inkSoft} 100%)`, color:'#fff', borderRadius:16, padding:18, position:'relative', overflow:'hidden' }}>
-        <div style={{ position:'absolute', top:-30, right:-30, width:130, height:130, borderRadius:'50%', background:`radial-gradient(circle, ${T.green}55 0%, transparent 70%)`, pointerEvents:'none' }}/>
-        <div style={{ position:'relative' }}>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:9.5, fontWeight:800, color:T.green, letterSpacing:'.14em', marginBottom:8 }}>
-            <Ico name="spark" size={11} color={T.green}/> NEW · AI ASSIST
-          </div>
-          <div style={{ fontSize:15, fontWeight:700, lineHeight:1.35, fontFamily:'Fraunces, serif', letterSpacing:'-.015em' }}>
-            Ask anything about your booking.
-          </div>
-          <div style={{ fontSize:12, color:'rgba(255,255,255,.7)', marginTop:6, lineHeight:1.5 }}>
-            Get an instant answer from our trip-aware assistant — handover to a human anytime.
-          </div>
-          <button style={{ marginTop:12, height:38, padding:'0 16px', borderRadius:999, background:T.green, color:'#fff', border:'none', fontSize:12.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:6 }}>
-            Try it <Ico name="arrow-right" size={12} color="#fff" stroke={2.4}/>
-          </button>
+      <div style={{ background:'#fff', color:T.ink, borderRadius:16, padding:isMobile?16:20, border:`1px solid ${T.greyLight}`, position:'relative' }}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:5, fontSize:9.5, fontWeight:800, color:T.greenDeep, letterSpacing:'.14em', marginBottom:8, background:'#F0FAF4', padding:'4px 10px', borderRadius:999, border:`1px solid ${T.green}33` }}>
+          <Ico name="spark" size={10} color={T.greenDeep}/> NEW · AI ASSIST
         </div>
+        <div style={{ fontSize:isMobile?15:16, fontWeight:700, lineHeight:1.35, fontFamily:'Fraunces, serif', letterSpacing:'-.015em', color:T.ink }}>
+          Ask anything about your booking.
+        </div>
+        <div style={{ fontSize:12.5, color:T.grey, marginTop:6, lineHeight:1.55 }}>
+          Get an instant answer from our trip-aware assistant — handover to a human anytime.
+        </div>
+        <button style={{ marginTop:14, height:36, padding:'0 14px', borderRadius:999, background:'#fff', color:T.ink, border:`1.5px solid ${T.ink}`, fontSize:12.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:6 }}>
+          Try it <Ico name="arrow-right" size={12} color={T.ink} stroke={2.4}/>
+        </button>
       </div>
 
       {/* FAQ */}

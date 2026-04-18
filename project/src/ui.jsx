@@ -44,6 +44,12 @@ function Ico({ name, size=16, color='currentColor', stroke=1.8, fill='none' }) {
     case 'coffee': return <svg {...p}><path d="M5 9h12v7a4 4 0 01-4 4H9a4 4 0 01-4-4V9z"/><path d="M17 11h2a2 2 0 010 4h-2M8 4s-1 1.5 0 3M12 4s-1 1.5 0 3"/></svg>;
     case 'mic': return <svg {...p}><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3M9 21h6"/></svg>;
     case 'play': return <svg {...p} fill={color}><path d="M7 4l12 8-12 8z"/></svg>;
+    case 'briefcase': return <svg {...p}><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2M3 12h18"/></svg>;
+    case 'refresh': return <svg {...p}><path d="M3 12a9 9 0 0115-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>;
+    case 'edit': return <svg {...p}><path d="M12 20h9M16.5 3.5a2.1 2.1 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>;
+    case 'alert': return <svg {...p}><path d="M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>;
+    case 'minus': return <svg {...p}><path d="M5 12h14"/></svg>;
+    case 'plus': return <svg {...p}><path d="M12 5v14M5 12h14"/></svg>;
     default: return null;
   }
 }
@@ -118,4 +124,155 @@ function useIsMobile(breakpoint=768) {
   return m;
 }
 
-Object.assign(window, { T, Ico, Btn, ImgPlaceholder, inr, useIsMobile });
+// ─────────────────────────────────────────────────────────────────────────────
+// Razorpay payment helper
+// In production, `order_id` must come from the server (POST /orders with the
+// secret key). Here, since this is a pure-frontend prototype, we open Checkout
+// in "no-order" mode using only the public Test Key — Razorpay will accept
+// this in test mode and route to its test simulator. Never embed the secret
+// key on the client.
+// ─────────────────────────────────────────────────────────────────────────────
+const RAZORPAY_KEY_ID = 'rzp_test_SeVsqWZfuI4nS6';
+
+function openRazorpay({
+  amount,        // in INR (rupees, not paise)
+  name = 'trav',
+  description = 'Trip booking',
+  prefill = {},
+  notes = {},
+  theme = { color:'#1DBF73' },
+  onSuccess,     // (response) => void
+  onDismiss,     // () => void
+  onFailure,     // (error) => void
+}) {
+  if (typeof window === 'undefined' || !window.Razorpay) {
+    // Graceful fallback: simulate success after a short delay so the UX
+    // still moves forward in a sandbox without internet.
+    console.warn('[trav] Razorpay SDK not loaded — simulating success.');
+    setTimeout(() => onSuccess && onSuccess({
+      razorpay_payment_id: 'pay_TEST_' + Math.random().toString(36).slice(2,12).toUpperCase(),
+      simulated: true,
+    }), 700);
+    return;
+  }
+  const options = {
+    key: RAZORPAY_KEY_ID,
+    amount: Math.round(amount * 100), // paise
+    currency: 'INR',
+    name,
+    description,
+    image: 'https://avatars.githubusercontent.com/u/7713209?s=200',
+    prefill: {
+      name: prefill.name || '',
+      email: prefill.email || '',
+      contact: prefill.contact || '',
+    },
+    notes,
+    theme,
+    handler: function (response) {
+      onSuccess && onSuccess(response);
+    },
+    modal: {
+      ondismiss: function () {
+        onDismiss && onDismiss();
+      },
+      escape: true,
+      backdropclose: false,
+    },
+  };
+  try {
+    const rz = new window.Razorpay(options);
+    rz.on && rz.on('payment.failed', function (resp) {
+      onFailure && onFailure(resp.error || resp);
+    });
+    rz.open();
+  } catch (err) {
+    console.error('[trav] Razorpay open failed:', err);
+    onFailure && onFailure(err);
+  }
+}
+
+// Read the saved profile (set on login / settings) so checkout pre-fills.
+function loadTravProfile() {
+  try {
+    const s = localStorage.getItem('trav.profile');
+    if (s) return JSON.parse(s);
+  } catch {}
+  return { name:'Aditi Rao', email:'aditi.r@gmail.com', phone:'+91 98••••••12' };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Persistence helpers — bookings, pending payments, reviews, coupons, hooks.
+// All keyed under `trav.*` in localStorage so state survives reloads and shows
+// up in Profile → My Bookings.
+// ─────────────────────────────────────────────────────────────────────────────
+function getBookings() {
+  try { return JSON.parse(localStorage.getItem('trav.bookings') || '[]'); } catch { return []; }
+}
+function saveBooking(b) {
+  const list = getBookings().filter(x => x.id !== b.id);
+  list.unshift(b);
+  try { localStorage.setItem('trav.bookings', JSON.stringify(list)); } catch {}
+  return b;
+}
+function updateBooking(id, patch) {
+  const list = getBookings().map(b => b.id === id ? { ...b, ...patch } : b);
+  try { localStorage.setItem('trav.bookings', JSON.stringify(list)); } catch {}
+}
+function getPendingBooking() {
+  try { const s = localStorage.getItem('trav.pendingBooking'); return s ? JSON.parse(s) : null; } catch { return null; }
+}
+function savePendingBooking(b) {
+  try { localStorage.setItem('trav.pendingBooking', JSON.stringify(b)); } catch {}
+}
+function clearPendingBooking() { try { localStorage.removeItem('trav.pendingBooking'); } catch {} }
+
+function getReviews() {
+  try { return JSON.parse(localStorage.getItem('trav.reviews') || '{}'); } catch { return {}; }
+}
+function saveReview(bookingId, review) {
+  const all = getReviews();
+  all[bookingId] = { ...review, at: Date.now() };
+  try { localStorage.setItem('trav.reviews', JSON.stringify(all)); } catch {}
+}
+
+function getActiveCoupon() {
+  try { return localStorage.getItem('trav.couponApplied') || ''; } catch { return ''; }
+}
+function setActiveCoupon(code) {
+  try { if (code) localStorage.setItem('trav.couponApplied', code); else localStorage.removeItem('trav.couponApplied'); } catch {}
+}
+
+function getHookFlag(key) {
+  try { return localStorage.getItem('trav.hook.'+key) === '1'; } catch { return false; }
+}
+function setHookFlag(key, v=true) {
+  try { localStorage.setItem('trav.hook.'+key, v?'1':'0'); } catch {}
+}
+
+// Generate a booking id the same way ConfirmedOnePage does so we can refer to
+// it from both the confirmation page and the Profile bookings list.
+function newBookingId(trip) {
+  const stub = (trip?.dest || 'XXX').replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase() || 'TRV';
+  return 'TRAV-' + stub + '-' + Math.random().toString(36).slice(2,8).toUpperCase();
+}
+
+// Resolve the currently-viewed trip from localStorage so booking pages don't
+// have to hardcode a trip id.
+function resolveViewTrip() {
+  try {
+    const v = JSON.parse(localStorage.getItem('trav.view') || '{}');
+    if (v.tripId === 'trip-nainital' && typeof NAINITAL_TRIP !== 'undefined') return NAINITAL_TRIP;
+  } catch {}
+  return typeof RISHIKESH_TRIP !== 'undefined' ? RISHIKESH_TRIP : null;
+}
+
+Object.assign(window, {
+  T, Ico, Btn, ImgPlaceholder, inr, useIsMobile, openRazorpay, loadTravProfile, RAZORPAY_KEY_ID,
+  getBookings, saveBooking, updateBooking,
+  getPendingBooking, savePendingBooking, clearPendingBooking,
+  getReviews, saveReview,
+  getActiveCoupon, setActiveCoupon,
+  getHookFlag, setHookFlag,
+  newBookingId, resolveViewTrip,
+});

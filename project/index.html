@@ -24,6 +24,35 @@
     body{font-size:14px}
     ::-webkit-scrollbar{width:0;height:0}
   }
+  /* === Dark mode (filter-invert preserves hue, inverts luminance) ===
+     Strategy: put an `invert(1) hue-rotate(180deg)` on the `.theme-flip` wrapper
+     to globally flip luminance. Children that must keep their ORIGINAL colors
+     (images, videos, canvases, brand-colored buttons) re-apply the SAME
+     `invert(1) hue-rotate(180deg)` filter. Because two inverts compose to
+     identity AND two 180deg hue-rotates compose to 360deg (=identity), the
+     net result on those children is identity — they render with their
+     original pixels. 180deg is the ONE angle at which CSS hue-rotate is
+     near-lossless (it's a simple sign flip of the chroma axes, representable
+     exactly by the YIQ-style matrix used by the spec). Any other angle (e.g.
+     200deg) loses saturation when chained, which was the cause of the washed
+     -out water/trees we saw before. */
+  html[data-theme="dark"]{background:#0a0a0a;color-scheme:dark}
+  html[data-theme="dark"] body{background:#0a0a0a;color:#fff}
+  html[data-theme="dark"] #root{background:#0a0a0a;min-height:100vh}
+  /* Parent flip — lossless at 180deg. */
+  html[data-theme="dark"] .theme-flip{filter:invert(1) hue-rotate(180deg);background:#fff}
+  /* Images/video/canvas: self-cancel so photos render with their native colors. */
+  html[data-theme="dark"] .theme-flip img,
+  html[data-theme="dark"] .theme-flip video,
+  html[data-theme="dark"] .theme-flip canvas{filter:invert(1) hue-rotate(180deg)}
+  /* Buttons and brand-colored chrome: self-cancel so #1DBF73 renders as #1DBF73. */
+  html[data-theme="dark"] .theme-flip button,
+  html[data-theme="dark"] .theme-flip .keep-colors{filter:invert(1) hue-rotate(180deg)}
+  /* The Razorpay modal is rendered in a portal outside .theme-flip, so it already
+     displays with its own (light) chrome — nothing to do for it here. */
+  /* Scrollbar polish in dark */
+  html[data-theme="dark"]::-webkit-scrollbar-thumb{background:#2a2a2a;border-color:#0a0a0a}
+  html[data-theme="dark"] ::-webkit-scrollbar-thumb{background:#2a2a2a;border-color:#0a0a0a}
 </style>
 </head>
 <body>
@@ -31,6 +60,7 @@
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script type="text/babel" src="src/ui.jsx"></script>
   <script type="text/babel" src="src/data.jsx"></script>
   <script type="text/babel" src="src/chrome.jsx"></script>
@@ -48,6 +78,7 @@
   <script type="text/babel" src="src/all-trips.jsx"></script>
   <script type="text/babel" src="src/investor.jsx"></script>
   <script type="text/babel" src="src/support.jsx"></script>
+  <script type="text/babel" src="src/about.jsx"></script>
   <script type="text/babel" src="src/app.jsx"></script>
 </body>
 </html>

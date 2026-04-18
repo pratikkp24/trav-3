@@ -2,13 +2,13 @@
 // All sections live on one page (no multi-step stepper), with a sticky
 // price-details panel on the right. After submit, shows the confirmation state.
 
-function Booking({ mode='quick', onBack, onBookAnother }) {
-  if (mode === 'quick') return <QuickBook onBack={onBack} onBookAnother={onBookAnother}/>;
+function Booking({ mode='quick', onBack, onBookAnother, onViewBookings }) {
+  if (mode === 'quick') return <QuickBook onBack={onBack} onBookAnother={onBookAnother} onViewBookings={onViewBookings}/>;
   return <CustomiseFlow onBack={onBack} onBookAnother={onBookAnother}/>;
 }
 
 function CustomiseFlow({ onBack, onBookAnother }) {
-  const t = RISHIKESH_TRIP;
+  const t = React.useMemo(() => resolveViewTrip() || RISHIKESH_TRIP, []);
   const [confirmed, setConfirmed] = React.useState(false);
 
   // Who's going
@@ -428,33 +428,81 @@ function Row2({ icon, l, r }) {
   );
 }
 
-function ConfirmedOnePage({ trip, guests, total, token, onBookAnother }) {
+function ConfirmedOnePage({ trip, guests, total, token, onBookAnother, onRetry, onViewBookings, bookingId, payment, status='success' }) {
+  const isTH = !!trip.travHer;
+  const accent = isTH ? T.rose : T.green;
+  const accentDeep = isTH ? '#9c3a2a' : T.greenDeep;
+  const accentSoft = isTH ? T.roseCream : '#F0FAF4';
+
+  // Visual/text map per payment status
+  const variant = {
+    success:   { icon:'check',  tone:accent,    soft:accentSoft,   deep:accentDeep, eyebrow:'SPOT LOCKED',     title:"You're in.",            copy: <>Spot locked for {guests} on <b style={{ color:T.ink }}>{trip.dest}</b>. Itinerary mailed, WhatsApp group ready.</> },
+    simulated: { icon:'check',  tone:accent,    soft:accentSoft,   deep:accentDeep, eyebrow:'SPOT LOCKED · SIMULATED', title:"You're in.",     copy: <>Razorpay SDK wasn't reachable so we simulated this confirmation. In production, the real flow runs identically — spot is still logged for <b style={{ color:T.ink }}>{trip.dest}</b>.</> },
+    pending:   { icon:'clock',  tone:T.amber,   soft:'#FFF5D6',    deep:'#A37A1A',  eyebrow:'PAYMENT PENDING', title:'Hold on, banking is slow.', copy: <>Your bank hasn't confirmed yet — this can take up to 10 minutes. We've reserved your seats for <b style={{ color:T.ink }}>{trip.dest}</b> meanwhile.</> },
+    failed:    { icon:'alert',  tone:T.rose,    soft:T.roseCream,  deep:'#9c3a2a',  eyebrow:'PAYMENT FAILED',  title:"That didn't go through.", copy: <>Your bank declined the charge. Nothing's been debited. Try again with the same method or switch to UPI for the fastest retry.</> },
+  }[status] || { icon:'check', tone:accent, soft:accentSoft, deep:accentDeep, eyebrow:'SPOT LOCKED', title:"You're in.", copy:null };
+
   return (
     <div style={{ background:'#F4F6FA', minHeight:'calc(100vh - 64px)', padding:'60px 36px' }}>
       <div style={{ maxWidth:720, margin:'0 auto', background:'#fff', borderRadius:20, border:`1px solid ${T.greyLight}`, padding:'40px 40px 28px', textAlign:'center', boxShadow:'0 12px 40px rgba(15,30,46,.06)' }}>
-        <div style={{ width:72, height:72, borderRadius:'50%', background:'#F0FAF4', margin:'0 auto 18px', display:'flex', alignItems:'center', justifyContent:'center', border:`2px solid ${T.green}55` }}>
-          <Ico name="check" size={32} color={T.green} stroke={3}/>
+        <div style={{ width:72, height:72, borderRadius:'50%', background:variant.soft, margin:'0 auto 18px', display:'flex', alignItems:'center', justifyContent:'center', border:`2px solid ${variant.tone}55` }}>
+          <Ico name={variant.icon} size={32} color={variant.tone} stroke={3}/>
         </div>
-        <h2 style={{ fontSize:32, fontWeight:700, color:T.ink, letterSpacing:'-.02em', margin:0, fontFamily:'Fraunces, serif' }}>You're in.</h2>
-        <div style={{ fontSize:15, color:T.grey, marginTop:10, maxWidth:460, margin:'10px auto 0', lineHeight:1.55 }}>
-          Spot locked for {guests} on <b style={{ color:T.ink }}>{trip.dest}</b>. Itinerary mailed, WhatsApp group ready.
+        <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'4px 11px', borderRadius:999, background:variant.soft, color:variant.deep, fontSize:10.5, fontWeight:800, letterSpacing:'.14em', marginBottom:12 }}>
+          {variant.eyebrow}
         </div>
-        <div style={{ margin:'28px auto 0', maxWidth:480, border:`1px dashed ${T.greyLight}`, borderRadius:14, padding:20, textAlign:'left' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+        <h2 style={{ fontSize:32, fontWeight:700, color:T.ink, letterSpacing:'-.02em', margin:0, fontFamily:'Fraunces, serif' }}>{variant.title}</h2>
+        <div style={{ fontSize:15, color:T.grey, marginTop:10, maxWidth:480, margin:'10px auto 0', lineHeight:1.55 }}>
+          {variant.copy}
+        </div>
+        <div style={{ margin:'28px auto 0', maxWidth:480, border:`1px dashed ${T.greyLight}`, borderRadius:14, padding:20, textAlign:'left', background:status==='failed'?'#FFFBFA':'#fff' }}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:10 }}>
             <div>
               <div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.12em', fontWeight:700 }}>BOOKING ID</div>
-              <div style={{ fontSize:16, fontWeight:700, color:T.ink, fontFamily:'ui-monospace, Menlo, monospace', marginTop:2 }}>TRAV-RSH-4F2A9C</div>
+              <div style={{ fontSize:16, fontWeight:700, color:T.ink, fontFamily:'ui-monospace, Menlo, monospace', marginTop:2 }}>{bookingId}</div>
             </div>
             <div style={{ textAlign:'right' }}>
-              <div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.12em', fontWeight:700 }}>PAID</div>
-              <div style={{ fontSize:18, fontWeight:800, color:T.greenDeep }}>{inr(token)}</div>
+              <div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.12em', fontWeight:700 }}>{status==='failed'?'ATTEMPTED':status==='pending'?'ON HOLD':'PAID'}</div>
+              <div style={{ fontSize:18, fontWeight:800, color:variant.deep }}>{inr(token)}</div>
             </div>
           </div>
+          {payment?.razorpay_payment_id && (
+            <div style={{ marginTop:14, paddingTop:12, borderTop:`1px dashed ${T.greyLight}`, display:'flex', justifyContent:'space-between', alignItems:'center', gap:10, flexWrap:'wrap' }}>
+              <div>
+                <div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.12em', fontWeight:700 }}>RAZORPAY PAYMENT ID</div>
+                <div style={{ fontSize:13, fontWeight:600, color:T.inkSoft, fontFamily:'ui-monospace, Menlo, monospace', marginTop:2 }}>{payment.razorpay_payment_id}</div>
+              </div>
+              <span style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 10px', borderRadius:999, background:variant.soft, color:variant.deep, fontSize:10.5, fontWeight:800, letterSpacing:'.1em' }}>
+                <Ico name="shield" size={11} color={variant.deep} stroke={2.4}/> {payment.simulated?'TEST · SIMULATED':'TEST MODE'}
+              </span>
+            </div>
+          )}
+          {status==='pending' && (
+            <div style={{ marginTop:14, paddingTop:12, borderTop:`1px dashed ${T.greyLight}`, fontSize:12, color:T.grey, lineHeight:1.6 }}>
+              We'll WhatsApp you the moment the bank confirms. If nothing comes through in 30 minutes, any amount debited is auto-reversed.
+            </div>
+          )}
+          {status==='failed' && (
+            <div style={{ marginTop:14, paddingTop:12, borderTop:`1px dashed ${T.greyLight}`, fontSize:12, color:T.grey, lineHeight:1.6 }}>
+              Common reasons: daily UPI limit hit, card OTP timed out, bank server blip. Your spot is saved for 30 minutes.
+            </div>
+          )}
         </div>
         <div style={{ display:'flex', gap:10, marginTop:22, justifyContent:'center', flexWrap:'wrap' }}>
-          <Btn kind="dark" size="lg" icon="whatsapp">Join WhatsApp group</Btn>
-          <Btn kind="outline" size="lg" onClick={onBookAnother}>Book another</Btn>
+          {status==='failed' && <Btn kind="primary" size="lg" icon="refresh" onClick={onRetry}>Retry payment</Btn>}
+          {status==='pending' && <Btn kind="primary" size="lg" icon="refresh" onClick={onRetry}>Check status</Btn>}
+          {(status==='success' || status==='simulated') && <Btn kind="dark" size="lg" icon="whatsapp">Join WhatsApp group</Btn>}
+          {(status==='success' || status==='simulated') && <Btn kind="outline" size="lg" onClick={onViewBookings}>View my bookings</Btn>}
+          <Btn kind={status==='failed'?'outline':'outline'} size="lg" onClick={onBookAnother}>{status==='failed'?'Browse other trips':'Book another'}</Btn>
         </div>
+        {(status==='success' || status==='simulated') && (
+          <div style={{ marginTop:20, padding:'12px 16px', background:'#FFF5D6', borderRadius:12, border:`1px solid ${T.amber}55`, display:'flex', alignItems:'center', gap:10, textAlign:'left' }}>
+            <Ico name="gift" size={18} color="#A37A1A"/>
+            <div style={{ flex:1, fontSize:12.5, color:'#5a4316', lineHeight:1.5 }}>
+              <b style={{ color:T.ink }}>Invite a friend, both get ₹500 off.</b> Your referral link is in the WhatsApp group.
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -473,15 +521,25 @@ const inp = { width:'100%', height:42, borderRadius:10, border:`1px solid ${T.gr
 const stepBtn3 = { width:30, height:30, borderRadius:8, border:`1px solid ${T.greyLight}`, background:'#fff', cursor:'pointer', fontSize:16, fontWeight:700, color:T.ink, fontFamily:'inherit', display:'inline-flex', alignItems:'center', justifyContent:'center' };
 
 // ───── QUICK BOOK — fast payment page (just pick travelers, pay) ─────
-function QuickBook({ onBack, onBookAnother }) {
-  const t = RISHIKESH_TRIP;
+function QuickBook({ onBack, onBookAnother, onViewBookings }) {
+  // Trip-aware: resolve from the current view (Rishikesh / Nainital / future trips)
+  const t = React.useMemo(() => resolveViewTrip() || RISHIKESH_TRIP, []);
+  const isTH = !!t.travHer;
+  const brandColor = isTH ? '#C14A36' : '#1DBF73';
   const [guests, setGuests] = React.useState(2);
   const [pay, setPay] = React.useState('upi');
   const [gstOn, setGstOn] = React.useState(false);
-  const [confirmed, setConfirmed] = React.useState(false);
   const [couponInput, setCouponInput] = React.useState('');
   const [coupon, setCoupon] = React.useState(null);
   const [couponErr, setCouponErr] = React.useState('');
+
+  // Auto-apply coupon if the user got one via the first-trip login hook.
+  React.useEffect(() => {
+    const stored = getActiveCoupon();
+    if (!stored || coupon) return;
+    const codes = { 'TRAV500':{type:'flat', value:500, label:'₹500 off'}, 'WEEKEND10':{type:'pct', value:10, label:'10% off'}, 'FIRSTRIP':{type:'pct', value:10, label:'10% off · first trip'} };
+    if (codes[stored]) setCoupon({ code: stored, ...codes[stored] });
+  }, []);
 
   const p = t.pricing;
   const base = p.base * guests;
@@ -495,13 +553,85 @@ function QuickBook({ onBack, onBookAnother }) {
 
   const applyCoupon = () => {
     const code = couponInput.trim().toUpperCase();
-    const codes = { 'TRAV500':{type:'flat', value:500, label:'₹500 off'}, 'WEEKEND10':{type:'pct', value:10, label:'10% off'}, 'FIRSTRIP':{type:'pct', value:15, label:'15% off · first trip'} };
-    if (codes[code]) { setCoupon({ code, ...codes[code] }); setCouponErr(''); }
+    const codes = { 'TRAV500':{type:'flat', value:500, label:'₹500 off'}, 'WEEKEND10':{type:'pct', value:10, label:'10% off'}, 'FIRSTRIP':{type:'pct', value:10, label:'10% off · first trip'} };
+    if (codes[code]) { setCoupon({ code, ...codes[code] }); setCouponErr(''); setActiveCoupon(code); }
     else { setCouponErr('Invalid code. Try TRAV500, WEEKEND10 or FIRSTRIP.'); }
   };
-  const removeCoupon = () => { setCoupon(null); setCouponInput(''); setCouponErr(''); };
+  const removeCoupon = () => { setCoupon(null); setCouponInput(''); setCouponErr(''); setActiveCoupon(''); };
 
-  if (confirmed) return <ConfirmedOnePage trip={t} guests={guests} total={total} token={token} onBookAnother={onBookAnother}/>;
+  const [paying, setPaying] = React.useState(false);
+  const [payment, setPayment] = React.useState(null); // { id, simulated }
+  const [payStatus, setPayStatus] = React.useState('idle'); // idle | success | simulated | pending | failed
+  const [bookingId, setBookingId] = React.useState(null);
+
+  // Persist a booking row that Profile > My Bookings can read.
+  const persistBooking = (status, resp) => {
+    const id = bookingId || newBookingId(t);
+    if (!bookingId) setBookingId(id);
+    const b = {
+      id,
+      trip: { id: t.id, dest: t.dest, dates: t.dates, img: t.img, creator: t.creator || '@trav.curated' },
+      status: status==='pending' ? 'upcoming' : status==='failed' ? 'upcoming' : 'upcoming',
+      state: status==='success' || status==='simulated' ? 'confirmed' : status==='pending' ? 'payment-pending' : 'payment-pending',
+      guests,
+      paid: (status==='success' || status==='simulated') ? token : 0,
+      balance,
+      departsIn: 14,
+      rating: null,
+      persona: isTH ? 'soloFemale' : 'standard',
+      holdExpiresHours: status==='pending' ? 24 : status==='failed' ? 0.5 : undefined,
+      paymentId: resp?.razorpay_payment_id,
+      simulated: !!resp?.simulated,
+      coupon: coupon?.code,
+      createdAt: Date.now(),
+      source: 'quick-book',
+    };
+    if (status==='pending' || status==='failed') savePendingBooking(b);
+    else { saveBooking(b); clearPendingBooking(); }
+    return id;
+  };
+
+  const startPayment = () => {
+    if (paying) return;
+    setPaying(true);
+    setPayStatus('idle');
+    const profile = loadTravProfile();
+    openRazorpay({
+      amount: token,
+      name: 'trav',
+      description: `Token for ${t.dest} · ${guests} ${guests===1?'traveler':'travelers'}`,
+      prefill: { name: profile.name, email: profile.email, contact: (profile.phone||'').replace(/\D/g,'').slice(-10) },
+      notes: { trip_id: t.id, dest: t.dest, guests: String(guests), method_pref: pay, coupon: coupon?.code || '' },
+      theme: { color: brandColor },
+      onSuccess: (resp) => {
+        setPaying(false); setPayment(resp);
+        const status = resp?.simulated ? 'simulated' : 'success';
+        persistBooking(status, resp);
+        setPayStatus(status);
+        setActiveCoupon('');
+      },
+      onDismiss: () => { setPaying(false); },
+      onFailure: (err) => {
+        setPaying(false);
+        setPayment({ razorpay_payment_id: err?.metadata?.payment_id, errorDescription: err?.description });
+        persistBooking('failed');
+        setPayStatus('failed');
+      },
+    });
+  };
+
+  const showConfirmation = ['success','simulated','pending','failed'].includes(payStatus);
+  if (showConfirmation) {
+    return <ConfirmedOnePage
+      trip={t} guests={guests} total={total} token={token}
+      onBookAnother={onBookAnother}
+      onRetry={()=>{ setPayStatus('idle'); setPayment(null); startPayment(); }}
+      onViewBookings={onViewBookings}
+      bookingId={bookingId}
+      payment={payment}
+      status={payStatus}
+    />;
+  }
 
   return (
     <div style={{ background:'#F4F6FA', minHeight:'calc(100vh - 64px)', padding:'28px 36px 80px' }}>
@@ -659,7 +789,7 @@ function QuickBook({ onBack, onBookAnother }) {
                   <span style={{ fontSize:12, color:T.greenDeep, fontWeight:700 }}>Pay now (token)</span>
                   <span style={{ fontSize:18, fontWeight:800, color:T.greenDeep }}>{inr(token)}</span>
                 </div>
-                <Btn kind="primary" size="lg" full trailing="arrow-right" onClick={()=>setConfirmed(true)}>Pay {inr(token)} · Lock spot</Btn>
+                <Btn kind="primary" size="lg" full trailing="arrow-right" onClick={startPayment}>{paying?'Opening payment…':`Pay ${inr(token)} · Lock spot`}</Btn>
                 <div style={{ marginTop:10, fontSize:11, color:T.grey, textAlign:'center', lineHeight:1.4 }}>
                   Balance {inr(balance)} auto-collected 7 days before. Free cancellation up to 7 days.
                 </div>

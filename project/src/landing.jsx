@@ -1,13 +1,35 @@
+// Editable live feed. Each item rotates in the ribbon at the top of the hero.
+// Every entry nudges the user to act — book, see, or call a trip directly.
+// kind: 'booking' (someone just booked) | 'scarcity' (low spots) | 'drop' (new trip drop) | 'offer' (coupon live)
+const LANDING_TICKER = [
+  { id:'t1', kind:'booking',  tripId:'trip-rishikesh', icon:'whatsapp', text:'Priya from Delhi just locked a spot on',  highlight:'Rishikesh · May 16–18',       cta:'Book this trip' },
+  { id:'t2', kind:'scarcity', tripId:'trip-nainital',  icon:'fire',     text:'Only',                                     highlight:'3 spots left on Nainital',     cta:'Grab a spot' },
+  { id:'t3', kind:'drop',     tripId:'trip-jaipur',    icon:'spark',    text:'New drop live from Thursday ·',            highlight:'Jaipur Pink City Walk',         cta:'See trip' },
+  { id:'t4', kind:'offer',    tripId:null,             icon:'gift',     text:'Code',                                     highlight:'WKND20 · 20% off this weekend', cta:'Apply & browse' },
+];
+
 function Landing({ onOpenTrip, onViewAllTrips }) {
   const [fromCity, setFromCity] = React.useState('Delhi');
+  const [mode, setMode] = React.useState('weekend'); // weekend | long
+  const [query, setQuery] = React.useState('');
   const isMobile = useIsMobile();
   const scrollToWeekend = () => {
     const el = document.getElementById('weekend-trips');
     if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
   };
+  const onSearch = () => {
+    if (onViewAllTrips) onViewAllTrips();
+    else scrollToWeekend();
+  };
+  const onTickerCta = (item) => {
+    if (item.tripId && onOpenTrip) onOpenTrip(item.tripId);
+    else if (onViewAllTrips) onViewAllTrips();
+    else scrollToWeekend();
+  };
   return (
     <>
-      <Hero fromCity={fromCity} setFromCity={setFromCity} onSeeTrips={scrollToWeekend} isMobile={isMobile}/>
+      <LiveTicker items={LANDING_TICKER} isMobile={isMobile} onCta={onTickerCta}/>
+      <Hero fromCity={fromCity} setFromCity={setFromCity} mode={mode} setMode={setMode} query={query} setQuery={setQuery} onSeeTrips={scrollToWeekend} onSearch={onSearch} isMobile={isMobile}/>
       <WeekendTrips fromCity={fromCity} onOpen={onOpenTrip} onViewAll={onViewAllTrips} isMobile={isMobile}/>
       <HowTraveling isMobile={isMobile}/>
       <HowItWorks isMobile={isMobile}/>
@@ -17,7 +39,71 @@ function Landing({ onOpenTrip, onViewAllTrips }) {
   );
 }
 
-function Hero({ fromCity, setFromCity, onSeeTrips, isMobile }) {
+/* ============ Live ticker (animated, action-led, editable list) ============ */
+function LiveTicker({ items, isMobile, onCta }) {
+  const [idx, setIdx] = React.useState(0);
+  const [paused, setPaused] = React.useState(false);
+  React.useEffect(() => {
+    if (!items || items.length <= 1 || paused) return;
+    const t = setInterval(() => setIdx(i => (i+1) % items.length), 4200);
+    return () => clearInterval(t);
+  }, [items, paused]);
+  if (!items || items.length===0) return null;
+  const kindTones = {
+    booking:  { fg:T.green,    label:'JUST BOOKED' },
+    scarcity: { fg:T.fire,     label:'FILLING FAST' },
+    drop:     { fg:T.greenDeep,label:'NEW DROP' },
+    offer:    { fg:'#A37A1A',  label:'OFFER LIVE' },
+  };
+  return (
+    <div onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} style={{ background:T.ink, color:'#fff', position:'relative', overflow:'hidden' }}>
+      {/* moving sheen */}
+      <div style={{ position:'absolute', inset:0, background:`linear-gradient(90deg, transparent 0%, ${T.green}11 30%, transparent 60%)`, animation:'tk-shimmer 6s linear infinite', pointerEvents:'none' }}/>
+      <div style={{ maxWidth:1200, margin:'0 auto', padding:isMobile?'9px 14px':'10px 36px', display:'flex', alignItems:'center', gap:isMobile?10:14, position:'relative' }}>
+        <span aria-label="live" style={{ position:'relative', width:9, height:9, flexShrink:0 }}>
+          <span style={{ position:'absolute', inset:0, borderRadius:'50%', background:T.green, opacity:.55, animation:'tk-pulse 1.5s ease-out infinite' }}/>
+          <span style={{ position:'absolute', inset:0, borderRadius:'50%', background:T.green }}/>
+        </span>
+        <div style={{ flex:1, minWidth:0, height:isMobile?20:22, position:'relative', overflow:'hidden' }}>
+          {items.map((it,i) => {
+            const tone = kindTones[it.kind] || kindTones.booking;
+            return (
+              <div key={it.id} style={{
+                position:'absolute', inset:0, display:'flex', alignItems:'center', gap:isMobile?8:10,
+                opacity: i===idx ? 1 : 0,
+                transform: i===idx ? 'translateY(0)' : (i===((idx-1+items.length)%items.length) ? 'translateY(-110%)' : 'translateY(110%)'),
+                transition:'opacity .35s ease, transform .35s ease',
+                whiteSpace:'nowrap', overflow:'hidden',
+              }}>
+                <span style={{ fontSize:9.5, fontWeight:800, letterSpacing:'.14em', padding:'3px 8px', borderRadius:999, background:`${tone.fg}22`, color:tone.fg, display:'inline-flex', alignItems:'center', gap:5, flexShrink:0 }}>
+                  <Ico name={it.icon} size={10} color={tone.fg}/>{tone.label}
+                </span>
+                <span style={{ fontSize:isMobile?12:13, color:'rgba(255,255,255,.78)', fontWeight:500, overflow:'hidden', textOverflow:'ellipsis', minWidth:0 }}>
+                  {it.text} <b style={{ color:'#fff', fontWeight:700 }}>{it.highlight}</b>
+                </span>
+              </div>
+            );
+          })}
+        </div>
+        <button onClick={()=>onCta && onCta(items[idx])} style={{
+          flexShrink:0, height:isMobile?30:32, padding:isMobile?'0 11px':'0 14px', borderRadius:999,
+          background:T.green, color:'#fff', border:'none', fontFamily:'inherit',
+          fontSize:isMobile?11.5:12.5, fontWeight:800, cursor:'pointer',
+          display:'inline-flex', alignItems:'center', gap:5,
+          boxShadow:`0 4px 12px ${T.green}55`,
+        }}>
+          {isMobile ? 'Book' : items[idx].cta} <Ico name="arrow-right" size={11} color="#fff" stroke={2.5}/>
+        </button>
+      </div>
+      <style>{`
+        @keyframes tk-pulse { 0% { transform:scale(1); opacity:.55 } 80% { transform:scale(2.4); opacity:0 } 100% { transform:scale(2.4); opacity:0 } }
+        @keyframes tk-shimmer { 0% { transform:translateX(-30%) } 100% { transform:translateX(60%) } }
+      `}</style>
+    </div>
+  );
+}
+
+function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrips, onSearch, isMobile }) {
   const UN = (id) => `https://images.unsplash.com/photo-${id}?w=400&q=80&auto=format&fit=crop`;
   const LFT = (tags, lock) => `https://loremflickr.com/400/400/${tags}?lock=${lock}`;
   const leftTiles = [
@@ -38,23 +124,18 @@ function Hero({ fromCity, setFromCity, onSeeTrips, isMobile }) {
   ];
   if (isMobile) {
     return (
-      <div style={{ position:'relative', background:'#fff', overflow:'hidden', padding:'24px 16px 36px' }}>
+      <div style={{ position:'relative', background:'#fff', overflow:'hidden', padding:'20px 16px 32px' }}>
         <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#F0FAF4', color:T.greenDeep, padding:'5px 12px', borderRadius:999, fontSize:11, fontWeight:600, marginBottom:14, border:`1px solid ${T.green}33` }}>
           <span style={{ width:6, height:6, borderRadius:'50%', background:T.green }}/>New drop · {TRAV.nextDrop}
         </div>
-        <h1 style={{ fontSize:38, fontWeight:700, letterSpacing:'-.03em', lineHeight:1.05, margin:0, color:T.ink, fontFamily:'Fraunces, serif' }}>
+        <h1 style={{ fontSize:36, fontWeight:700, letterSpacing:'-.03em', lineHeight:1.05, margin:0, color:T.ink, fontFamily:'Fraunces, serif' }}>
           Your weekend,<br/>perfectly <span style={{ color:T.green, fontStyle:'italic' }}>travelled.</span>
         </h1>
-        <div style={{ marginTop:12, fontSize:14.5, color:T.grey, lineHeight:1.55 }}>
+        <div style={{ marginTop:10, fontSize:14, color:T.grey, lineHeight:1.55 }}>
           Creator-led weekend trips. Just 15 spots. No leaves needed.
         </div>
-        <div className="scroll-x" style={{ marginTop:14, display:'flex', gap:8, overflowX:'auto', margin:'14px -16px 0', padding:'2px 16px' }}>
-          {TRAV.cities.map(c => {
-            const a = c===fromCity;
-            return <button key={c} onClick={()=>setFromCity(c)} className="snap" style={{ flex:'0 0 auto', padding:'8px 16px', borderRadius:999, border:`1.5px solid ${a?T.ink:T.greyLight}`, background:a?T.ink:'#fff', color:a?'#fff':T.ink, fontSize:13, fontWeight:a?700:500, fontFamily:'inherit', cursor:'pointer' }}>{c}</button>;
-          })}
-        </div>
-        <div style={{ marginTop:18, display:'flex', flexDirection:'column', gap:8 }}>
+        <SearchBar mode={mode} setMode={setMode} fromCity={fromCity} setFromCity={setFromCity} query={query} setQuery={setQuery} onSearch={onSearch} isMobile/>
+        <div style={{ marginTop:14, display:'flex', flexDirection:'column', gap:8 }}>
           <Btn kind="primary" size="lg" full trailing="arrow-right" onClick={onSeeTrips}>See this weekend's trips</Btn>
           <Btn kind="outline" size="lg" full icon="whatsapp">Get Thursday Drops</Btn>
         </div>
@@ -86,18 +167,8 @@ function Hero({ fromCity, setFromCity, onSeeTrips, isMobile }) {
           <div style={{ marginTop:20, fontSize:17, color:T.grey, lineHeight:1.5, maxWidth:520 }}>
             Creator-led weekend trips. Friday night → Sunday evening.<br/>₹7–10K. Just 15 spots. No leaves needed.
           </div>
-          <div style={{ marginTop:28, display:'inline-flex', alignItems:'center', gap:10, background:'#fff', border:`1px solid ${T.greyLight}`, borderRadius:999, padding:'6px 6px 6px 18px', boxShadow:'0 6px 24px rgba(15,30,46,.06)' }}>
-            <Ico name="pin" size={14} color={T.grey}/>
-            <span style={{ fontSize:13, color:T.grey, fontWeight:500 }}>Traveling from</span>
-            <div style={{ display:'flex', gap:4, alignItems:'center' }}>
-              {TRAV.cities.slice(0,4).map(c => {
-                const a = c===fromCity;
-                return <div key={c} onClick={()=>setFromCity(c)} style={{ padding:'7px 13px', borderRadius:999, cursor:'pointer', fontSize:12.5, fontWeight:a?700:500, background:a?T.ink:'transparent', color:a?'#fff':T.ink, transition:'all .15s' }}>{c}</div>;
-              })}
-              <div style={{ display:'inline-flex', alignItems:'center', gap:3, padding:'7px 10px', color:T.grey, fontSize:12.5, cursor:'pointer' }}>more <Ico name="chevron-down" size={11} color={T.grey}/></div>
-            </div>
-          </div>
-          <div style={{ display:'flex', gap:12, marginTop:28, flexWrap:'wrap', justifyContent:'center' }}>
+          <SearchBar mode={mode} setMode={setMode} fromCity={fromCity} setFromCity={setFromCity} query={query} setQuery={setQuery} onSearch={onSearch} isMobile={false}/>
+          <div style={{ display:'flex', gap:12, marginTop:18, flexWrap:'wrap', justifyContent:'center' }}>
             <Btn kind="primary" size="lg" trailing="arrow-right" onClick={onSeeTrips}>See this weekend's trips</Btn>
             <Btn kind="outline" size="lg" icon="whatsapp">Get Thursday Drops</Btn>
           </div>
@@ -108,6 +179,84 @@ function Hero({ fromCity, setFromCity, onSeeTrips, isMobile }) {
       </div>
     </div>
   );
+}
+
+function SearchBar({ mode, setMode, fromCity, setFromCity, query, setQuery, onSearch, isMobile }) {
+  const [cityOpen, setCityOpen] = React.useState(false);
+  const placeholder = mode==='weekend' ? 'Bali, Goa, beach…' : 'Bali, Bhutan, longer…';
+  return (
+    <div style={{ marginTop:isMobile?16:24, width:isMobile?'100%':'auto', maxWidth:isMobile?'100%':640, position:'relative' }}>
+      {/* Unified search shell — toggle tabs sit at the top, search row below, one connected card */}
+      <div style={{ background:'#fff', border:`1px solid ${T.greyLight}`, borderRadius:isMobile?18:24, boxShadow:'0 12px 40px rgba(15,30,46,.10)', overflow:'visible' }}>
+        {/* Mode tabs as airbnb-style ribbon at the top of the card */}
+        <div style={{ display:'flex', alignItems:'center', gap:isMobile?2:4, padding:isMobile?'10px 10px 0':'12px 14px 0', justifyContent:isMobile?'center':'flex-start' }}>
+          {[
+            { id:'weekend', label:'Weekend',      icon:'calendar' },
+            { id:'long',    label:'Long weekend', icon:'spark' },
+          ].map(m => {
+            const a = mode===m.id;
+            return (
+              <button key={m.id} onClick={()=>setMode(m.id)} style={{
+                position:'relative',
+                height:isMobile?30:34, padding:isMobile?'0 14px':'0 16px', borderRadius:999, border:'none',
+                background: a ? '#F4F6FA' : 'transparent',
+                color: a ? T.ink : T.grey,
+                fontFamily:'inherit', fontSize:isMobile?12:13, fontWeight:a?700:600, cursor:'pointer',
+                display:'inline-flex', alignItems:'center', gap:6,
+                transition:'all .15s',
+              }}>
+                <Ico name={m.icon} size={12} color={a?T.greenDeep:T.grey}/> {m.label}
+              </button>
+            );
+          })}
+        </div>
+        {/* Search row */}
+        <div style={{ padding:isMobile?'8px 8px 8px':'10px 10px 10px', display:'flex', alignItems:'stretch', gap:isMobile?4:0, flexDirection:isMobile?'column':'row' }}>
+          {/* From */}
+          <div style={{ position:'relative', flex:isMobile?'unset':'0 0 auto' }}>
+            <button onClick={()=>setCityOpen(o=>!o)} style={{ background:'transparent', border:'none', cursor:'pointer', fontFamily:'inherit', padding:isMobile?'8px 14px':'6px 16px', display:'flex', alignItems:'center', gap:10, width:isMobile?'100%':'auto', textAlign:'left', borderRadius:isMobile?12:999, transition:'background .15s' }} onMouseEnter={e=>e.currentTarget.style.background='#FAFBFC'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+              <Ico name="pin" size={14} color={T.greenDeep}/>
+              <div>
+                <div style={{ fontSize:9, fontWeight:800, color:T.grey, letterSpacing:'.14em', lineHeight:1 }}>FROM</div>
+                <div style={{ fontSize:13, fontWeight:700, color:T.ink, marginTop:3, display:'inline-flex', alignItems:'center', gap:5 }}>{fromCity} <Ico name="chevron-down" size={11} color={T.grey}/></div>
+              </div>
+            </button>
+            {cityOpen && (
+              <div style={{ position:'absolute', top:'calc(100% + 6px)', left:0, background:'#fff', borderRadius:12, border:`1px solid ${T.greyLight}`, boxShadow:'0 16px 36px rgba(15,30,46,.18)', padding:6, zIndex:30, minWidth:160 }}>
+                {TRAV.cities.map(c => (
+                  <button key={c} onClick={()=>{setFromCity(c); setCityOpen(false);}} style={{ display:'block', width:'100%', padding:'9px 12px', borderRadius:8, border:'none', background: c===fromCity?'#F0FAF4':'transparent', color: c===fromCity?T.greenDeep:T.ink, textAlign:'left', fontSize:13, fontWeight: c===fromCity?700:500, cursor:'pointer', fontFamily:'inherit' }}>{c}</button>
+                ))}
+              </div>
+            )}
+          </div>
+          {!isMobile && <div style={{ width:1, background:T.greyLight, margin:'10px 2px' }}/>}
+          {/* Where / vibe */}
+          <div style={{ flex:1, display:'flex', alignItems:'center', gap:10, padding:isMobile?'8px 14px':'6px 16px', minWidth:0, borderTop:isMobile?`1px solid ${T.greyLight}`:'none', borderRadius:isMobile?12:999, transition:'background .15s' }} onMouseEnter={e=>!isMobile && (e.currentTarget.style.background='#FAFBFC')} onMouseLeave={e=>!isMobile && (e.currentTarget.style.background='transparent')}>
+            <Ico name={mode==='weekend'?'spark':'star'} size={14} color={T.greenDeep}/>
+            <div style={{ flex:1, minWidth:0, textAlign:'left' }}>
+              <div style={{ fontSize:9, fontWeight:800, color:T.grey, letterSpacing:'.14em', lineHeight:1 }}>WHERE</div>
+              <input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>{if(e.key==='Enter') onSearch();}} placeholder={placeholder} style={{ width:'100%', border:'none', outline:'none', fontSize:13.5, fontWeight:600, color:T.ink, padding:0, marginTop:3, fontFamily:'inherit', background:'transparent' }}/>
+            </div>
+          </div>
+          {/* Search button */}
+          <button onClick={onSearch} aria-label="Search trips" style={{
+            flexShrink:0, height:isMobile?44:48, padding:isMobile?'0 18px':'0 22px', borderRadius:999,
+            background:T.green, color:'#fff', border:'none', cursor:'pointer', fontFamily:'inherit',
+            fontSize:isMobile?13.5:14, fontWeight:800,
+            display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8,
+            boxShadow:`0 4px 14px ${T.green}55`, marginTop:isMobile?2:0, marginLeft:isMobile?0:4,
+            transition:'transform .15s, box-shadow .15s',
+          }} onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-1px)'; e.currentTarget.style.boxShadow=`0 8px 22px ${T.green}66`; }} onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow=`0 4px 14px ${T.green}55`; }}>
+            <SearchIcon/> Search
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SearchIcon() {
+  return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>;
 }
 
 function PhotoTile({ t }) {
@@ -189,18 +338,32 @@ function WeekendTrips({ fromCity, onOpen, onViewAll, isMobile }) {
 
 function TripCard({ trip, onOpen }) {
   const [hover, setHover] = React.useState(false);
+  const isTH = !!trip.travHer;
+  const accent = isTH ? T.rose : T.greenDeep;
+  const ringHover = isTH ? 'rgba(190,62,42,.18)' : 'rgba(15,30,46,.12)';
   return (
     <div onClick={onOpen} onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)}
-      style={{ background:'#fff', borderRadius:16, overflow:'hidden', border:`1px solid ${T.greyLight}`, boxShadow:hover?'0 18px 40px rgba(15,30,46,.12)':'0 2px 8px rgba(15,30,46,.04)', transform:hover?'translateY(-3px)':'translateY(0)', transition:'all .2s', cursor:'pointer' }}>
+      style={{ background:'#fff', borderRadius:16, overflow:'hidden', border:`1px solid ${isTH?'#F2D6CE':T.greyLight}`, boxShadow:hover?`0 18px 40px ${ringHover}`:'0 2px 8px rgba(15,30,46,.04)', transform:hover?'translateY(-3px)':'translateY(0)', transition:'all .2s', cursor:'pointer', position:'relative' }}>
+      {isTH && (
+        <div style={{ position:'absolute', top:14, right:-4, zIndex:3, background:`linear-gradient(135deg, ${T.rose} 0%, #d04a36 100%)`, color:'#fff', padding:'6px 12px 6px 11px', fontSize:10, fontWeight:800, letterSpacing:'.14em', textTransform:'uppercase', display:'inline-flex', alignItems:'center', gap:5, boxShadow:'0 4px 12px rgba(190,62,42,.35)', clipPath:'polygon(0 0, 100% 0, 100% 100%, 0 100%, 6px 50%)', paddingLeft:16 }}>
+          <Ico name="rose" size={11} color="#fff"/> trav.her
+        </div>
+      )}
       <div style={{ height:240, position:'relative' }}>
         <ImgPlaceholder {...trip.img} radius={0} overlay={false}/>
+        {isTH && <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(190,62,42,0) 55%, rgba(190,62,42,.32) 100%)' }}/>}
         <div style={{ position:'absolute', top:14, left:14, display:'flex', gap:6 }}>
           {trip.tags.map(tag => <span key={tag} style={{ background:'rgba(255,255,255,.92)', color:T.ink, padding:'5px 11px', borderRadius:999, fontSize:10.5, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase' }}>{tag}</span>)}
         </div>
         <div style={{ position:'absolute', bottom:12, left:12, background:'rgba(20,30,40,.75)', color:'#fff', padding:'5px 11px 5px 5px', borderRadius:999, fontSize:12, fontWeight:500, display:'inline-flex', alignItems:'center', gap:7 }}>
-          <span style={{ width:20, height:20, borderRadius:'50%', background:T.green, display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:700, color:'#fff' }}>{trip.creator[1].toUpperCase()}</span>
+          <span style={{ width:20, height:20, borderRadius:'50%', background:isTH?T.rose:T.green, display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:700, color:'#fff' }}>{trip.creator[1].toUpperCase()}</span>
           {trip.creator}
         </div>
+        {isTH && (
+          <div style={{ position:'absolute', bottom:12, right:12, background:'rgba(255,255,255,.96)', color:T.rose, padding:'4px 10px', borderRadius:999, fontSize:10, fontWeight:800, letterSpacing:'.1em', textTransform:'uppercase', display:'inline-flex', alignItems:'center', gap:5, boxShadow:'0 2px 8px rgba(0,0,0,.18)' }}>
+            <Ico name="users" size={10} color={T.rose}/> Women only · 8
+          </div>
+        )}
       </div>
       <div style={{ padding:'18px 18px 4px', display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:12 }}>
         <div>
@@ -209,7 +372,7 @@ function TripCard({ trip, onOpen }) {
         </div>
         <div style={{ textAlign:'right' }}>
           <div style={{ fontSize:9.5, color:T.grey, letterSpacing:'.14em', fontWeight:700 }}>STARTING AT</div>
-          <div style={{ fontSize:22, fontWeight:800, color:T.greenDeep, letterSpacing:'-.02em', marginTop:2 }}>{inr(trip.price)}</div>
+          <div style={{ fontSize:22, fontWeight:800, color:accent, letterSpacing:'-.02em', marginTop:2 }}>{inr(trip.price)}</div>
         </div>
       </div>
       <div style={{ margin:'14px 18px 16px', padding:'10px 12px', borderTop:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', gap:10 }}>
@@ -223,26 +386,102 @@ function TripCard({ trip, onOpen }) {
 
 function HowTraveling({ isMobile }) {
   const options = [
-    { icon:'users', label:'Group', color:'#3ea370', bg:'#E7F7EE' },
-    { icon:'heart', label:'Romantic', color:T.rose, bg:T.roseCream },
-    { icon:'bed', label:'Business', color:'#4a6788', bg:'#EAF1F9' },
-    { icon:'heart', label:'Solo', color:'#c45a6e', bg:'#FDEAEE' },
-    { icon:'users', label:'Family', color:'#3ea370', bg:'#E7F7EE' },
+    { icon:'users', label:'Group', color:'#3ea370', bg:'#E7F7EE',
+      pitch:"Squad of 4+? We'll curate a trip your group actually agrees on. One itinerary, one invoice, zero group-chat chaos.",
+      features:['Private departures','Custom dates','Dedicated trip lead'] },
+    { icon:'heart', label:'Romantic', color:T.rose, bg:T.roseCream,
+      pitch:"Date-night energy, two nights long. Boutique stays, quiet corners, one surprise built in.",
+      features:['Couples-only rooms','Candlelit dinner','No group pressure'] },
+    { icon:'bed', label:'Business', color:'#4a6788', bg:'#EAF1F9',
+      pitch:"Workations that don't feel like work. Fast wifi, quiet rooms, and an evening view worth closing the laptop for.",
+      features:['Fibre-speed wifi','Private workspace','Weekday check-in'] },
+    { icon:'heart', label:'Solo female', color:'#B5365A', bg:'#FDEAF0',
+      pitch:"Women-only weekends, curated by women who've been there. Verified stays, female trip leads, and a group that genuinely looks out for each other.",
+      features:['Women-only cohort','Female trip lead','Safety-vetted stays'] },
+    { icon:'users', label:'Family', color:'#3ea370', bg:'#E7F7EE',
+      pitch:"Kid-friendly escapes that don't bore the grown-ups. From interconnecting rooms to activities sized for 6-year-olds and 60-year-olds.",
+      features:['Kid-safe activities','Family rooms','Flexible pace'] },
   ];
+  const [selected, setSelected] = React.useState('Solo female');
+  const selectedIndex = options.findIndex(o => o.label === selected);
+  const selectedOption = selectedIndex >= 0 ? options[selectedIndex] : null;
+  const triangleLeft = selectedIndex >= 0 ? `calc(${selectedIndex * 20}% + 10%)` : '50%';
+
   return (
     <div style={{ background:'#F4F6FA', padding:isMobile?'18px 0 40px':'24px 36px 72px' }}>
       <div style={{ maxWidth:1200, margin:'0 auto', padding:isMobile?'0 16px':0 }}>
         <h2 style={{ fontSize:isMobile?22:40, fontWeight:800, letterSpacing:'-.025em', textAlign:isMobile?'left':'center', color:T.ink, margin:`0 0 ${isMobile?16:32}px`, fontFamily:'Fraunces, serif' }}>How are you traveling?</h2>
         <div className={isMobile?'scroll-x':''} style={{ display:isMobile?'flex':'grid', gridTemplateColumns:isMobile?undefined:'repeat(5,1fr)', gap:isMobile?10:20, overflowX:isMobile?'auto':'visible', margin:isMobile?'0 -16px':0, padding:isMobile?'0 16px':0 }}>
-          {options.map(o => (
-            <div key={o.label} className={isMobile?'snap':''} style={{ background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`, padding:isMobile?'18px 14px':'28px 16px', textAlign:'center', cursor:'pointer', minWidth:isMobile?108:'auto', flexShrink:0 }}>
-              <div style={{ width:isMobile?44:56, height:isMobile?44:56, borderRadius:'50%', background:o.bg, display:'flex', alignItems:'center', justifyContent:'center', margin:`0 auto ${isMobile?10:14}px` }}>
-                <Ico name={o.icon} size={isMobile?20:24} color={o.color} stroke={1.8}/>
+          {options.map(o => {
+            const isSel = o.label === selected;
+            return (
+              <div key={o.label} className={isMobile?'snap':''}
+                onClick={() => setSelected(o.label)}
+                style={{
+                  background:'#fff', borderRadius:16,
+                  border:isSel ? `2px solid ${o.color}` : `1px solid ${T.greyLight}`,
+                  padding:isMobile?'18px 14px':'28px 16px', textAlign:'center', cursor:'pointer',
+                  minWidth:isMobile?108:'auto', flexShrink:0,
+                  boxShadow:isSel ? '0 6px 20px rgba(15,30,46,.10)' : 'none',
+                  transition:'box-shadow .15s, border-color .15s',
+                }}>
+                <div style={{ width:isMobile?44:56, height:isMobile?44:56, borderRadius:'50%', background:o.bg, display:'flex', alignItems:'center', justifyContent:'center', margin:`0 auto ${isMobile?10:14}px` }}>
+                  <Ico name={o.icon} size={isMobile?20:24} color={o.color} stroke={1.8}/>
+                </div>
+                <div style={{ fontSize:isMobile?12.5:14, fontWeight:700, color:T.ink }}>{o.label}</div>
               </div>
-              <div style={{ fontSize:isMobile?12.5:14, fontWeight:700, color:T.ink }}>{o.label}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
+        {selectedOption && (
+          <div style={{ position:'relative', marginTop:isMobile?10:14 }}>
+            {!isMobile && (
+              <div style={{
+                position:'absolute', top:-8, left:triangleLeft, transform:'translateX(-50%)',
+                width:0, height:0,
+                borderLeft:'8px solid transparent', borderRight:'8px solid transparent',
+                borderBottom:`8px solid #fff`,
+                filter:'drop-shadow(0 -1px 0 '+T.greyLight+')',
+              }}/>
+            )}
+            <div style={{
+              background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`,
+              padding:isMobile?18:22, boxShadow:'0 6px 18px rgba(15,30,46,.08)',
+              display:'flex', flexDirection:isMobile?'column':'row', alignItems:isMobile?'flex-start':'center',
+              gap:isMobile?12:18,
+            }}>
+              <div style={{
+                width:isMobile?40:48, height:isMobile?40:48, borderRadius:'50%',
+                background:selectedOption.bg, display:'flex', alignItems:'center', justifyContent:'center',
+                flexShrink:0,
+              }}>
+                <Ico name={selectedOption.icon} size={isMobile?20:22} color={selectedOption.color} stroke={1.8}/>
+              </div>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontSize:isMobile?18:20, fontWeight:700, color:T.ink, fontFamily:'Fraunces, serif', marginBottom:6 }}>
+                  {selectedOption.label}
+                </div>
+                <div style={{ fontSize:isMobile?13.5:14, color:T.grey, lineHeight:1.55, marginBottom:10 }}>
+                  {selectedOption.pitch}
+                </div>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+                  {selectedOption.features.map(f => (
+                    <span key={f} style={{
+                      fontSize:12, fontWeight:600, color:selectedOption.color,
+                      background:selectedOption.bg, borderRadius:999,
+                      padding:'5px 10px',
+                    }}>{f}</span>
+                  ))}
+                </div>
+              </div>
+              <a href="#" onClick={e=>e.preventDefault()} style={{
+                fontSize:13.5, fontWeight:600, color:selectedOption.color,
+                textDecoration:'none', alignSelf:isMobile?'flex-end':'flex-end',
+                whiteSpace:'nowrap',
+              }}>See trips →</a>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

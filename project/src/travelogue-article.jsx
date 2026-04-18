@@ -3,10 +3,12 @@
 
 function TravelogueArticle({ onBack, onOpenTrip }) {
   const a = GOA_ARTICLE;
+  const wordCount = [...(a.intro||[]), ...(a.bodyParas||[])].join(' ').split(/\s+/).length;
+  const readMin = Math.max(4, Math.round(wordCount / 220));
   return (
     <div style={{ background:'#fff' }}>
       {/* Sub-header breadcrumb */}
-      <div style={{ background:'#fff', borderBottom:`1px solid ${T.greyLight}`, padding:'14px 36px', position:'sticky', top:64, zIndex:10, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+      <div style={{ background:'#fff', borderBottom:`1px solid ${T.greyLight}`, padding:'12px 36px', position:'sticky', top:64, zIndex:10, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:14 }}>
           <span onClick={onBack} style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:13.5, fontWeight:600, color:T.ink, cursor:'pointer' }}>
             <Ico name="arrow-left" size={15} color={T.ink}/> Travelogue
@@ -30,22 +32,26 @@ function TravelogueArticle({ onBack, onOpenTrip }) {
       {/* Hero */}
       <ArticleHero article={a}/>
 
-      {/* Intro body + pull quotes */}
-      <div style={{ maxWidth:760, margin:'0 auto', padding:'40px 36px 20px' }}>
-        <PullQuote text={a.pullQuote1}/>
-        <Prose paras={a.intro}/>
-        <div style={{ margin:'34px 0' }}>
-          <h2 style={{ fontFamily:'Fraunces, serif', fontSize:28, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:'0 0 14px' }}>{a.sectionTitle}</h2>
-          <Prose paras={a.bodyParas}/>
+      {/* Journal-style meta strip */}
+      <JournalMetaStrip article={a} readMin={readMin} wordCount={wordCount}/>
+
+      {/* Body: two-column journal prose with drop cap + margin rail */}
+      <div style={{ maxWidth:1120, margin:'0 auto', padding:'28px 36px 8px', display:'grid', gridTemplateColumns:'1fr 220px', gap:40 }}>
+        <div>
+          <ProseTwoCol intro={a.intro} dropCap/>
+          <PullQuote text={a.pullQuote1}/>
+          <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:'22px 0 12px' }}>{a.sectionTitle}</h2>
+          <ProseTwoCol paras={a.bodyParas}/>
+          <PullQuote text={a.pullQuote2}/>
         </div>
-        <PullQuote text={a.pullQuote2}/>
+        <MarginRail article={a} readMin={readMin}/>
       </div>
 
-      {/* Trending Videos */}
-      <TrendingVideos videos={a.videos}/>
-
-      {/* Budget Breakdown */}
-      <BudgetBreakdown rows={a.budget}/>
+      {/* Trending Videos + Budget side-by-side on desktop */}
+      <div style={{ maxWidth:1200, margin:'28px auto 0', padding:'0 36px', display:'grid', gridTemplateColumns:'1.35fr 1fr', gap:28, alignItems:'start' }}>
+        <TrendingVideos videos={a.videos} compact/>
+        <BudgetBreakdown rows={a.budget} compact/>
+      </div>
 
       {/* Experience Collection */}
       <ExperienceCollection items={a.experiences}/>
@@ -53,6 +59,86 @@ function TravelogueArticle({ onBack, onOpenTrip }) {
       {/* Gallery, Taste, Notes, Related, CTA are in lower file */}
       <TravelogueLowerSections article={a} onOpenTrip={onOpenTrip}/>
     </div>
+  );
+}
+
+function JournalMetaStrip({ article, readMin, wordCount }) {
+  const items = [
+    { k:'ISSUE', v:article.date },
+    { k:'COLUMN', v:article.category },
+    { k:'READ', v:`${readMin} min` },
+    { k:'WORDS', v:wordCount.toLocaleString('en-IN') },
+    { k:'PHOTOS', v:(article.gallery||[]).length },
+    { k:'DATELINE', v:'GOA · IN' },
+  ];
+  return (
+    <div style={{ maxWidth:1120, margin:'18px auto 0', padding:'0 36px' }}>
+      <div style={{ display:'grid', gridTemplateColumns:`repeat(${items.length}, 1fr)`, gap:0, border:`1px solid ${T.greyLight}`, borderRadius:12, overflow:'hidden', background:'#FAFAF7' }}>
+        {items.map((it, i) => (
+          <div key={it.k} style={{ padding:'12px 14px', borderRight: i<items.length-1 ? `1px solid ${T.greyLight}` : 'none' }}>
+            <div style={{ fontSize:9.5, letterSpacing:'.18em', color:T.grey, fontWeight:800 }}>{it.k}</div>
+            <div style={{ fontSize:13, color:T.ink, fontWeight:700, marginTop:3, fontFamily:'Fraunces, serif' }}>{it.v}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProseTwoCol({ intro, paras, dropCap }) {
+  const list = paras || intro || [];
+  if (!list.length) return null;
+  return (
+    <div style={{ columnCount:2, columnGap:28, columnRule:`1px solid ${T.greyLight}` }}>
+      {list.map((p, i) => (
+        <p key={i} style={{
+          fontSize:14.5, lineHeight:1.72, color:'#2e3d52',
+          margin: i===0 ? '0 0 14px' : '0 0 14px',
+          textWrap:'pretty',
+          breakInside:'avoid-column',
+        }}>
+          {dropCap && i===0 ? (
+            <>
+              <span style={{ float:'left', fontFamily:'Fraunces, serif', fontSize:54, lineHeight:.9, fontWeight:700, color:T.greenDeep, marginRight:8, marginTop:3 }}>{p.charAt(0)}</span>
+              {p.slice(1)}
+            </>
+          ) : p}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function MarginRail({ article, readMin }) {
+  return (
+    <aside style={{ position:'sticky', top:140, alignSelf:'start', display:'flex', flexDirection:'column', gap:16 }}>
+      <div style={{ border:`1px solid ${T.greyLight}`, borderRadius:12, padding:'14px 16px', background:'#FAFAF7' }}>
+        <div style={{ fontSize:9.5, letterSpacing:'.18em', color:T.grey, fontWeight:800, marginBottom:10 }}>IN THIS JOURNAL</div>
+        <ol style={{ listStyle:'none', padding:0, margin:0, counterReset:'toc' }}>
+          {['The Other Goa','Why This Year Is Different','North vs South','Taste memories','Budget & logistics','Related trips'].map((s, i) => (
+            <li key={i} style={{ counterIncrement:'toc', fontSize:12.5, color:T.inkSoft, padding:'6px 0', borderBottom: i<5 ? `1px solid ${T.greyLight}` : 'none', lineHeight:1.35, display:'flex', gap:8 }}>
+              <span style={{ color:T.grey, fontWeight:700, fontFamily:'Fraunces, serif', minWidth:18 }}>{String(i+1).padStart(2,'0')}</span>
+              <span>{s}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div style={{ border:`1px solid ${T.green}33`, borderRadius:12, padding:'14px 16px', background:'#F0FAF4' }}>
+        <div style={{ fontSize:9.5, letterSpacing:'.18em', color:T.greenDeep, fontWeight:800, marginBottom:8 }}>FIELD NOTE</div>
+        <div style={{ fontSize:12.5, color:T.inkSoft, lineHeight:1.55, fontFamily:'Fraunces, serif', fontStyle:'italic' }}>
+          "Leave north after 9 PM on Saturday. The causeway south is empty, and the stars do the rest."
+        </div>
+        <div style={{ fontSize:11, color:T.grey, fontWeight:600, marginTop:6 }}>— {article.author.name}</div>
+      </div>
+      <div style={{ border:`1px solid ${T.greyLight}`, borderRadius:12, padding:'14px 16px', background:'#fff' }}>
+        <div style={{ fontSize:9.5, letterSpacing:'.18em', color:T.grey, fontWeight:800, marginBottom:8 }}>CITED PLACES</div>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+          {['Assagao','Panjim','Divar','Cabo de Rama','Netravali','Arambol','Mandrem'].map(p => (
+            <span key={p} style={{ fontSize:11, padding:'4px 9px', borderRadius:999, background:'#F4F6FA', color:T.ink, fontWeight:600 }}>{p}</span>
+          ))}
+        </div>
+      </div>
+    </aside>
   );
 }
 
@@ -112,35 +198,39 @@ function Prose({ paras }) {
   );
 }
 
-function TrendingVideos({ videos }) {
+function TrendingVideos({ videos, compact }) {
+  const cols = compact ? 2 : 4;
+  const wrapStyle = compact
+    ? { padding:0 }
+    : { maxWidth:1200, margin:'0 auto', padding:'24px 36px 20px' };
   return (
-    <div style={{ maxWidth:1200, margin:'0 auto', padding:'24px 36px 20px' }}>
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
-        <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:0 }}>Trending Videos</h2>
-        <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:12, color:T.grey }}>
+    <div style={wrapStyle}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:compact?14:20 }}>
+        <h2 style={{ fontFamily:'Fraunces, serif', fontSize:compact?22:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:0 }}>Trending Videos</h2>
+        <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:compact?11:12, color:T.grey }}>
           Powered by
           <span style={{ display:'inline-flex', alignItems:'center', gap:5, color:'#FF0033', fontWeight:700 }}>
-            <span style={{ width:18, height:18, borderRadius:4, background:'#FF0033', display:'inline-flex', alignItems:'center', justifyContent:'center' }}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="#fff"><path d="M8 5l11 7-11 7z"/></svg>
+            <span style={{ width:compact?16:18, height:compact?16:18, borderRadius:4, background:'#FF0033', display:'inline-flex', alignItems:'center', justifyContent:'center' }}>
+              <svg width={compact?9:10} height={compact?9:10} viewBox="0 0 24 24" fill="#fff"><path d="M8 5l11 7-11 7z"/></svg>
             </span>
             Shorts
           </span>
         </div>
       </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:16 }}>
+      <div style={{ display:'grid', gridTemplateColumns:`repeat(${cols}, 1fr)`, gap:compact?12:16 }}>
         {videos.map((v, i) => (
           <div key={i} style={{ position:'relative', aspectRatio:'9/16', borderRadius:14, overflow:'hidden', border:`1px solid ${T.greyLight}`, cursor:'pointer' }}>
             <ImgPlaceholder src={v.src} tone={v.tone} ink={v.ink} accent={v.accent} label="" radius={0}/>
-            <div style={{ position:'absolute', top:12, left:12, right:12, display:'flex', alignItems:'center', gap:8 }}>
-              <div style={{ width:28, height:28, borderRadius:'50%', background:'rgba(255,255,255,.85)', flexShrink:0 }}/>
+            <div style={{ position:'absolute', top:compact?10:12, left:compact?10:12, right:compact?10:12, display:'flex', alignItems:'center', gap:8 }}>
+              <div style={{ width:compact?24:28, height:compact?24:28, borderRadius:'50%', background:'rgba(255,255,255,.85)', flexShrink:0 }}/>
               <div style={{ overflow:'hidden' }}>
-                <div style={{ fontSize:12.5, fontWeight:700, color:'#fff', textShadow:'0 1px 4px rgba(0,0,0,.4)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{v.title}</div>
-                <div style={{ fontSize:10.5, color:'rgba(255,255,255,.85)', textShadow:'0 1px 3px rgba(0,0,0,.4)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{v.handle}</div>
+                <div style={{ fontSize:compact?11.5:12.5, fontWeight:700, color:'#fff', textShadow:'0 1px 4px rgba(0,0,0,.4)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{v.title}</div>
+                <div style={{ fontSize:compact?9.5:10.5, color:'rgba(255,255,255,.85)', textShadow:'0 1px 3px rgba(0,0,0,.4)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{v.handle}</div>
               </div>
             </div>
             <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <div style={{ width:56, height:56, borderRadius:'50%', background:'#FF0033', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 8px 20px rgba(0,0,0,.4)' }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5l11 7-11 7z"/></svg>
+              <div style={{ width:compact?46:56, height:compact?46:56, borderRadius:'50%', background:'#FF0033', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 8px 20px rgba(0,0,0,.4)' }}>
+                <svg width={compact?18:22} height={compact?18:22} viewBox="0 0 24 24" fill="#fff"><path d="M8 5l11 7-11 7z"/></svg>
               </div>
             </div>
             <div style={{ position:'absolute', bottom:10, left:10, right:10, display:'flex', justifyContent:'flex-end' }}>
@@ -153,31 +243,34 @@ function TrendingVideos({ videos }) {
   );
 }
 
-function BudgetBreakdown({ rows }) {
+function BudgetBreakdown({ rows, compact }) {
   const total = rows.reduce((a,r)=>a+r.amount, 0);
+  const wrapStyle = compact ? { padding:0 } : { maxWidth:760, margin:'48px auto 0', padding:'0 36px' };
+  const rowPad = compact ? '11px 16px' : '16px 22px';
   return (
-    <div style={{ maxWidth:760, margin:'48px auto 0', padding:'0 36px' }}>
-      <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, textAlign:'center', margin:'0 0 22px' }}>Trip Budget Breakdown</h2>
+    <div style={wrapStyle}>
+      <h2 style={{ fontFamily:'Fraunces, serif', fontSize:compact?22:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, textAlign:compact?'left':'center', margin:`0 0 ${compact?14:22}px` }}>Trip Budget</h2>
       <div style={{ background:'#F7F9FB', border:`1px solid ${T.greyLight}`, borderRadius:16, overflow:'hidden' }}>
         {rows.map((r, i) => (
-          <div key={i} style={{ display:'flex', alignItems:'center', padding:'16px 22px', borderBottom: i<rows.length-1 ? `1px solid ${T.greyLight}` : 'none', background: i%2===1 ? '#fff' : 'transparent' }}>
-            <BudgetIcon name={r.icon}/>
-            <div style={{ flex:1, marginLeft:16, fontSize:14.5, color:T.ink, fontWeight:500 }}>{r.label}</div>
-            <div style={{ fontSize:14.5, color:T.ink, fontWeight:600, fontVariantNumeric:'tabular-nums' }}>₹{r.amount.toLocaleString('en-IN')}</div>
+          <div key={i} style={{ display:'flex', alignItems:'center', padding:rowPad, borderBottom: i<rows.length-1 ? `1px solid ${T.greyLight}` : 'none', background: i%2===1 ? '#fff' : 'transparent' }}>
+            <BudgetIcon name={r.icon} compact={compact}/>
+            <div style={{ flex:1, marginLeft:compact?12:16, fontSize:compact?13:14.5, color:T.ink, fontWeight:500 }}>{r.label}</div>
+            <div style={{ fontSize:compact?13:14.5, color:T.ink, fontWeight:600, fontVariantNumeric:'tabular-nums' }}>₹{r.amount.toLocaleString('en-IN')}</div>
           </div>
         ))}
-        <div style={{ background:T.green, padding:'16px 22px', display:'flex', alignItems:'center', justifyContent:'space-between', color:'#fff' }}>
-          <div style={{ fontSize:14.5, fontWeight:700 }}>Total Spend</div>
-          <div style={{ fontSize:18, fontWeight:800, fontVariantNumeric:'tabular-nums', fontFamily:'Fraunces, serif' }}>₹{total.toLocaleString('en-IN')}</div>
+        <div style={{ background:T.green, padding:rowPad, display:'flex', alignItems:'center', justifyContent:'space-between', color:'#fff' }}>
+          <div style={{ fontSize:compact?13:14.5, fontWeight:700 }}>Total Spend</div>
+          <div style={{ fontSize:compact?16:18, fontWeight:800, fontVariantNumeric:'tabular-nums', fontFamily:'Fraunces, serif' }}>₹{total.toLocaleString('en-IN')}</div>
         </div>
       </div>
-      <div style={{ fontSize:12, color:T.grey, textAlign:'center', marginTop:10 }}>Per person, 5 nights · October 2025 rates</div>
+      <div style={{ fontSize:compact?11:12, color:T.grey, textAlign:compact?'left':'center', marginTop:10 }}>Per person, 5 nights · October 2025 rates</div>
     </div>
   );
 }
 
-function BudgetIcon({ name }) {
-  const base = { width:36, height:36, borderRadius:10, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 };
+function BudgetIcon({ name, compact }) {
+  const sz = compact ? 30 : 36;
+  const base = { width:sz, height:sz, borderRadius:10, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 };
   const map = {
     bed:{ bg:'#FCE3C6', stroke:'#7a3a0a', draw:<g><path d="M6 18v-6h16v6M6 14h16M10 12V9a2 2 0 012-2h4a2 2 0 012 2v3" fill="none" strokeWidth="1.8"/></g> },
     scooter:{ bg:'#FEEFB6', stroke:'#7a5a0a', draw:<g strokeWidth="1.8" fill="none"><circle cx="7" cy="18" r="3"/><circle cx="20" cy="18" r="3"/><path d="M10 18h7l-3-8h-3M14 10l2-4h3"/></g> },
@@ -190,7 +283,7 @@ function BudgetIcon({ name }) {
   const m = map[name] || map.misc;
   return (
     <div style={{ ...base, background:m.bg }}>
-      <svg width="24" height="24" viewBox="0 0 26 26" stroke={m.stroke} strokeLinecap="round" strokeLinejoin="round">{m.draw}</svg>
+      <svg width={compact?20:24} height={compact?20:24} viewBox="0 0 26 26" stroke={m.stroke} strokeLinecap="round" strokeLinejoin="round">{m.draw}</svg>
     </div>
   );
 }
@@ -202,8 +295,8 @@ function ExperienceCollection({ items }) {
     { bg:'#FBE8D8', fg:'#5a2a0f' }, { bg:'#EDF4D8', fg:'#3a4a0f' }, { bg:'#FDE2E2', fg:'#5a1a1a' },
   ];
   return (
-    <div style={{ maxWidth:1080, margin:'64px auto 0', padding:'0 36px' }}>
-      <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, textAlign:'center', margin:'0 0 28px' }}>Experience Collection</h2>
+    <div style={{ maxWidth:1080, margin:'36px auto 0', padding:'0 36px' }}>
+      <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, textAlign:'center', margin:'0 0 22px' }}>Experience Collection</h2>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:16 }}>
         {items.map((it, i) => (
           <div key={i} style={{ background:'#F7F9FB', border:`1px solid ${T.greyLight}`, borderRadius:14, padding:'18px 18px 20px', display:'flex', gap:14 }}>
