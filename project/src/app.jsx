@@ -22,6 +22,7 @@ function App() {
   const openArticle = (articleId) => set({ screen:'travelogue-article', tripId:null, bookingId:null, articleId });
   const openAllTrips = () => set({ screen:'all-trips', tripId:null, bookingId:null });
   const openInvestor = () => set({ screen:'investor', tripId:null, bookingId:null });
+  const openSupport = () => set({ screen:'support', tripId:null, bookingId:null });
   const openBookingDetail = (bookingId) => set({ screen:'booking-detail', tripId:null, bookingId });
   const openInvoice = (bookingId) => set({ screen:'invoice', tripId:null, bookingId });
   const handleLoginClick = () => { if(loggedIn) openProfile(); else setShowLogin(true); };
@@ -34,6 +35,7 @@ function App() {
       {view.screen==='landing' && <Landing onOpenTrip={openTrip} onViewAllTrips={openAllTrips}/>}
       {view.screen==='all-trips' && <AllTripsIndex onOpenTrip={openTrip}/>}
       {view.screen==='investor' && <InvestorPage onBack={goHome}/>}
+      {view.screen==='support' && <SupportPage onBack={goHome}/>}
       {view.screen==='detail' && <TripDetail onBack={goHome} onBook={openBooking} onCustomise={openCustomise} onOpenArticle={openArticle}/>}
       {view.screen==='booking' && <Booking mode={view.mode||'quick'} onBack={backToDetail} onBookAnother={goHome}/>}
       {view.screen==='profile' && <Profile onLogout={handleLogout} onOpenBooking={openBookingDetail} onOpenInvoice={openInvoice}/>}
@@ -42,10 +44,27 @@ function App() {
       {view.screen==='travher' && <TravHerPage onJoin={()=>alert('Opening WhatsApp group…')}/>}
       {view.screen==='travelogue' && <TravelogueIndex onOpenArticle={openArticle}/>}
       {view.screen==='travelogue-article' && <TravelogueArticle onBack={openTravelogue} onOpenTrip={openTrip}/>}
-      {!['booking','profile','booking-detail','invoice'].includes(view.screen) && <Footer onTravelogue={openTravelogue} onInvestor={openInvestor}/>}
+      {!['booking','profile','booking-detail','invoice'].includes(view.screen) && <Footer onTravelogue={openTravelogue} onInvestor={openInvestor} onSupport={openSupport}/>}
+      <MobileBottomNavWrapper view={view} loggedIn={loggedIn} onHome={goHome} onTrips={openAllTrips} onTravelogue={openTravelogue} onProfile={openProfile} onLogin={handleLoginClick} onSearch={openAllTrips}/>
+      <SupportFabWrapper view={view} onOpen={openSupport}/>
       {showLogin && <LoginModal onClose={()=>setShowLogin(false)} onLogin={handleLoginSuccess}/>}
     </div>
   );
+}
+
+function MobileBottomNavWrapper({ view, loggedIn, onHome, onTrips, onTravelogue, onProfile, onLogin, onSearch }) {
+  const isMobile = useIsMobile();
+  if (!isMobile) return null;
+  // Hide on focused checkout flows where a primary CTA already lives at the bottom
+  if (['detail','booking'].includes(view.screen)) return null;
+  return <MobileBottomNav active={view.screen} loggedIn={loggedIn} onHome={onHome} onTrips={onTrips} onTravelogue={onTravelogue} onProfile={onProfile} onLogin={onLogin} onSearch={onSearch}/>;
+}
+
+function SupportFabWrapper({ view, onOpen }) {
+  const isMobile = useIsMobile();
+  // Hide FAB on the support page itself, on booking flow (focused checkout), and the investor memo (editorial purity).
+  const hide = ['support','booking','investor'].includes(view.screen);
+  return <SupportFab onOpen={onOpen} isMobile={isMobile} hide={hide}/>;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);

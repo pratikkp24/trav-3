@@ -479,14 +479,27 @@ function QuickBook({ onBack, onBookAnother }) {
   const [pay, setPay] = React.useState('upi');
   const [gstOn, setGstOn] = React.useState(false);
   const [confirmed, setConfirmed] = React.useState(false);
+  const [couponInput, setCouponInput] = React.useState('');
+  const [coupon, setCoupon] = React.useState(null);
+  const [couponErr, setCouponErr] = React.useState('');
 
   const p = t.pricing;
   const base = p.base * guests;
   const tax = p.tax * guests;
   const fee = p.convenience * guests;
-  const total = base + tax + fee;
+  const subtotal = base + tax + fee;
+  const discount = coupon ? (coupon.type==='pct' ? Math.round(subtotal * coupon.value / 100) : coupon.value) : 0;
+  const total = Math.max(0, subtotal - discount);
   const token = p.token * guests;
-  const balance = total - token;
+  const balance = Math.max(0, total - token);
+
+  const applyCoupon = () => {
+    const code = couponInput.trim().toUpperCase();
+    const codes = { 'TRAV500':{type:'flat', value:500, label:'₹500 off'}, 'WEEKEND10':{type:'pct', value:10, label:'10% off'}, 'FIRSTRIP':{type:'pct', value:15, label:'15% off · first trip'} };
+    if (codes[code]) { setCoupon({ code, ...codes[code] }); setCouponErr(''); }
+    else { setCouponErr('Invalid code. Try TRAV500, WEEKEND10 or FIRSTRIP.'); }
+  };
+  const removeCoupon = () => { setCoupon(null); setCouponInput(''); setCouponErr(''); };
 
   if (confirmed) return <ConfirmedOnePage trip={t} guests={guests} total={total} token={token} onBookAnother={onBookAnother}/>;
 
@@ -598,10 +611,49 @@ function QuickBook({ onBack, onBookAnother }) {
                   <Row2 icon="users" l={`Base (${inr(p.base)} × ${guests})`} r={inr(base)}/>
                   <Row2 l="Taxes" r={inr(tax)}/>
                   <Row2 l="Convenience fee" r={inr(fee)}/>
+                  {coupon && <Row2 icon="gift" l={`Coupon · ${coupon.code}`} r={`-${inr(discount)}`}/>}
                 </div>
-                <div style={{ borderTop:`1px dashed ${T.greyLight}`, marginTop:12, paddingTop:12, display:'flex', justifyContent:'space-between', alignItems:'baseline' }}>
+
+                {/* Coupon code input */}
+                <div style={{ marginTop:14, paddingTop:14, borderTop:`1px solid ${T.greyLight}` }}>
+                  <div style={{ fontSize:10.5, fontWeight:800, color:T.grey, letterSpacing:'.14em', marginBottom:8, display:'flex', alignItems:'center', gap:6 }}>
+                    <Ico name="gift" size={11} color={T.greenDeep}/> COUPON CODE
+                  </div>
+                  {coupon ? (
+                    <div style={{ background:'#F0FAF4', border:`1px solid ${T.green}55`, borderRadius:10, padding:'10px 12px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <div style={{ width:26, height:26, borderRadius:'50%', background:T.green, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                          <Ico name="check" size={13} color="#fff" stroke={3}/>
+                        </div>
+                        <div>
+                          <div style={{ fontSize:12.5, fontWeight:800, color:T.greenDeep, fontFamily:'ui-monospace, Menlo, monospace' }}>{coupon.code}</div>
+                          <div style={{ fontSize:11, color:T.greenDeep, marginTop:1 }}>{coupon.label} applied · {inr(discount)}</div>
+                        </div>
+                      </div>
+                      <button onClick={removeCoupon} style={{ background:'transparent', border:'none', cursor:'pointer', padding:6, borderRadius:6, color:T.greenDeep, fontFamily:'inherit', fontSize:11.5, fontWeight:700 }}>Remove</button>
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ display:'flex', gap:8 }}>
+                        <input value={couponInput} onChange={e=>{setCouponInput(e.target.value); setCouponErr('');}} onKeyDown={e=>{if(e.key==='Enter') applyCoupon();}} placeholder="Enter code" style={{ flex:1, height:40, borderRadius:10, border:`1.5px solid ${couponErr?T.rose:T.greyLight}`, padding:'0 12px', fontSize:13, fontFamily:'ui-monospace, Menlo, monospace', fontWeight:600, outline:'none', textTransform:'uppercase', color:T.ink, background:'#fff' }}/>
+                        <button onClick={applyCoupon} disabled={!couponInput.trim()} style={{ height:40, padding:'0 16px', borderRadius:10, background: couponInput.trim()?T.ink:'#E6E6E6', color:'#fff', border:'none', fontSize:12.5, fontWeight:700, cursor: couponInput.trim()?'pointer':'not-allowed', fontFamily:'inherit' }}>Apply</button>
+                      </div>
+                      {couponErr ? (
+                        <div style={{ fontSize:11, color:T.rose, marginTop:6, fontWeight:600 }}>{couponErr}</div>
+                      ) : (
+                        <div style={{ fontSize:10.5, color:T.grey, marginTop:6 }}>Try <b style={{ color:T.ink, fontFamily:'ui-monospace, Menlo, monospace' }}>WEEKEND10</b> for 10% off</div>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                <div style={{ borderTop:`1px dashed ${T.greyLight}`, marginTop:14, paddingTop:12, display:'flex', justifyContent:'space-between', alignItems:'baseline' }}>
                   <span style={{ fontSize:11, fontWeight:700, color:T.grey, letterSpacing:'.12em' }}>TOTAL</span>
-                  <span style={{ fontSize:22, fontWeight:800, color:T.ink, letterSpacing:'-.02em' }}>{inr(total)}</span>
+                  <div style={{ textAlign:'right' }}>
+                    {discount>0 && <div style={{ fontSize:12, color:T.grey, textDecoration:'line-through', marginBottom:1 }}>{inr(subtotal)}</div>}
+                    <span style={{ fontSize:22, fontWeight:800, color:discount>0?T.greenDeep:T.ink, letterSpacing:'-.02em' }}>{inr(total)}</span>
+                    {discount>0 && <div style={{ fontSize:10.5, color:T.greenDeep, fontWeight:700, marginTop:2 }}>You saved {inr(discount)}</div>}
+                  </div>
                 </div>
                 <div style={{ marginTop:10, background:'#F0FAF4', borderRadius:10, padding:'10px 12px', display:'flex', justifyContent:'space-between', alignItems:'baseline', border:`1px solid ${T.green}33`, marginBottom:12 }}>
                   <span style={{ fontSize:12, color:T.greenDeep, fontWeight:700 }}>Pay now (token)</span>

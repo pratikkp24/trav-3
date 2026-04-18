@@ -1,11 +1,13 @@
 // All Trips filter index — browse every itinerary with a left-side filter rail.
 
 function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)' }) {
+  const isMobile = useIsMobile();
   const [duration, setDuration] = React.useState('all'); // all | weekend | 2-3 | 4-6 | 7+
   const [travelingAs, setTravelingAs] = React.useState(null); // null | friends | solo-female | couple | family
   const [vibes, setVibes] = React.useState([]); // ['adventure', ...]
   const [budget, setBudget] = React.useState([]); // ['u5','5to10','10to20','20plus']
   const [sort, setSort] = React.useState('recommended');
+  const [filterOpen, setFilterOpen] = React.useState(false);
 
   const allVibes = [
     { id:'adventure', label:'Adventure' },
@@ -47,11 +49,35 @@ function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)' }) {
   const activeCount = (duration!=='all'?1:0) + (travelingAs?1:0) + vibes.length + budget.length;
 
   return (
-    <div style={{ background:T.offWhite, minHeight:'calc(100vh - 64px)', padding:'32px 36px 80px' }}>
-      <div style={{ maxWidth:1340, margin:'0 auto', display:'grid', gridTemplateColumns:'260px 1fr', gap:32, alignItems:'start' }}>
-        {/* LEFT — Filters */}
-        <aside style={{ position:'sticky', top:88, alignSelf:'start' }}>
-          <div style={{ background:'#fff', borderRadius:18, border:`1px solid ${T.greyLight}`, padding:'22px 20px' }}>
+    <div style={{ background:T.offWhite, minHeight:'calc(100vh - 64px)', padding:isMobile?'18px 0 100px':'32px 36px 80px' }}>
+      {/* Mobile-only top bar with filter toggle */}
+      {isMobile && (
+        <div style={{ position:'sticky', top:56, zIndex:10, background:T.offWhite, padding:'0 16px 12px' }}>
+          <div style={{ display:'flex', gap:8, alignItems:'center', justifyContent:'space-between' }}>
+            <button onClick={()=>setFilterOpen(true)} style={{ flex:1, height:42, borderRadius:10, border:`1px solid ${T.greyLight}`, background:'#fff', color:T.ink, fontFamily:'inherit', fontSize:13, fontWeight:700, display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8, cursor:'pointer' }}>
+              <Ico name="settings" size={14} color={T.greenDeep} stroke={2}/> Filters {activeCount>0 && <span style={{ background:T.green, color:'#fff', borderRadius:999, padding:'1px 7px', fontSize:11, fontWeight:800 }}>{activeCount}</span>}
+            </button>
+            <select value={sort} onChange={e=>setSort(e.target.value)} style={{ height:42, padding:'0 32px 0 14px', borderRadius:10, border:`1px solid ${T.greyLight}`, fontSize:13, fontWeight:600, color:T.ink, background:'#fff', fontFamily:'inherit', appearance:'none' }}>
+              <option value="recommended">Recommended</option>
+              <option value="price-low">Price ↑</option>
+              <option value="price-high">Price ↓</option>
+              <option value="filling">Filling fast</option>
+            </select>
+          </div>
+        </div>
+      )}
+      <div style={{ maxWidth:1340, margin:'0 auto', display:'grid', gridTemplateColumns:isMobile?'1fr':'260px 1fr', gap:isMobile?0:32, alignItems:'start', padding:isMobile?'0 16px':0 }}>
+        {/* LEFT — Filters (drawer on mobile, sticky aside on desktop) */}
+        <aside onClick={isMobile?()=>setFilterOpen(false):undefined} style={isMobile ? { display:filterOpen?'block':'none', position:'fixed', inset:0, background:'rgba(10,15,22,.55)', zIndex:90, padding:0, overflow:'auto' } : { position:'sticky', top:88, alignSelf:'start' }}>
+          <div onClick={isMobile?(e)=>e.stopPropagation():undefined} style={{ background:'#fff', borderRadius:isMobile?'18px 18px 0 0':18, border:`1px solid ${T.greyLight}`, padding:'22px 20px', position:isMobile?'absolute':'static', bottom:isMobile?0:'auto', left:0, right:0, maxHeight:isMobile?'85vh':'auto', overflowY:isMobile?'auto':'visible' }}>
+            {isMobile && (
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14, paddingBottom:10, borderBottom:`1px solid ${T.greyLight}` }}>
+                <div style={{ fontSize:16, fontWeight:700, color:T.ink, fontFamily:'Fraunces, serif' }}>Filters</div>
+                <button onClick={()=>setFilterOpen(false)} style={{ background:'#F4F6FA', border:'none', width:34, height:34, borderRadius:'50%', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <Ico name="x" size={16} color={T.ink}/>
+                </button>
+              </div>
+            )}
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:4 }}>
               <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                 <Ico name="spark" size={15} color={T.greenDeep}/>
@@ -141,30 +167,40 @@ function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)' }) {
 
         {/* RIGHT — Header + grid */}
         <main>
-          <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:26, flexWrap:'wrap', gap:16 }}>
-            <div>
-              <h1 style={{ fontSize:40, fontWeight:800, color:T.ink, letterSpacing:'-.025em', margin:0, fontFamily:'Fraunces, serif', lineHeight:1.1 }}>
-                Weekend Escapes from {fromCity.split(' ')[0]}
-              </h1>
-              <div style={{ fontSize:14.5, color:T.grey, marginTop:8, maxWidth:560 }}>
-                Curated 2–{duration==='7+'?'10':'7'} day adventures tailored for your squad. No planning required.
+          {!isMobile && (
+            <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:26, flexWrap:'wrap', gap:16 }}>
+              <div>
+                <h1 style={{ fontSize:40, fontWeight:800, color:T.ink, letterSpacing:'-.025em', margin:0, fontFamily:'Fraunces, serif', lineHeight:1.1 }}>
+                  Weekend Escapes from {fromCity.split(' ')[0]}
+                </h1>
+                <div style={{ fontSize:14.5, color:T.grey, marginTop:8, maxWidth:560 }}>
+                  Curated 2–{duration==='7+'?'10':'7'} day adventures tailored for your squad. No planning required.
+                </div>
               </div>
-            </div>
-            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-              <span style={{ fontSize:11, color:T.grey, letterSpacing:'.14em', fontWeight:700 }}>SORT BY</span>
-              <div style={{ position:'relative' }}>
-                <select value={sort} onChange={e=>setSort(e.target.value)} style={{ height:40, padding:'0 34px 0 14px', borderRadius:10, border:`1px solid ${T.greyLight}`, fontSize:13, fontWeight:600, color:T.ink, background:'#fff', fontFamily:'inherit', appearance:'none', cursor:'pointer' }}>
-                  <option value="recommended">Recommended</option>
-                  <option value="price-low">Price · low to high</option>
-                  <option value="price-high">Price · high to low</option>
-                  <option value="filling">Filling fast first</option>
-                </select>
-                <div style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', pointerEvents:'none' }}>
-                  <Ico name="chevron-down" size={13} color={T.grey}/>
+              <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                <span style={{ fontSize:11, color:T.grey, letterSpacing:'.14em', fontWeight:700 }}>SORT BY</span>
+                <div style={{ position:'relative' }}>
+                  <select value={sort} onChange={e=>setSort(e.target.value)} style={{ height:40, padding:'0 34px 0 14px', borderRadius:10, border:`1px solid ${T.greyLight}`, fontSize:13, fontWeight:600, color:T.ink, background:'#fff', fontFamily:'inherit', appearance:'none', cursor:'pointer' }}>
+                    <option value="recommended">Recommended</option>
+                    <option value="price-low">Price · low to high</option>
+                    <option value="price-high">Price · high to low</option>
+                    <option value="filling">Filling fast first</option>
+                  </select>
+                  <div style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', pointerEvents:'none' }}>
+                    <Ico name="chevron-down" size={13} color={T.grey}/>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
+          {isMobile && (
+            <div style={{ marginBottom:14 }}>
+              <h1 style={{ fontSize:24, fontWeight:800, color:T.ink, letterSpacing:'-.025em', margin:0, fontFamily:'Fraunces, serif', lineHeight:1.1 }}>
+                {sorted.length} trips from {fromCity.split(' ')[0]}
+              </h1>
+              <div style={{ fontSize:12.5, color:T.grey, marginTop:4 }}>Curated for your squad. No planning required.</div>
+            </div>
+          )}
 
           {sorted.length===0 ? (
             <div style={{ background:'#fff', borderRadius:18, border:`1px dashed ${T.greyLight}`, padding:'60px 40px', textAlign:'center' }}>
@@ -173,7 +209,7 @@ function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)' }) {
               <Btn kind="outline" size="md" onClick={clearAll}>Clear filters</Btn>
             </div>
           ) : (
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:20 }}>
+            <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3, 1fr)', gap:isMobile?14:20 }}>
               {sorted.map(t => <AllTripCard key={t.id} trip={t} onOpen={()=>onOpenTrip(t.id)}/>)}
             </div>
           )}

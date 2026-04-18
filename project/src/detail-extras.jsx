@@ -24,24 +24,24 @@ function TrustStrip({ trip }) {
   );
 }
 
-function AvailableDepartures({ departures }) {
+function AvailableDepartures({ departures, isMobile }) {
   const [sel, setSel] = React.useState(departures.find(d=>d.selected)?.id || departures[0].id);
   return (
-    <Section title="Available Departures">
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:12 }}>
+    <Section title="Available Departures" isMobile={isMobile}>
+      <div className={isMobile?'scroll-x':''} style={{ display:isMobile?'flex':'grid', gridTemplateColumns:isMobile?undefined:'repeat(3, 1fr)', gap:12, overflowX:isMobile?'auto':'visible', margin:isMobile?'0 -16px':0, padding:isMobile?'8px 16px 4px':0 }}>
         {departures.map(d => {
           const active = d.id===sel;
           return (
-            <div key={d.id} onClick={()=>setSel(d.id)} style={{ position:'relative', border:`${active?2:1}px solid ${active?T.green:T.greyLight}`, borderRadius:14, padding:'18px 16px 14px', cursor:'pointer', background: active ? '#F4FBF7' : '#fff', transition:'background .2s' }}>
+            <div key={d.id} onClick={()=>setSel(d.id)} className={isMobile?'snap':''} style={{ position:'relative', border:`${active?2:1}px solid ${active?T.green:T.greyLight}`, borderRadius:14, padding:'18px 16px 14px', cursor:'pointer', background: active ? '#F4FBF7' : '#fff', transition:'background .2s', minWidth:isMobile?220:'auto', flexShrink:0 }}>
               {d.label && (
                 <div style={{ position:'absolute', top:-9, left:12, background:T.ink, color:'#fff', padding:'3px 10px', borderRadius:999, fontSize:9.5, fontWeight:800, letterSpacing:'.12em' }}>{d.label}</div>
               )}
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
                 <div style={{ fontSize:13, fontWeight:700, color:T.ink, letterSpacing:'.02em' }}>{d.dateRange}</div>
-                <div style={{ fontSize:20, fontWeight:800, color:T.ink, fontFamily:'Fraunces, serif' }}>₹{d.price.toLocaleString('en-IN')}</div>
+                <div style={{ fontSize:isMobile?17:20, fontWeight:800, color:T.ink, fontFamily:'Fraunces, serif' }}>₹{d.price.toLocaleString('en-IN')}</div>
               </div>
               <div style={{ fontSize:11.5, color: d.status==='filling' ? T.fire : T.grey, fontWeight:600, marginBottom:12 }}>{d.note}</div>
-              <button style={{ width:'100%', height:36, borderRadius:10, border: active ? 'none' : `1px solid ${T.greyLight}`, background: active ? T.green : '#fff', color: active ? '#fff' : T.ink, fontSize:12.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+              <button style={{ width:'100%', height:isMobile?40:36, borderRadius:10, border: active ? 'none' : `1px solid ${T.greyLight}`, background: active ? T.green : '#fff', color: active ? '#fff' : T.ink, fontSize:12.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', justifyContent:'center', gap:6 }}>
                 {active ? <><Ico name="check" size={13} color="#fff" stroke={2.5}/> Selected</> : 'Select date'}
               </button>
             </div>
@@ -52,13 +52,13 @@ function AvailableDepartures({ departures }) {
   );
 }
 
-function SignatureStay({ stay }) {
+function SignatureStay({ stay, isMobile }) {
   return (
-    <div style={{ background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`, overflow:'hidden', display:'grid', gridTemplateColumns:'1fr 1.2fr' }}>
-      <div style={{ position:'relative', minHeight:260 }}>
+    <div style={{ background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`, overflow:'hidden', display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1.2fr' }}>
+      <div style={{ position:'relative', minHeight:isMobile?180:260 }}>
         <ImgPlaceholder {...stay.thumbs[0]} radius={0}/>
       </div>
-      <div style={{ padding:'22px 22px 18px' }}>
+      <div style={{ padding:isMobile?'18px 16px 14px':'22px 22px 18px' }}>
         <div style={{ fontSize:11, fontWeight:800, color:T.greenDeep, letterSpacing:'.18em', marginBottom:6 }}>SIGNATURE STAY</div>
         <h3 style={{ fontSize:22, fontWeight:700, color:T.ink, margin:'0 0 6px', fontFamily:'Fraunces, serif', letterSpacing:'-.015em' }}>{stay.name}</h3>
         <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
@@ -92,11 +92,11 @@ function SignatureStay({ stay }) {
   );
 }
 
-function PackList({ items }) {
+function PackList({ items, isMobile }) {
   return (
-    <Section title="What to Pack">
-      <div style={{ fontSize:12.5, color:T.grey, marginTop:-14, marginBottom:16 }}>Detailed checklist shared on WhatsApp after booking · <span style={{ color:T.greenDeep, fontWeight:700 }}>AUTO-CURATED FOR THIS ITINERARY</span></div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:14 }}>
+    <Section title="What to Pack" isMobile={isMobile}>
+      <div style={{ fontSize:12.5, color:T.grey, marginTop:-10, marginBottom:14 }}>Detailed checklist shared on WhatsApp after booking · <span style={{ color:T.greenDeep, fontWeight:700 }}>AUTO-CURATED FOR THIS ITINERARY</span></div>
+      <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr 1fr':'repeat(4, 1fr)', gap:isMobile?10:14 }}>
         {items.map((it,i) => (
           <div key={i} style={{ background:'#F7F9FB', borderRadius:12, padding:'16px 14px' }}>
             <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
@@ -113,15 +113,15 @@ function PackList({ items }) {
   );
 }
 
-function ExploreDeeper({ articleIds, onOpenArticle }) {
+function ExploreDeeper({ articleIds, onOpenArticle, isMobile }) {
   const arts = (articleIds||[]).map(id => TRAVELOGUES.find(a=>a.id===id)).filter(Boolean);
   if (!arts.length) return null;
   return (
-    <Section title="Explore this destination deeper">
-      <div style={{ fontSize:11, fontWeight:800, color:T.greenDeep, letterSpacing:'.18em', marginTop:-14, marginBottom:14 }}>PLAN BETTER WITH LOCAL INSIGHTS</div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:14 }}>
+    <Section title="Explore this destination deeper" isMobile={isMobile}>
+      <div style={{ fontSize:11, fontWeight:800, color:T.greenDeep, letterSpacing:'.18em', marginTop:-10, marginBottom:14 }}>PLAN BETTER WITH LOCAL INSIGHTS</div>
+      <div className={isMobile?'scroll-x':''} style={{ display:isMobile?'flex':'grid', gridTemplateColumns:isMobile?undefined:'repeat(3, 1fr)', gap:14, overflowX:isMobile?'auto':'visible', margin:isMobile?'0 -16px':0, padding:isMobile?'0 16px':0 }}>
         {arts.map(a => (
-          <div key={a.id} onClick={()=>onOpenArticle && onOpenArticle(a.id)} style={{ border:`1px solid ${T.greyLight}`, borderRadius:12, overflow:'hidden', cursor:'pointer', background:'#fff' }}>
+          <div key={a.id} onClick={()=>onOpenArticle && onOpenArticle(a.id)} className={isMobile?'snap':''} style={{ border:`1px solid ${T.greyLight}`, borderRadius:12, overflow:'hidden', cursor:'pointer', background:'#fff', minWidth:isMobile?220:'auto', flexShrink:0 }}>
             <div style={{ height:110, position:'relative' }}>
               <ImgPlaceholder {...a.hero} radius={0}/>
             </div>
@@ -136,19 +136,19 @@ function ExploreDeeper({ articleIds, onOpenArticle }) {
   );
 }
 
-function AfterYouBook() {
+function AfterYouBook({ isMobile }) {
   const items = [
     { icon:'whatsapp', title:'Instant WhatsApp confirmation', body:'Receive digital vouchers and trip overview within minutes.' },
     { icon:'users', title:'Trip group created before departure', body:'Meet your curator and fellow travelers in a private, secure group.' },
     { icon:'phone', title:'24/7 travel support', body:"Concierge help for anything you need on the ground." },
   ];
   return (
-    <div style={{ background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`, padding:'28px 24px' }}>
-      <div style={{ textAlign:'center', marginBottom:22 }}>
+    <div style={{ background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`, padding:isMobile?'22px 16px':'28px 24px' }}>
+      <div style={{ textAlign:'center', marginBottom:isMobile?16:22 }}>
         <div style={{ fontSize:11, fontWeight:800, color:T.greenDeep, letterSpacing:'.18em', marginBottom:6 }}>AFTER YOU BOOK</div>
-        <h3 style={{ fontSize:22, fontWeight:700, color:T.ink, margin:0, fontFamily:'Fraunces, serif', letterSpacing:'-.015em' }}>What happens next</h3>
+        <h3 style={{ fontSize:isMobile?18:22, fontWeight:700, color:T.ink, margin:0, fontFamily:'Fraunces, serif', letterSpacing:'-.015em' }}>What happens next</h3>
       </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:16 }}>
+      <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3, 1fr)', gap:isMobile?12:16 }}>
         {items.map((it,i) => (
           <div key={i} style={{ textAlign:'center', padding:'16px 12px' }}>
             <div style={{ width:44, height:44, borderRadius:'50%', background:'#E7F7EE', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 10px' }}>

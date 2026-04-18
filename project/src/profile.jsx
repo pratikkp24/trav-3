@@ -1,4 +1,5 @@
-function Profile({ onLogout, onOpenBooking, onOpenInvoice }) {
+function Profile({ onLogout, onOpenBooking, onOpenInvoice, onOpenTrip, onTravHer }) {
+  const isMobile = useIsMobile();
   const [tab, setTab] = React.useState('upcoming');
   const [nav, setNav] = React.useState('bookings');
   const upcoming = USER_BOOKINGS.filter(b=>b.status==='upcoming');
@@ -6,30 +7,30 @@ function Profile({ onLogout, onOpenBooking, onOpenInvoice }) {
   const cancelled = USER_BOOKINGS.filter(b=>b.status==='cancelled');
   const current = tab==='upcoming'?upcoming:tab==='past'?past:cancelled;
   return (
-    <div style={{ background:'#F4F6FA', minHeight:'calc(100vh - 64px)' }}>
-      <div style={{ background:`linear-gradient(135deg, ${T.ink}, ${T.inkSoft})`, color:'#fff', padding:'40px 36px 80px' }}>
+    <div style={{ background:'#F4F6FA', minHeight:'calc(100vh - 64px)', paddingBottom:isMobile?80:0 }}>
+      <div style={{ background:`linear-gradient(135deg, ${T.ink}, ${T.inkSoft})`, color:'#fff', padding:isMobile?'24px 16px 60px':'40px 36px 80px' }}>
         <div style={{ maxWidth:1200, margin:'0 auto' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:18 }}>
-            <div style={{ width:72, height:72, borderRadius:'50%', background:`linear-gradient(135deg, ${T.green}, ${T.greenDeep})`, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:26, fontWeight:700, border:'3px solid rgba(255,255,255,.15)' }}>AR</div>
-            <div>
-              <div style={{ fontSize:12, color:'rgba(255,255,255,.6)', letterSpacing:'.1em', fontWeight:700 }}>WELCOME BACK</div>
-              <h1 style={{ fontSize:32, fontWeight:700, letterSpacing:'-.02em', margin:'2px 0 0', fontFamily:'Fraunces, serif' }}>Aditi Rao</h1>
-              <div style={{ fontSize:13, color:'rgba(255,255,255,.7)', marginTop:4 }}>aditi.r@mail.com · +91 98•••••12</div>
+          <div style={{ display:'flex', alignItems:'center', gap:isMobile?14:18, flexWrap:'wrap' }}>
+            <div style={{ width:isMobile?60:72, height:isMobile?60:72, borderRadius:'50%', background:`linear-gradient(135deg, ${T.green}, ${T.greenDeep})`, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:isMobile?22:26, fontWeight:700, border:'3px solid rgba(255,255,255,.15)' }}>AR</div>
+            <div style={{ minWidth:0, flex:isMobile?1:'initial' }}>
+              <div style={{ fontSize:11, color:'rgba(255,255,255,.6)', letterSpacing:'.1em', fontWeight:700 }}>WELCOME BACK</div>
+              <h1 style={{ fontSize:isMobile?22:32, fontWeight:700, letterSpacing:'-.02em', margin:'2px 0 0', fontFamily:'Fraunces, serif' }}>Aditi Rao</h1>
+              <div style={{ fontSize:isMobile?11:13, color:'rgba(255,255,255,.7)', marginTop:4, overflow:'hidden', textOverflow:'ellipsis' }}>aditi.r@mail.com · +91 98•••••12</div>
             </div>
-            <div style={{ flex:1 }}/>
-            <div style={{ display:'flex', gap:28 }}>
+            {!isMobile && <div style={{ flex:1 }}/>}
+            <div style={{ display:'flex', gap:isMobile?16:28, marginTop:isMobile?14:0, width:isMobile?'100%':'auto', justifyContent:isMobile?'space-between':'flex-start' }}>
               {[{n:'3',l:'trips taken'},{n:'5',l:'states'},{n:'28',l:'co-travelers'},{n:'12',l:'saved'}].map(s => (
                 <div key={s.l} style={{ textAlign:'center' }}>
-                  <div style={{ fontSize:24, fontWeight:800, letterSpacing:'-.02em', fontFamily:'Fraunces, serif' }}>{s.n}</div>
-                  <div style={{ fontSize:10.5, color:'rgba(255,255,255,.65)', letterSpacing:'.1em', fontWeight:600, textTransform:'uppercase' }}>{s.l}</div>
+                  <div style={{ fontSize:isMobile?20:24, fontWeight:800, letterSpacing:'-.02em', fontFamily:'Fraunces, serif' }}>{s.n}</div>
+                  <div style={{ fontSize:9.5, color:'rgba(255,255,255,.65)', letterSpacing:'.1em', fontWeight:600, textTransform:'uppercase' }}>{s.l}</div>
                 </div>
               ))}
             </div>
           </div>
         </div>
       </div>
-      <div style={{ maxWidth:1200, margin:'-48px auto 0', padding:'0 36px 60px', position:'relative' }}>
-        <div style={{ display:'grid', gridTemplateColumns:'240px 1fr', gap:24 }}>
+      <div style={{ maxWidth:1200, margin:'-48px auto 0', padding:isMobile?'0 16px 30px':'0 36px 60px', position:'relative' }}>
+        <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'240px 1fr', gap:isMobile?14:24 }}>
           <div style={{ background:'#fff', borderRadius:16, padding:12, border:`1px solid ${T.greyLight}`, alignSelf:'start', height:'fit-content' }}>
             {[
               { id:'bookings', label:'My bookings', icon:'bag' },

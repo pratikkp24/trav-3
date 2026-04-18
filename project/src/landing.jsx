@@ -1,22 +1,23 @@
 function Landing({ onOpenTrip, onViewAllTrips }) {
   const [fromCity, setFromCity] = React.useState('Delhi');
+  const isMobile = useIsMobile();
   const scrollToWeekend = () => {
     const el = document.getElementById('weekend-trips');
     if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
   };
   return (
     <>
-      <Hero fromCity={fromCity} setFromCity={setFromCity} onSeeTrips={scrollToWeekend}/>
-      <WeekendTrips fromCity={fromCity} onOpen={onOpenTrip} onViewAll={onViewAllTrips}/>
-      <HowTraveling/>
-      <HowItWorks/>
-      <TravHer/>
-      <GoingLonger/>
+      <Hero fromCity={fromCity} setFromCity={setFromCity} onSeeTrips={scrollToWeekend} isMobile={isMobile}/>
+      <WeekendTrips fromCity={fromCity} onOpen={onOpenTrip} onViewAll={onViewAllTrips} isMobile={isMobile}/>
+      <HowTraveling isMobile={isMobile}/>
+      <HowItWorks isMobile={isMobile}/>
+      <TravHer isMobile={isMobile}/>
+      <GoingLonger isMobile={isMobile}/>
     </>
   );
 }
 
-function Hero({ fromCity, setFromCity, onSeeTrips }) {
+function Hero({ fromCity, setFromCity, onSeeTrips, isMobile }) {
   const UN = (id) => `https://images.unsplash.com/photo-${id}?w=400&q=80&auto=format&fit=crop`;
   const LFT = (tags, lock) => `https://loremflickr.com/400/400/${tags}?lock=${lock}`;
   const leftTiles = [
@@ -35,6 +36,38 @@ function Hero({ fromCity, setFromCity, onSeeTrips }) {
     { k:'bali', src:UN('1537996194471-e657df975ab4'), tone:'#b8774a', ink:'#321808', accent:'#f4cd90', r:-4, size:'md', top:168, left:130, label:'Bali' },
     { k:'prague', src:LFT('prague,czech,old', 208), tone:'#6a5a84', ink:'#1f1830', accent:'#e4d8b9', r:3, size:'md', top:188, left:250, label:'Prague' },
   ];
+  if (isMobile) {
+    return (
+      <div style={{ position:'relative', background:'#fff', overflow:'hidden', padding:'24px 16px 36px' }}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#F0FAF4', color:T.greenDeep, padding:'5px 12px', borderRadius:999, fontSize:11, fontWeight:600, marginBottom:14, border:`1px solid ${T.green}33` }}>
+          <span style={{ width:6, height:6, borderRadius:'50%', background:T.green }}/>New drop · {TRAV.nextDrop}
+        </div>
+        <h1 style={{ fontSize:38, fontWeight:700, letterSpacing:'-.03em', lineHeight:1.05, margin:0, color:T.ink, fontFamily:'Fraunces, serif' }}>
+          Your weekend,<br/>perfectly <span style={{ color:T.green, fontStyle:'italic' }}>travelled.</span>
+        </h1>
+        <div style={{ marginTop:12, fontSize:14.5, color:T.grey, lineHeight:1.55 }}>
+          Creator-led weekend trips. Just 15 spots. No leaves needed.
+        </div>
+        <div className="scroll-x" style={{ marginTop:14, display:'flex', gap:8, overflowX:'auto', margin:'14px -16px 0', padding:'2px 16px' }}>
+          {TRAV.cities.map(c => {
+            const a = c===fromCity;
+            return <button key={c} onClick={()=>setFromCity(c)} className="snap" style={{ flex:'0 0 auto', padding:'8px 16px', borderRadius:999, border:`1.5px solid ${a?T.ink:T.greyLight}`, background:a?T.ink:'#fff', color:a?'#fff':T.ink, fontSize:13, fontWeight:a?700:500, fontFamily:'inherit', cursor:'pointer' }}>{c}</button>;
+          })}
+        </div>
+        <div style={{ marginTop:18, display:'flex', flexDirection:'column', gap:8 }}>
+          <Btn kind="primary" size="lg" full trailing="arrow-right" onClick={onSeeTrips}>See this weekend's trips</Btn>
+          <Btn kind="outline" size="lg" full icon="whatsapp">Get Thursday Drops</Btn>
+        </div>
+        <div className="scroll-x" style={{ marginTop:24, display:'flex', gap:10, overflowX:'auto', margin:'24px -16px 0', padding:'2px 16px 8px' }}>
+          {[...leftTiles, ...rightTiles].slice(0, 8).map(t => (
+            <div key={t.k} className="snap" style={{ flex:'0 0 110px', height:140, borderRadius:14, overflow:'hidden', boxShadow:'0 6px 18px rgba(15,30,46,.1)' }}>
+              <ImgPlaceholder src={t.src} tone={t.tone} ink={t.ink} accent={t.accent} label={t.label} radius={0}/>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
   return (
     <div style={{ position:'relative', background:'#fff', overflow:'hidden' }}>
       <MonumentBand/>
@@ -117,22 +150,22 @@ function MonumentBand() {
   );
 }
 
-function WeekendTrips({ fromCity, onOpen, onViewAll }) {
+function WeekendTrips({ fromCity, onOpen, onViewAll, isMobile }) {
   return (
-    <div id="weekend-trips" style={{ background:'#F4F6FA', padding:'72px 36px', scrollMarginTop:72 }}>
-      <div style={{ maxWidth:1200, margin:'0 auto' }}>
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:28, flexWrap:'wrap', gap:14 }}>
+    <div id="weekend-trips" style={{ background:'#F4F6FA', padding:isMobile?'32px 0':'72px 36px', scrollMarginTop:72 }}>
+      <div style={{ maxWidth:1200, margin:'0 auto', padding:isMobile?'0 16px':0 }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', marginBottom:isMobile?18:28, flexWrap:'wrap', gap:10 }}>
           <div>
-            <h2 style={{ fontSize:40, fontWeight:800, letterSpacing:'-.025em', margin:0, color:T.ink, fontFamily:'Fraunces, serif' }}>This weekend from {fromCity}</h2>
-            <div style={{ fontSize:14.5, color:T.grey, marginTop:6 }}>Dropping Thursday. 15 spots per trip.</div>
+            <h2 style={{ fontSize:isMobile?24:40, fontWeight:800, letterSpacing:'-.025em', margin:0, color:T.ink, fontFamily:'Fraunces, serif' }}>This weekend from {fromCity}</h2>
+            <div style={{ fontSize:isMobile?12.5:14.5, color:T.grey, marginTop:isMobile?4:6 }}>Dropping Thursday. 15 spots per trip.</div>
           </div>
-          <div style={{ background:T.amberSoft, border:`1px solid ${T.amber}55`, borderLeft:`4px solid ${T.amber}`, padding:'10px 16px', borderRadius:8, display:'flex', gap:8, alignItems:'center' }}>
+          {!isMobile && <div style={{ background:T.amberSoft, border:`1px solid ${T.amber}55`, borderLeft:`4px solid ${T.amber}`, padding:'10px 16px', borderRadius:8, display:'flex', gap:8, alignItems:'center' }}>
             <Ico name="clock" size={14} color={T.amber}/>
             <span style={{ fontSize:13, fontWeight:600, color:'#b3791f' }}>Next drop: {TRAV.nextDrop}</span>
-          </div>
+          </div>}
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:24 }}>
-          {WEEKEND_TRIPS.map(t => <TripCard key={t.id} trip={t} onOpen={()=>onOpen(t.id)}/>)}
+        <div className={isMobile?'scroll-x':''} style={{ display:isMobile?'flex':'grid', gridTemplateColumns:isMobile?undefined:'repeat(3,1fr)', gap:isMobile?14:24, overflowX:isMobile?'auto':'visible', margin:isMobile?'0 -16px':0, padding:isMobile?'0 16px':0 }}>
+          {WEEKEND_TRIPS.map(t => <div key={t.id} className={isMobile?'snap':''} style={{ minWidth:isMobile?280:'auto', flexShrink:0 }}><TripCard trip={t} onOpen={()=>onOpen(t.id)}/></div>)}
         </div>
         <div style={{ display:'flex', justifyContent:'center', marginTop:32 }}>
           <button onClick={onViewAll} style={{
@@ -188,7 +221,7 @@ function TripCard({ trip, onOpen }) {
   );
 }
 
-function HowTraveling() {
+function HowTraveling({ isMobile }) {
   const options = [
     { icon:'users', label:'Group', color:'#3ea370', bg:'#E7F7EE' },
     { icon:'heart', label:'Romantic', color:T.rose, bg:T.roseCream },
@@ -197,16 +230,16 @@ function HowTraveling() {
     { icon:'users', label:'Family', color:'#3ea370', bg:'#E7F7EE' },
   ];
   return (
-    <div style={{ background:'#F4F6FA', padding:'24px 36px 72px' }}>
-      <div style={{ maxWidth:1200, margin:'0 auto' }}>
-        <h2 style={{ fontSize:40, fontWeight:800, letterSpacing:'-.025em', textAlign:'center', color:T.ink, margin:'0 0 32px', fontFamily:'Fraunces, serif' }}>How are you traveling?</h2>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:20 }}>
+    <div style={{ background:'#F4F6FA', padding:isMobile?'18px 0 40px':'24px 36px 72px' }}>
+      <div style={{ maxWidth:1200, margin:'0 auto', padding:isMobile?'0 16px':0 }}>
+        <h2 style={{ fontSize:isMobile?22:40, fontWeight:800, letterSpacing:'-.025em', textAlign:isMobile?'left':'center', color:T.ink, margin:`0 0 ${isMobile?16:32}px`, fontFamily:'Fraunces, serif' }}>How are you traveling?</h2>
+        <div className={isMobile?'scroll-x':''} style={{ display:isMobile?'flex':'grid', gridTemplateColumns:isMobile?undefined:'repeat(5,1fr)', gap:isMobile?10:20, overflowX:isMobile?'auto':'visible', margin:isMobile?'0 -16px':0, padding:isMobile?'0 16px':0 }}>
           {options.map(o => (
-            <div key={o.label} style={{ background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`, padding:'28px 16px', textAlign:'center', cursor:'pointer' }}>
-              <div style={{ width:56, height:56, borderRadius:'50%', background:o.bg, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 14px' }}>
-                <Ico name={o.icon} size={24} color={o.color} stroke={1.8}/>
+            <div key={o.label} className={isMobile?'snap':''} style={{ background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`, padding:isMobile?'18px 14px':'28px 16px', textAlign:'center', cursor:'pointer', minWidth:isMobile?108:'auto', flexShrink:0 }}>
+              <div style={{ width:isMobile?44:56, height:isMobile?44:56, borderRadius:'50%', background:o.bg, display:'flex', alignItems:'center', justifyContent:'center', margin:`0 auto ${isMobile?10:14}px` }}>
+                <Ico name={o.icon} size={isMobile?20:24} color={o.color} stroke={1.8}/>
               </div>
-              <div style={{ fontSize:14, fontWeight:700, color:T.ink }}>{o.label}</div>
+              <div style={{ fontSize:isMobile?12.5:14, fontWeight:700, color:T.ink }}>{o.label}</div>
             </div>
           ))}
         </div>
@@ -215,15 +248,15 @@ function HowTraveling() {
   );
 }
 
-function HowItWorks() {
+function HowItWorks({ isMobile }) {
   return (
-    <div style={{ background:'#F4F6FA', padding:'48px 36px 72px' }}>
-      <div style={{ maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:40 }}>
+    <div style={{ background:'#F4F6FA', padding:isMobile?'18px 16px 40px':'48px 36px 72px' }}>
+      <div style={{ maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)', gap:isMobile?24:40 }}>
         {HOW_IT_WORKS.map(s => (
           <div key={s.n}>
-            <div style={{ fontSize:72, fontWeight:800, color:'#D8DEE8', fontFamily:'Fraunces, serif', lineHeight:1 }}>{s.n}</div>
-            <h3 style={{ fontSize:26, fontWeight:700, color:T.ink, letterSpacing:'-.02em', margin:'0 0 12px', fontFamily:'Fraunces, serif' }}>{s.title}</h3>
-            <div style={{ fontSize:14, color:T.grey, lineHeight:1.6, maxWidth:320 }}>{s.body}</div>
+            <div style={{ fontSize:isMobile?54:72, fontWeight:800, color:'#D8DEE8', fontFamily:'Fraunces, serif', lineHeight:1 }}>{s.n}</div>
+            <h3 style={{ fontSize:isMobile?20:26, fontWeight:700, color:T.ink, letterSpacing:'-.02em', margin:`0 0 ${isMobile?8:12}px`, fontFamily:'Fraunces, serif' }}>{s.title}</h3>
+            <div style={{ fontSize:isMobile?13.5:14, color:T.grey, lineHeight:1.6, maxWidth:320 }}>{s.body}</div>
           </div>
         ))}
       </div>
@@ -231,10 +264,10 @@ function HowItWorks() {
   );
 }
 
-function TravHer() {
+function TravHer({ isMobile }) {
   return (
-    <div style={{ background:T.roseCream, padding:'72px 36px', borderLeft:`6px solid ${T.rose}` }}>
-      <div style={{ maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:'1fr 1fr', gap:48, alignItems:'center' }}>
+    <div style={{ background:T.roseCream, padding:isMobile?'36px 16px':'72px 36px', borderLeft:isMobile?'none':`6px solid ${T.rose}`, borderTop:isMobile?`4px solid ${T.rose}`:'none' }}>
+      <div style={{ maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?20:48, alignItems:'center' }}>
         <div>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <h2 style={{ fontSize:56, fontWeight:800, color:T.rose, letterSpacing:'-.035em', margin:0, fontFamily:'Fraunces, serif' }}>trav.her</h2>
@@ -263,14 +296,14 @@ function TravHer() {
   );
 }
 
-function GoingLonger() {
+function GoingLonger({ isMobile }) {
   return (
-    <div style={{ background:'#F4F6FA', padding:'88px 36px 72px' }}>
-      <div style={{ maxWidth:1200, margin:'0 auto' }}>
-        <h2 style={{ fontSize:40, fontWeight:800, color:T.ink, letterSpacing:'-.025em', margin:'0 0 32px', fontFamily:'Fraunces, serif' }}>Going longer</h2>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:20 }}>
+    <div style={{ background:'#F4F6FA', padding:isMobile?'32px 0 40px':'88px 36px 72px' }}>
+      <div style={{ maxWidth:1200, margin:'0 auto', padding:isMobile?'0 16px':0 }}>
+        <h2 style={{ fontSize:isMobile?22:40, fontWeight:800, color:T.ink, letterSpacing:'-.025em', margin:`0 0 ${isMobile?16:32}px`, fontFamily:'Fraunces, serif' }}>Going longer</h2>
+        <div className={isMobile?'scroll-x':''} style={{ display:isMobile?'flex':'grid', gridTemplateColumns:isMobile?undefined:'repeat(4,1fr)', gap:isMobile?12:20, overflowX:isMobile?'auto':'visible', margin:isMobile?'0 -16px':0, padding:isMobile?'0 16px':0 }}>
           {GOING_LONGER.map(g => (
-            <div key={g.dest} style={{ borderRadius:16, overflow:'hidden', cursor:'pointer', aspectRatio:'3/4', position:'relative' }}>
+            <div key={g.dest} className={isMobile?'snap':''} style={{ borderRadius:16, overflow:'hidden', cursor:'pointer', aspectRatio:'3/4', position:'relative', minWidth:isMobile?200:'auto', flexShrink:0 }}>
               <ImgPlaceholder src={g.src} tone={g.tone} accent={g.accent} ink="#0a1418" label={g.dest.toLowerCase()} radius={16} overlay={false}/>
               <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,.75) 100%)' }}/>
               <div style={{ position:'absolute', left:18, bottom:18, right:18, color:'#fff' }}>
