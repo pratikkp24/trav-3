@@ -319,10 +319,11 @@ function BookingRow({ b, onOpenBooking, onOpenInvoice }) {
       onFailure: (err) => alert('Payment failed: ' + (err?.description || 'Please try again.')),
     });
   };
+  const isMobile = useIsMobile();
   return (
     <div style={{ border:`1.5px solid ${(isSolo||isCorp)?th.ring:T.greyLight}`, borderRadius:14, overflow:'hidden', background:'#fff', position:'relative' }}>
-      <div style={{ display:'grid', gridTemplateColumns:'180px 1fr auto', gap:18, padding:14, alignItems:'center' }}>
-        <div onClick={open} style={{ width:180, height:120, borderRadius:10, overflow:'hidden', cursor:'pointer', position:'relative' }}>
+      <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'180px 1fr auto', gap:isMobile?12:18, padding:isMobile?12:14, alignItems:isMobile?'start':'center' }}>
+        <div onClick={open} style={{ width:isMobile?'100%':180, height:isMobile?140:120, borderRadius:10, overflow:'hidden', cursor:'pointer', position:'relative' }}>
           <ImgPlaceholder {...b.trip.img} radius={0} overlay={false}/>
           {isCanc && <div style={{ position:'absolute', inset:0, background:'rgba(15,30,46,.55)', display:'flex', alignItems:'center', justifyContent:'center' }}><span style={{ background:'#fff', color:T.rose, padding:'4px 10px', borderRadius:999, fontSize:10.5, fontWeight:800, letterSpacing:'.1em', transform:'rotate(-6deg)' }}>CANCELLED</span></div>}
         </div>
@@ -346,24 +347,24 @@ function BookingRow({ b, onOpenBooking, onOpenInvoice }) {
             {isPast && b.rating && <span style={{ display:'inline-flex', alignItems:'center', gap:3, color:T.amber, fontWeight:600 }}>{[0,1,2,3,4].map(i=><Ico key={i} name="star" size={11} color={T.amber}/>)}</span>}
           </div>
         </div>
-        <div style={{ textAlign:'right' }}>
+        <div style={{ textAlign:isMobile?'left':'right', marginTop:isMobile?4:0 }}>
           {isUp && !isWaitlist && !isPaymentPending && <>
-            <div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.1em', fontWeight:700 }}>DEPARTS IN</div>
+            <div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.1em', fontWeight:700 }}>{isMobile?'DEPARTS IN: ': 'DEPARTS IN'}</div>
             <div style={{ fontSize:22, fontWeight:800, color:T.ink, letterSpacing:'-.02em' }}>{b.departsIn} <span style={{ fontSize:12, fontWeight:600, color:T.grey }}>days</span></div>
             <div style={{ fontSize:11, color:th.deep, fontWeight:600, marginTop:2 }}>Paid {inr(b.paid)} · {inr(b.balance)} due</div>
           </>}
           {isUp && isWaitlist && <>
-            <div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.1em', fontWeight:700 }}>POSITION</div>
+            <div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.1em', fontWeight:700 }}>{isMobile?'POSITION: ': 'POSITION'}</div>
             <div style={{ fontSize:22, fontWeight:800, color:'#A37A1A', letterSpacing:'-.02em' }}>#{b.waitlistPos} <span style={{ fontSize:12, fontWeight:600, color:T.grey }}>in line</span></div>
             <div style={{ fontSize:11, color:T.grey, marginTop:2 }}>You'll be charged only if a spot opens</div>
           </>}
           {isUp && isPaymentPending && <>
-            <div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.1em', fontWeight:700 }}>HOLD EXPIRES</div>
+            <div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.1em', fontWeight:700 }}>{isMobile?'HOLD EXPIRES: ': 'HOLD EXPIRES'}</div>
             <div style={{ fontSize:22, fontWeight:800, color:T.rose, letterSpacing:'-.02em' }}>{b.holdExpiresHours}h</div>
             <div style={{ fontSize:11, color:T.rose, fontWeight:600, marginTop:2 }}>Pay {inr(b.balance)} to confirm</div>
           </>}
-          {isPast && <div style={{ fontSize:11, color:T.grey }}>Paid {inr(b.paid)}</div>}
-          {isCanc && <div style={{ fontSize:11, color:T.rose, fontWeight:600 }}>Refund {inr(b.refund)} {b.state==='refund-processing'?'in progress':'processed'}</div>}
+          {isPast && <div style={{ fontSize:11, color:T.grey }}>{isMobile?'Paid: ':''} {inr(b.paid)}</div>}
+          {isCanc && <div style={{ fontSize:11, color:T.rose, fontWeight:600 }}>{isMobile?'Refund: ':''} {inr(b.refund)} {b.state==='refund-processing'?'in progress':'processed'}</div>}
         </div>
       </div>
       {paySuccess && (
@@ -377,7 +378,7 @@ function BookingRow({ b, onOpenBooking, onOpenInvoice }) {
           </div>
         </div>
       )}
-      <div style={{ borderTop:`1px solid ${T.greyLight}`, padding:'10px 14px', background:'#FAFBFC', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:10 }}>
+      <div style={{ borderTop:`1px solid ${T.greyLight}`, padding:'10px 14px', background:'#FAFBFC', display:'flex', justifyContent:'space-between', alignItems:isMobile?'stretch':'center', flexDirection:isMobile?'column':'row', gap:10 }}>
         <div style={{ fontSize:12, color:T.grey, display:'inline-flex', alignItems:'center', gap:6 }}>
           {isUp && isWaitlist && <>You'll get WhatsApp + email the moment a spot opens.</>}
           {isUp && isPaymentPending && !paySuccess && <>We're holding your spot until the timer runs out.</>}
@@ -389,7 +390,7 @@ function BookingRow({ b, onOpenBooking, onOpenInvoice }) {
           {isCanc && b.state==='refund-processing' && <>Refund initiated · hits your source account in {b.refundEta} business days</>}
           {isCanc && b.state!=='refund-processing' && <>Cancelled 3 Mar · Refund hit your source account</>}
         </div>
-        <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+        <div style={{ display:'flex', gap:8, flexWrap:'wrap', width:isMobile?'100%':'auto' }}>
           {isUp && isPaymentPending && <>
             <Btn kind="ghost" size="sm" onClick={()=>setModal('cancel')} style={{ color:T.rose }}>Drop hold</Btn>
             <Btn kind="primary" size="sm" trailing="arrow-right" onClick={payNow}>Pay {inr(b.balance)}</Btn>
@@ -539,11 +540,11 @@ function RequestCard({ r }) {
       onFailure: (err) => alert('Payment failed: ' + (err?.description || 'Please try again.')),
     });
   };
-  const [detailsOpen, setDetailsOpen] = React.useState(false);
+  const isMobile = useIsMobile();
   return (
     <>
-    <div onClick={()=>setDetailsOpen(true)} style={{ border:`1px solid ${T.greyLight}`, borderRadius:14, overflow:'hidden', background:'#fff', cursor:'pointer', transition:'box-shadow .2s', ':hover':{boxShadow:'0 4px 12px rgba(15,30,46,.04)'} }}>
-      <div style={{ padding:'14px 16px', display:'flex', gap:14, alignItems:'flex-start', flexWrap:'wrap' }}>
+    <div onClick={()=>setDetailsOpen(true)} style={{ border:`1px solid ${T.greyLight}`, borderRadius:14, overflow:'hidden', background:'#fff', cursor:'pointer', transition:'box-shadow .2s' }}>
+      <div style={{ padding:isMobile?'12px 14px':'14px 16px', display:'flex', gap:14, alignItems:'flex-start', flexWrap:'wrap' }}>
         <div style={{ width:46, height:46, borderRadius:10, background:th.soft, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
           <Ico name="pin" size={20} color={th.deep} stroke={1.8}/>
         </div>
@@ -566,7 +567,7 @@ function RequestCard({ r }) {
           </div>
         </div>
         {r.state==='quote-ready' && r.quote && (
-          <div style={{ textAlign:'right', minWidth:130 }}>
+          <div style={{ textAlign:isMobile?'left':'right', minWidth:isMobile?'100%':130 }}>
             <div style={{ fontSize:10, color:T.grey, letterSpacing:'.12em', fontWeight:700 }}>CURATOR QUOTE</div>
             <div style={{ fontSize:20, fontWeight:800, color:T.greenDeep, letterSpacing:'-.02em', fontFamily:'Fraunces, serif' }}>{inr(r.quote.price)}<span style={{ fontSize:11, fontWeight:600, color:T.grey }}> /head</span></div>
             <div style={{ fontSize:11, color:T.grey, marginTop:2 }}>{r.quote.tripsCount} option{r.quote.tripsCount>1?'s':''} ready</div>
@@ -584,9 +585,9 @@ function RequestCard({ r }) {
           </div>
         </div>
       )}
-      <div style={{ borderTop:`1px solid ${T.greyLight}`, padding:'10px 14px', background:'#FAFBFC', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:10 }}>
+      <div style={{ borderTop:`1px solid ${T.greyLight}`, padding:'10px 14px', background:'#FAFBFC', display:'flex', justifyContent:'space-between', alignItems:isMobile?'stretch':'center', flexDirection:isMobile?'column':'row', gap:10 }}>
         <div style={{ fontSize:12, color:T.grey }}>{paid ? 'Your trip docs will land on WhatsApp within 2 hours.' : s.helper}</div>
-        <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+        <div style={{ display:'flex', gap:8, flexWrap:'wrap', width:isMobile?'100%':'auto' }}>
           {r.state==='quote-ready' && !paid && <>
             <Btn kind="ghost" size="sm" icon="send" onClick={(e)=>{ e.stopPropagation(); window.openSupport && window.openSupport(); }}>Message curator</Btn>
             <Btn kind="primary" size="sm" trailing="arrow-right" onClick={(e)=>{ e.stopPropagation(); bookQuote(); }}>Review &amp; book · {inr(token)} token</Btn>

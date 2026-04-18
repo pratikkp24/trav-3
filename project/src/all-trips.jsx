@@ -254,10 +254,18 @@ function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)', filterDest }) {
           )}
 
           {sorted.length===0 ? (
-            <div style={{ background:'#fff', borderRadius:18, border:`1px dashed ${T.greyLight}`, padding:'60px 40px', textAlign:'center' }}>
-              <div style={{ fontSize:16, fontWeight:700, color:T.ink, marginBottom:6 }}>No trips match those filters.</div>
-              <div style={{ fontSize:13, color:T.grey, marginBottom:16 }}>Try loosening a filter or clear them all.</div>
-              <Btn kind="outline" size="md" onClick={clearAll}>Clear filters</Btn>
+            <div style={{ background:'#fff', borderRadius:24, border:`1px solid ${T.greyLight}`, padding:isMobile?'60px 24px':'100px 40px', textAlign:'center', boxShadow:'0 4px 12px rgba(15,30,46,.04)' }}>
+              <div style={{ width:72, height:72, borderRadius:'50%', background:T.offWhite, margin:'0 auto 24px', display:'flex', alignItems:'center', justifyContent:'center', border:`1px solid ${T.greyLight}` }}>
+                <Ico name="pin" size={32} color={T.grey} stroke={1.5}/>
+              </div>
+              <h2 style={{ fontSize:isMobile?22:28, fontWeight:700, color:T.ink, margin:'0 0 8px', fontFamily:'Fraunces, serif', letterSpacing:'-.02em' }}>No adventures found yet.</h2>
+              <p style={{ fontSize:isMobile?14:15, color:T.grey, marginBottom:28, lineHeight:1.55, maxWidth:420, margin:'0 auto 32px' }}>
+                We couldn't find any trips matching your filters in {fromCity.split(' ')[0]}. Try loosening your search or tell us where you want to go.
+              </p>
+              <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
+                <Btn kind="dark" size="md" onClick={clearAll} icon="refresh">Clear all filters</Btn>
+                <Btn kind="outline" size="md" onClick={() => window.setPage && window.setPage('support')} icon="spark">Request custom trip</Btn>
+              </div>
             </div>
           ) : (
             <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3, 1fr)', gap:isMobile?14:20 }}>

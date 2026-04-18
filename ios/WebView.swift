@@ -7,19 +7,40 @@ struct WebView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         
-        // Allows inline video playback and other media features
+        // JS-Native Bridge for Haptics and Share
+        let controller = WKUserContentController()
+        context.coordinator.addHandlers(to: controller)
+        config.userContentController = controller
+        
         config.allowsInlineMediaPlayback = true
         
         let webView = WKWebView(frame: .zero, configuration: config)
-        
-        // Ensure the background color matches our brand if the web takes time to load
         webView.backgroundColor = .clear
         webView.isOpaque = false
-        
-        // Standard user agent or custom if needed
         webView.customUserAgent = "TravNativeiOS"
         
         return webView
+    }
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    class Coordinator: NSObject, WKScriptMessageHandler {
+        func addHandlers(to controller: WKUserContentController) {
+            controller.add(self, name: "haptic")
+            controller.add(self, name: "share")
+        }
+
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            if message.name == "haptic" {
+                let generator = UIImpactFeedbackGenerator(style: .medium)
+                generator.impactOccurred()
+            } else if message.name == "share", let data = message.body as? [String: Any], let text = data["text"] as? String {
+                let av = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+                UIApplication.shared.windows.first?.rootViewController?.present(av, animated: true, completion: nil)
+            }
+        }
     }
     
     func updateUIView(_ uiView: WKWebView, context: Context) {
@@ -27,3 +48,4 @@ struct WebView: UIViewRepresentable {
         uiView.load(request)
     }
 }
+

@@ -1,13 +1,6 @@
-function personaTheme(persona) {
-  if (persona === 'soloFemale') return { primary:T.rose, deep:'#9c3a2a', soft:T.roseCream, ring:`${T.rose}33`, label:'Solo female mode' };
-  if (persona === 'corporate')  return { primary:T.ink,  deep:T.ink,    soft:'#F1F4F8',   ring:`${T.ink}22`,  label:'Corporate mode' };
-  if (persona === 'couples')    return { primary:T.rose, deep:'#9c3a2a', soft:T.roseCream, ring:`${T.rose}33`, label:'Couples mode' };
-  if (persona === 'group')      return { primary:T.greenDeep, deep:T.greenDeep, soft:'#F0FAF4', ring:`${T.green}33`, label:'Friends mode' };
-  if (persona === 'first')      return { primary:T.amber, deep:'#a37a1a', soft:'#FFF5D6', ring:`${T.amber}55`, label:'First-timer mode' };
-  return { primary:T.greenDeep, deep:T.greenDeep, soft:'#F0FAF4', ring:`${T.green}33`, label:null };
-}
 
 function TripDetail({ tripId, onBack, onBook, onCustomise, onOpenArticle }) {
+
   // We now receive tripId via props, keeping it instantly synced with view state!
   const t = tripId === 'trip-nainital' ? NAINITAL_TRIP : (tripId === 'trip-thailand' ? THAILAND_TRIP : RISHIKESH_TRIP);
   const isMobile = useIsMobile();
@@ -37,19 +30,14 @@ function TripDetail({ tripId, onBack, onBook, onCustomise, onOpenArticle }) {
           <Btn kind="outline" size="sm" icon="arrow-left" onClick={onBack}>{isMobile?'Back':'Back to trips'}</Btn>
           <div style={{ display:'flex', gap:6 }}>
             <button onClick={() => {
-              const text = `Hey guys! 🌴 Check out this weekend trip by trav.\n\n` +
-                           `📍 ${t.dest}\n` +
-                           `📅 ${t.dates.split('·')[1]?.trim()||t.dates}\n` +
-                           `💸 ${inr(t.price)} / head\n\n` +
-                           `${t.tagline}\n\n` +
-                           `Let's lock this in? Only ${t.spotsLeft} spots left! 🔥\n` +
-                           `Link: https://trav.app/trip/${t.id}`;
-              navigator.clipboard.writeText(text);
-              alert('Pitch copied to clipboard! Paste it in your WhatsApp group.');
+              share(`Hey! 🌴 Check out this weekend trip to ${t.dest} by trav.\n\n` +
+                    `📅 ${t.dates.split('·')[1]?.trim()||t.dates}\n` +
+                    `💸 ${inr(t.price)} / head\n\n` +
+                    `${t.tagline}`);
             }} style={galleryActionBtn}>
-              <Ico name="whatsapp" size={14} color={T.greenDeep}/>{!isMobile && ' Pitch to group'}
+              <Ico name="share" size={14} color={T.greenDeep}/> Share
             </button>
-            <button style={galleryActionBtn}><Ico name="heart" size={14} color={T.ink} stroke={2}/>{!isMobile && ' Save'}</button>
+            <button style={galleryActionBtn} onClick={() => haptic('medium')}><Ico name="heart" size={14} color={T.ink} stroke={2}/>{!isMobile && ' Save'}</button>
           </div>
         </div>
         <div style={{ display:'flex', flexWrap:'wrap', gap:isMobile?6:10, marginBottom:isMobile?8:10, alignItems:'center' }}>

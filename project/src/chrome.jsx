@@ -5,8 +5,22 @@ function Nav({ onLogo, active='destinations', loggedIn, onLogin, onProfile, onTr
   const border = isDark ? 'rgba(255,255,255,.08)' : T.greyLight;
   const textPri = isDark ? 'rgba(255,255,255,.92)' : T.ink;
   const textSec = isDark ? 'rgba(255,255,255,.58)' : T.grey;
+  const navHeight = isMobile ? (56 + 12) : 64; // Extra space for safe area header if needed
   return (
-    <div style={{ height:isMobile?56:64, background:navBg, borderBottom:`1px solid ${border}`, backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', display:'flex', alignItems:'center', padding:`0 ${isMobile?16:36}px`, gap:isMobile?14:30, position:'sticky', top:0, zIndex:20 }}>
+    <div className="safe-top" style={{ 
+      height:isMobile ? 56 : 64, 
+      background:navBg, 
+      borderBottom:`1px solid ${border}`, 
+      backdropFilter:'blur(10px)', 
+      WebkitBackdropFilter:'blur(10px)', 
+      display:'flex', 
+      alignItems:'center', 
+      padding:`0 ${isMobile?16:36}px`, 
+      gap:isMobile?14:30, 
+      position:'sticky', 
+      top:0, 
+      zIndex:20 
+    }}>
       <div onClick={onLogo} style={{ display:'flex', alignItems:'center', gap:4, cursor:'pointer' }}>
         <span style={{ fontSize:isMobile?20:22, fontWeight:800, color:isDark?'#fff':T.greenDark, letterSpacing:'-.03em', fontFamily:'Fraunces, serif' }}>trav</span>
         <span style={{ width:6, height:6, background:T.green, borderRadius:2, marginBottom:4 }}/>
@@ -31,18 +45,20 @@ function Nav({ onLogo, active='destinations', loggedIn, onLogin, onProfile, onTr
           <span style={{ fontSize:14, fontWeight:600, color:isDark?T.green:T.greenDeep, cursor:'pointer' }}>Weekend Trips</span>
         </div>
       )}
-      <button onClick={onToggleTheme} aria-label="Toggle theme" title={isDark?'Switch to light':'Switch to dark'} style={{ width:isMobile?34:38, height:isMobile?34:38, borderRadius:'50%', background:'transparent', border:`1px solid ${border}`, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', padding:0 }}>
-        <Ico name={isDark?'sun':'moon'} size={isMobile?15:16} color={textPri} stroke={2}/>
-      </button>
-      {loggedIn ? (
-        <div onClick={onProfile} style={{ display:'flex', alignItems:'center', gap:isMobile?6:10, cursor:'pointer', padding:isMobile?'4px 8px 4px 4px':'6px 12px 6px 6px', borderRadius:999, border:`1px solid ${border}` }}>
-          <div style={{ width:isMobile?26:30, height:isMobile?26:30, borderRadius:'50%', background:`linear-gradient(135deg, ${T.green}, ${T.greenDeep})`, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:isMobile?10:11, fontWeight:700 }}>AR</div>
-          {!isMobile && <span style={{ fontSize:13, fontWeight:600, color:textPri }}>Aditi</span>}
-          <Ico name="chevron-down" size={12} color={textSec}/>
-        </div>
-      ) : (
-        <button onClick={onLogin} style={{ height:isMobile?36:40, padding:isMobile?'0 14px':'0 22px', borderRadius:999, background:'transparent', color:isDark?T.green:T.greenDeep, border:`1.5px solid ${isDark?T.green:T.greenDeep}`, fontSize:isMobile?12.5:14, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }}>Login</button>
-      )}
+      <div className="mobile-hide" style={{ display:'flex', alignItems:'center', gap:20 }}>
+        <button onClick={onToggleTheme} aria-label="Toggle theme" title={isDark?'Switch to light':'Switch to dark'} style={{ width:isMobile?34:38, height:isMobile?34:38, borderRadius:'50%', background:'transparent', border:`1px solid ${border}`, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', padding:0 }}>
+          <Ico name={isDark?'sun':'moon'} size={isMobile?15:16} color={textPri} stroke={2}/>
+        </button>
+        {loggedIn ? (
+          <div onClick={onProfile} style={{ display:'flex', alignItems:'center', gap:isMobile?6:10, cursor:'pointer', padding:isMobile?'4px 8px 4px 4px':'6px 12px 6px 6px', borderRadius:999, border:`1px solid ${border}` }}>
+            <div style={{ width:isMobile?26:30, height:isMobile?26:30, borderRadius:'50%', background:`linear-gradient(135deg, ${T.green}, ${T.greenDeep})`, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:isMobile?10:11, fontWeight:700 }}>AR</div>
+            <span style={{ fontSize:13, fontWeight:600, color:textPri }}>Aditi</span>
+            <Ico name="chevron-down" size={12} color={textSec}/>
+          </div>
+        ) : (
+          <button onClick={onLogin} style={{ height:isMobile?36:40, padding:isMobile?'0 14px':'0 22px', borderRadius:999, background:'transparent', color:isDark?T.green:T.greenDeep, border:`1.5px solid ${isDark?T.green:T.greenDeep}`, fontSize:isMobile?12.5:14, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }}>Login</button>
+        )}
+      </div>
     </div>
   );
 }
@@ -235,11 +251,12 @@ function LoginModal({ onClose, onLogin }) {
 
 function MobileBottomNav({ active, onHome, onTrips, onTravelogue, onProfile, onSearch, loggedIn, onLogin, theme='light' }) {
   const isDark = theme==='dark';
-  const barBg = isDark ? 'rgba(10,10,10,.92)' : '#fff';
-  const border = isDark ? 'rgba(255,255,255,.08)' : T.greyLight;
+  const barBg = isDark ? 'rgba(10,10,10,.92)' : 'rgba(255,255,255,.94)';
+  const border = isDark ? 'rgba(255,255,255,.08)' : 'rgba(15,30,46,.08)';
   const inactive = isDark ? 'rgba(255,255,255,.55)' : T.grey;
   const active$ = isDark ? T.green : T.greenDeep;
   const fabBorder = isDark ? '#0a0a0a' : '#fff';
+  
   const left = [
     { id:'home',  label:'Home',  icon:'pin',     onClick:onHome,  activeWhen:['landing'] },
     { id:'trips', label:'Trips', icon:'calendar', onClick:onTrips, activeWhen:['all-trips','detail','booking'] },
@@ -248,27 +265,60 @@ function MobileBottomNav({ active, onHome, onTrips, onTravelogue, onProfile, onS
     { id:'travelogue', label:'Stories', icon:'spark',  onClick:onTravelogue, activeWhen:['travelogue','travelogue-article'] },
     { id:'profile',    label:loggedIn?'You':'Login', icon:loggedIn?'users':'logout', onClick:loggedIn?onProfile:onLogin, activeWhen:['profile','booking-detail','invoice'] },
   ];
+
   const Tab = ({ t }) => {
     const isActive = t.activeWhen.includes(active);
     const color = isActive ? active$ : inactive;
     return (
-      <button onClick={t.onClick} style={{ flex:1, background:'transparent', border:'none', cursor:'pointer', padding:'8px 4px 6px', display:'flex', flexDirection:'column', alignItems:'center', gap:4, fontFamily:'inherit', position:'relative' }}>
-        {isActive && <span style={{ position:'absolute', top:0, left:'50%', transform:'translateX(-50%)', width:30, height:3, background:T.green, borderRadius:'0 0 999px 999px' }}/>}
-        <Ico name={t.icon} size={20} color={color} stroke={isActive?2.4:1.8}/>
-        <span style={{ fontSize:10, fontWeight:isActive?700:600, color, letterSpacing:'.02em' }}>{t.label}</span>
+      <button onClick={(e) => { e.preventDefault(); haptic(); t.onClick && t.onClick(); }} style={{ 
+        flex:1, background:'transparent', border:'none', cursor:'pointer', padding:'10px 4px 6px', 
+        display:'flex', flexDirection:'column', alignItems:'center', gap:4, fontFamily:'inherit', 
+        position:'relative', outline:'none',
+        transition:'transform .2s'
+      }}>
+        <div style={{ transform:isActive?'scale(1.1)':'scale(1)', transition:'transform .2s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
+          <Ico name={t.icon} size={22} color={color} stroke={isActive?2.5:1.8}/>
+        </div>
+        <span style={{ 
+          fontSize:10, fontWeight:isActive?800:600, color, letterSpacing:'.01em', 
+          opacity:isActive?1:0.7, transform:isActive?'translateY(0)':'translateY(1px)',
+          transition:'all .2s'
+        }}>{t.label}</span>
+        {isActive && <div style={{ position:'absolute', top:0, left:'50%', transform:'translateX(-50%)', width:20, height:3, background:active$, borderRadius:'0 0 4px 4px', animation:'navTabIn .3s ease' }}/>}
       </button>
     );
   };
+
   return (
-    <div style={{ position:'fixed', left:0, right:0, bottom:0, zIndex:75, background:barBg, borderTop:`1px solid ${border}`, backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', boxShadow: isDark?'0 -6px 20px rgba(0,0,0,.4)':'0 -6px 20px rgba(15,30,46,.06)', padding:`6px 0 calc(6px + env(safe-area-inset-bottom)) 0`, display:'flex', alignItems:'flex-end' }}>
-      {left.map(t => <Tab key={t.id} t={t}/>)}
-      <div style={{ flex:'0 0 78px', display:'flex', justifyContent:'center', alignItems:'flex-end' }}>
-        <button onClick={onSearch||onTrips} aria-label="Search trips" style={{ width:58, height:58, borderRadius:'50%', background:`linear-gradient(135deg, ${T.green}, ${T.greenDeep})`, color:'#fff', border:`4px solid ${fabBorder}`, cursor:'pointer', fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 8px 22px rgba(29,191,115,.45)', marginTop:-26 }}>
-          <SearchIco size={22}/>
-        </button>
+    <>
+      <div className="safe-bottom" style={{ 
+        position:'fixed', left:0, right:0, bottom:0, zIndex:75, background:barBg, 
+        borderTop:`1px solid ${border}`, backdropFilter:'blur(15px)', WebkitBackdropFilter:'blur(15px)', 
+        boxShadow: isDark?'0 -6px 24px rgba(0,0,0,.5)':'0 -6px 20px rgba(15,30,46,.08)', 
+        padding:`4px 0 env(safe-area-inset-bottom)`, display:'flex', alignItems:'center' 
+      }}>
+        {left.map(t => <Tab key={t.id} t={t}/>)}
+        <div style={{ flex:'0 0 72px', display:'flex', justifyContent:'center', position:'relative' }}>
+          <button onClick={(e) => { e.preventDefault(); haptic(); (onSearch||onTrips)(); }} aria-label="Search trips" style={{ 
+            width:56, height:56, borderRadius:'50%', 
+            background:`linear-gradient(135deg, ${T.green}, ${T.greenDeep})`, 
+            color:'#fff', border:`4px solid ${fabBorder}`, cursor:'pointer', 
+            fontFamily:'inherit', display:'flex', alignItems:'center', justifyContent:'center', 
+            boxShadow:'0 8px 24px rgba(29,191,115,.4)', 
+            marginTop:-32,
+            transition:'transform .2s, box-shadow .2s'
+          }}
+          onMouseDown={e => e.currentTarget.style.transform = 'scale(0.92)'}
+          onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}>
+            <Ico name="search" size={24} color="#fff" stroke={2.5}/>
+          </button>
+        </div>
+        {right.map(t => <Tab key={t.id} t={t}/>)}
       </div>
-      {right.map(t => <Tab key={t.id} t={t}/>)}
-    </div>
+      <style>{`
+        @keyframes navTabIn { from { width: 0; opacity: 0; } to { width: 20px; opacity: 1; } }
+      `}</style>
+    </>
   );
 }
 

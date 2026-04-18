@@ -9,11 +9,31 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Poppins:wght@400;500;600;700;800&display=swap"/>
+<script>
+  (function() {
+    try {
+      var theme = localStorage.getItem('trav.theme') || 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme === 'dark') {
+        // Immediate background set to match native shell Ink color
+        document.write('<style>body{background:#0F1E2E !important;}</style>');
+      }
+    } catch (e) {}
+  })();
+</script>
 <style>
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;font-family:'Poppins',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
   body{background:#fff;color:#0F1E2E;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
   button, .btn, .nav-item, .chip{ -webkit-user-select:none; user-select:none; }
+  .mobile-hide{ display:flex }
+  .mobile-only{ display:none }
+  @media (max-width:767px) {
+    .mobile-hide{ display:none !important }
+    .mobile-only{ display:flex !important }
+    .safe-top{ padding-top:env(safe-area-inset-top) }
+    .safe-bottom{ padding-bottom:env(safe-area-inset-bottom) }
+  }
   button{font-family:inherit}
   ::-webkit-scrollbar{width:10px;height:10px}
   ::-webkit-scrollbar-thumb{background:#D4D4D4;border-radius:5px;border:2px solid #fff}
@@ -39,9 +59,9 @@
      exactly by the YIQ-style matrix used by the spec). Any other angle (e.g.
      200deg) loses saturation when chained, which was the cause of the washed
      -out water/trees we saw before. */
-  html[data-theme="dark"]{background:#0a0a0a;color-scheme:dark}
-  html[data-theme="dark"] body{background:#0a0a0a;color:#fff}
-  html[data-theme="dark"] #root{background:#0a0a0a;min-height:100vh}
+  html[data-theme="dark"]{background:#0F1E2E;color-scheme:dark}
+  html[data-theme="dark"] body{background:#0F1E2E;color:#fff}
+  html[data-theme="dark"] #root{background:#0F1E2E;min-height:100vh}
   /* Parent flip — lossless at 180deg. */
   html[data-theme="dark"] .theme-flip{filter:invert(1) hue-rotate(180deg);background:#fff}
   /* Images/video/canvas: self-cancel so photos render with their native colors. */
@@ -54,8 +74,8 @@
   /* The Razorpay modal is rendered in a portal outside .theme-flip, so it already
      displays with its own (light) chrome — nothing to do for it here. */
   /* Scrollbar polish in dark */
-  html[data-theme="dark"]::-webkit-scrollbar-thumb{background:#2a2a2a;border-color:#0a0a0a}
-  html[data-theme="dark"] ::-webkit-scrollbar-thumb{background:#2a2a2a;border-color:#0a0a0a}
+  html[data-theme="dark"]::-webkit-scrollbar-thumb{background:#1a2e42;border-color:#0F1E2E}
+  html[data-theme="dark"] ::-webkit-scrollbar-thumb{background:#1a2e42;border-color:#0F1E2E}
 </style>
 </head>
 <body>

@@ -9,6 +9,34 @@ const T = {
   gold:'#F5A623', goldDeep:'#C17F12', goldSoft:'#FFF6E0',
 };
 
+// Native environment check
+const isIosApp = !!(window.webkit && window.webkit.messageHandlers);
+
+function haptic(type = 'medium') {
+  if (isIosApp && window.webkit.messageHandlers.haptic) {
+    window.webkit.messageHandlers.haptic.postMessage({ type });
+  } else if (window.navigator && window.navigator.vibrate) {
+    // Fallback for Android/Web
+    window.navigator.vibrate(10);
+  }
+}
+
+function share(text, url) {
+  const shareData = { text: text || 'Check out this trip on Trav!', url: url || window.location.href };
+  if (isIosApp && window.webkit.messageHandlers.share) {
+    window.webkit.messageHandlers.share.postMessage({ 
+      text: shareData.text + (shareData.url ? '\n' + shareData.url : '') 
+    });
+  } else if (navigator.share) {
+    navigator.share(shareData).catch(() => {});
+  } else {
+    // Fallback to clipboard
+    const fullText = shareData.text + (shareData.url ? '\n' + shareData.url : '');
+    navigator.clipboard.writeText(fullText);
+    alert('Link copied to clipboard!');
+  }
+}
+
 function Ico({ name, size=16, color='currentColor', stroke=1.8, fill='none' }) {
   const p = { width:size, height:size, viewBox:'0 0 24 24', fill, stroke:color, strokeWidth:stroke, strokeLinecap:'round', strokeLinejoin:'round' };
   switch (name) {
@@ -54,31 +82,50 @@ function Ico({ name, size=16, color='currentColor', stroke=1.8, fill='none' }) {
     case 'plus': return <svg {...p}><path d="M12 5v14M5 12h14"/></svg>;
     case 'coin': return <svg viewBox="0 0 24 24" width={size} height={size}><circle cx="12" cy="12" r="10" fill={color==='currentColor'?'#F5A623':color} stroke="#C17F12" strokeWidth="1.2"/><text x="12" y="16" textAnchor="middle" fontSize="12" fontWeight="800" fill="#fff" fontFamily="Poppins, sans-serif">₹</text></svg>;
     case 'sparkle-ring': return <svg {...p}><circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>;
+    case 'search': return <svg {...p}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>;
+    case 'share': return <svg {...p}><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>;
     default: return null;
   }
 }
 
-function Btn({ kind='primary', size='md', icon, trailing, full, onClick, children, style }) {
-  const sizes = { sm:{h:34,fs:12.5,pad:'0 14px',gap:6,ico:13}, md:{h:44,fs:14,pad:'0 20px',gap:8,ico:15}, lg:{h:52,fs:15,pad:'0 26px',gap:10,ico:16} }[size];
+function Btn({ kind='primary', size='md', icon, trailing, full, onClick, children, style, disabled }) {
+  const sizes = { 
+    sm:{h:36,fs:12.5,pad:'0 14px',gap:6,ico:13}, 
+    md:{h:46,fs:14,pad:'0 20px',gap:8,ico:15}, 
+    lg:{h:54,fs:15.5,pad:'0 26px',gap:10,ico:17} 
+  }[size];
+  
   const kinds = {
-    primary:{bg:T.green,fg:'#fff',bd:T.green},
-    dark:{bg:T.ink,fg:'#fff',bd:T.ink},
-    outline:{bg:'transparent',fg:T.ink,bd:T.greyLight},
-    ghost:{bg:'transparent',fg:T.ink,bd:'transparent'},
-    outlineDark:{bg:'rgba(20,30,40,.55)',fg:'#fff',bd:'rgba(255,255,255,.25)'},
-    rose:{bg:T.rose,fg:'#fff',bd:T.rose},
+    primary:{bg:T.green,fg:'#fff',bd:T.green,active:T.greenDeep},
+    dark:{bg:T.ink,fg:'#fff',bd:T.ink,active:'#1a2e42'},
+    outline:{bg:'transparent',fg:T.ink,bd:T.greyLight,active:'rgba(15,30,46,.05)'},
+    ghost:{bg:'transparent',fg:T.ink,bd:'transparent',active:'rgba(15,30,46,.05)'},
+    outlineDark:{bg:'rgba(20,30,40,.55)',fg:'#fff',bd:'rgba(255,255,255,.25)',active:'rgba(255,255,255,.15)'},
+    rose:{bg:T.rose,fg:'#fff',bd:T.rose,active:'#9c3a2a'},
   }[kind];
+
   return (
-    <button onClick={onClick} style={{
-      height:sizes.h, fontSize:sizes.fs, padding:sizes.pad, gap:sizes.gap, borderRadius:999,
-      background:kinds.bg, color:kinds.fg, border:`1.5px solid ${kinds.bd}`,
-      display:'inline-flex', alignItems:'center', justifyContent:'center',
-      fontWeight:600, cursor:'pointer', width:full?'100%':'auto', fontFamily:'inherit',
-      transition:'transform .1s', ...style,
-    }}>
-      {icon && <Ico name={icon} size={sizes.ico} color={kinds.fg} stroke={2}/>}
-      {children}
-      {trailing && <Ico name={trailing} size={sizes.ico} color={kinds.fg} stroke={2}/>}
+    <button 
+      disabled={disabled}
+      onClick={(e) => { if(!disabled) { haptic(); onClick && onClick(e); } }} 
+      style={{
+        height:sizes.h, fontSize:sizes.fs, padding:sizes.pad, gap:sizes.gap, borderRadius:999,
+        background:disabled ? T.greyLight : kinds.bg, 
+        color:disabled ? T.grey : kinds.fg, 
+        border:`1.5px solid ${disabled ? T.greyLight : kinds.bd}`,
+        display:'inline-flex', alignItems:'center', justifyContent:'center',
+        fontWeight:700, cursor:disabled?'not-allowed':'pointer', width:full?'100%':'auto', fontFamily:'inherit',
+        transition:'transform .15s cubic-bezier(0.34, 1.56, 0.64, 1), background .15s, opacity .15s',
+        opacity:disabled ? 0.6 : 1,
+        outline:'none',
+        ...style,
+      }}
+      onMouseDown={e => { if(!disabled) e.currentTarget.style.transform = 'scale(0.95)'; }}
+      onMouseUp={e => { if(!disabled) e.currentTarget.style.transform = 'scale(1)'; }}
+      onMouseLeave={e => { if(!disabled) e.currentTarget.style.transform = 'scale(1)'; }}>
+      {icon && <Ico name={icon} size={sizes.ico} color={disabled ? T.grey : kinds.fg} stroke={2.5}/>}
+      <span style={{ transform:'translateY(-1px)' }}>{children}</span>
+      {trailing && <Ico name={trailing} size={sizes.ico} color={disabled ? T.grey : kinds.fg} stroke={2.5}/>}
     </button>
   );
 }
@@ -271,6 +318,36 @@ function resolveViewTrip() {
   return typeof RISHIKESH_TRIP !== 'undefined' ? RISHIKESH_TRIP : null;
 }
 
+function personaTheme(persona) {
+  if (persona === 'soloFemale') return { primary:T.rose, deep:'#9c3a2a', soft:T.roseCream, ring:`${T.rose}33`, label:'Solo female mode' };
+  if (persona === 'corporate')  return { primary:T.ink,  deep:T.ink,    soft:'#F1F4F8',   ring:`${T.ink}22`,  label:'Corporate mode' };
+  if (persona === 'couples')    return { primary:T.rose, deep:'#9c3a2a', soft:T.roseCream, ring:`${T.rose}33`, label:'Couples mode' };
+  if (persona === 'group')      return { primary:T.greenDeep, deep:T.greenDeep, soft:'#F0FAF4', ring:`${T.green}33`, label:'Friends mode' };
+  if (persona === 'first')      return { primary:T.amber, deep:'#a37a1a', soft:'#FFF5D6', ring:`${T.amber}55`, label:'First-timer mode' };
+  return { primary:T.greenDeep, deep:T.greenDeep, soft:'#F0FAF4', ring:`${T.green}33`, label:null };
+}
+
+function getWishlist() {
+  try { return JSON.parse(localStorage.getItem('trav.wishlist') || '[]'); } catch { return []; }
+}
+
+function toggleWishlist(tripId) {
+  try {
+    const list = getWishlist();
+    const idx = list.indexOf(tripId);
+    let now;
+    if (idx >= 0) {
+      list.splice(idx, 1);
+      now = false;
+    } else {
+      list.push(tripId);
+      now = true;
+    }
+    localStorage.setItem('trav.wishlist', JSON.stringify(list));
+    return now;
+  } catch { return false; }
+}
+
 Object.assign(window, {
   T, Ico, Btn, ImgPlaceholder, inr, useIsMobile, openRazorpay, loadTravProfile, RAZORPAY_KEY_ID,
   getBookings, saveBooking, updateBooking,
@@ -279,4 +356,7 @@ Object.assign(window, {
   getActiveCoupon, setActiveCoupon,
   getHookFlag, setHookFlag,
   newBookingId, resolveViewTrip,
+  haptic, share, personaTheme,
+  getWishlist, toggleWishlist
 });
+

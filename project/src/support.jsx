@@ -10,6 +10,7 @@ function SupportPage({ onBack }) {
   const [submitted, setSubmitted] = React.useState(false);
   const [openFaq, setOpenFaq] = React.useState(-1);
   const [fileName, setFileName] = React.useState('');
+  const [aiOpen, setAiOpen] = React.useState(false);
 
   const submit = () => {
     if (!topic || !desc.trim()) return;
@@ -36,10 +37,11 @@ function SupportPage({ onBack }) {
             submitted={submitted} setSubmitted={setSubmitted}
             onSubmit={submit}
           />
-          <RightRail isMobile={isMobile} openFaq={openFaq} setOpenFaq={setOpenFaq}/>
+          <RightRail isMobile={isMobile} openFaq={openFaq} setOpenFaq={setOpenFaq} onAiOpen={() => setAiOpen(true)}/>
         </div>
         <TrustStats isMobile={isMobile}/>
       </div>
+      {aiOpen && <AssistantChat isMobile={isMobile} onClose={() => setAiOpen(false)} />}
     </div>
   );
 }
@@ -332,7 +334,7 @@ function inputStyle() {
 
 /* ============ Right rail (FAQ + ai assist + status) ============ */
 
-function RightRail({ isMobile, openFaq, setOpenFaq }) {
+function RightRail({ isMobile, openFaq, setOpenFaq, onAiOpen }) {
   const faqs = [
     { q:'How do I cancel or modify my booking?', a:'Up to 7 days before departure: full refund, no questions. 3–7 days: 50% refund. Less than 3 days: spot is held; you can transfer to a friend. Tap "Cancel & refund" above or message us on WhatsApp.' },
     { q:'Where is my refund?',                   a:'Refunds settle in 5–7 working days back to the original payment method. We send you a SMS + email when initiated. If it\'s past day 7, message us with your booking ID.' },
@@ -353,7 +355,7 @@ function RightRail({ isMobile, openFaq, setOpenFaq }) {
         <div style={{ fontSize:12.5, color:T.grey, marginTop:6, lineHeight:1.55 }}>
           Get an instant answer from our trip-aware assistant — handover to a human anytime.
         </div>
-        <button style={{ marginTop:14, height:36, padding:'0 14px', borderRadius:999, background:'#fff', color:T.ink, border:`1.5px solid ${T.ink}`, fontSize:12.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:6 }}>
+        <button onClick={onAiOpen} style={{ marginTop:14, height:36, padding:'0 14px', borderRadius:999, background:'#fff', color:T.ink, border:`1.5px solid ${T.ink}`, fontSize:12.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:6 }}>
           Try it <Ico name="arrow-right" size={12} color={T.ink} stroke={2.4}/>
         </button>
       </div>
@@ -447,6 +449,9 @@ function SupportFab({ onOpen, isMobile, hide }) {
             <div style={{ fontSize:11.5, color:'rgba(255,255,255,.85)', marginTop:4, lineHeight:1.4 }}>Real human · avg 28 min response</div>
           </div>
           <div style={{ padding:14, display:'flex', flexDirection:'column', gap:8 }}>
+            <button onClick={() => { setOpen(false); window.openAiAssist && window.openAiAssist(); }} style={{ height:40, padding:'0 14px', borderRadius:10, background:T.ink, color:'#fff', border:'none', fontSize:13, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+              <Ico name="spark" size={14} color={T.green}/> AI Assistant
+            </button>
             <button style={{ height:40, padding:'0 14px', borderRadius:10, background:T.green, color:'#fff', border:'none', fontSize:13, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8 }}>
               <Ico name="whatsapp" size={14} color="#fff"/> Open WhatsApp
             </button>
@@ -460,4 +465,152 @@ function SupportFab({ onOpen, isMobile, hide }) {
   );
 }
 
-Object.assign(window, { SupportPage, SupportFab });
+/* ============ AI Assistant Chat ============ */
+
+function AssistantChat({ isMobile, onClose }) {
+  const [messages, setMessages] = React.useState([
+    { role:'ai', text:'Hey! I\'m Trav Assist. I can help with booking changes, policy questions, or trip details. What\'s on your mind?' }
+  ]);
+  const [input, setInput] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [escalated, setEscalated] = React.useState(false);
+  const scrollRef = React.useRef();
+
+  const handleSend = (preset) => {
+    const userText = preset || input.trim();
+    if (!userText || loading) return;
+    
+    setMessages(prev => [...prev, { role:'user', text:userText }]);
+    setInput('');
+    setLoading(true);
+    haptic('light');
+
+    // Mock AI logic
+    setTimeout(() => {
+      let reply = "I'm a bit unsure about that. Would you like to speak with a human support agent instead?";
+      const txt = userText.toLowerCase();
+      
+      if (txt.includes('cancel') || txt.includes('refund')) {
+        reply = "You can cancel for a full refund up to 7 days before departure. Within 3-7 days, it's 50%. Less than 72 hours, we can only offer a date change for a ₹500 fee. Should I initiate a refund check for you?";
+      } else if (txt.includes('dates') || txt.includes('change')) {
+        reply = "Free date changes are available up to 14 days before. After that, there's a ₹500 rescheduling fee. Which trip are you looking at?";
+      } else if (txt.includes('whatsapp') || txt.includes('group')) {
+        reply = "Trip groups are created 48 hours before departure. You'll get an invite automatically via WhatsApp. If your trip is sooner and you're not in, I can escalate this to Priyank right now.";
+      } else if (txt.includes('hello') || txt.includes('hi')) {
+        reply = "Hi there! 👋 I'm your trip-aware assistant. Ask me about policies, bookings, or even what to pack!";
+      } else if (txt.includes('escalate') || txt.includes('human') || txt.includes('lead')) {
+        reply = "Understood. Handing you over to Priyank (Trip Lead). He'll reach out on WhatsApp in under 10 minutes.";
+        setEscalated(true);
+      }
+
+      setMessages(prev => [...prev, { role:'ai', text:reply }]);
+      setLoading(false);
+      haptic('medium');
+    }, 1000);
+  };
+
+  React.useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+  }, [messages, loading]);
+
+  const presets = ['Refund policy', 'Change dates', 'Talk to human'];
+
+  return (
+    <div style={{ position:'fixed', inset:0, background:'rgba(10,20,30,.4)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', zIndex:200, display:'flex', alignItems:isMobile?'flex-end':'center', justifyContent:'center' }}>
+      <div className="keep-colors" style={{ width:isMobile?'100%':440, height:isMobile?'85vh':600, background:'#fff', borderRadius:isMobile?'24px 24px 0 0':20, display:'flex', flexDirection:'column', overflow:'hidden', boxShadow:'0 30px 60px rgba(0,0,0,.25)', position:'relative' }}>
+        
+        {/* Header */}
+        <div style={{ padding:isMobile?18:20, borderBottom:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', justifyContent:'space-between', background:T.ink, color:'#fff' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ position:'relative' }}>
+              <div style={{ width:36, height:36, borderRadius:'50%', background:T.green, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:`0 0 0 4px ${T.green}33` }}>
+                <Ico name="spark" size={20} color="#fff" stroke={2.5}/>
+              </div>
+              <div style={{ position:'absolute', bottom:-1, right:-1, width:10, height:10, borderRadius:'50%', background:T.green, border:'2px solid #fff' }}/>
+            </div>
+            <div>
+              <div style={{ fontSize:15, fontWeight:800, fontFamily:'Fraunces, serif' }}>Trav Assist</div>
+              <div style={{ fontSize:10, opacity:.8, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase' }}>Expert Trip Concierge</div>
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background:'rgba(255,255,255,.1)', border:'none', width:32, height:32, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
+            <Ico name="x" size={18} color="#fff" stroke={2.5}/>
+          </button>
+        </div>
+        
+        {/* Chat window */}
+        <div ref={scrollRef} style={{ flex:1, overflowY:'auto', padding:'20px 16px', display:'flex', flexDirection:'column', gap:16, background:'#F8F9FB' }}>
+          {messages.map((m, i) => (
+            <div key={i} style={{ alignSelf: m.role==='ai' ? 'flex-start' : 'flex-end', maxWidth:'80%' }}>
+              <div style={{ 
+                background: m.role==='ai' ? '#fff' : T.green, 
+                color: m.role==='ai' ? T.ink : '#fff', 
+                padding:'12px 16px', 
+                borderRadius: m.role==='ai' ? '4px 18px 18px 18px' : '18px 18px 4px 18px', 
+                fontSize:14, 
+                lineHeight:1.55, 
+                fontWeight:500,
+                boxShadow: m.role==='ai' ? '0 4px 12px rgba(15,30,46,0.04)' : '0 4px 12px rgba(29,191,115,0.15)',
+                border: m.role==='ai' ? `1px solid ${T.greyLight}` : 'none',
+                animation: 'msgIn .3s ease'
+              }}>
+                {m.text}
+              </div>
+            </div>
+          ))}
+          {loading && (
+            <div style={{ alignSelf:'flex-start', background:'#fff', padding:'12px 18px', borderRadius:'4px 18px 18px 18px', border:`1px solid ${T.greyLight}`, display:'flex', gap:5 }}>
+              <span className="dot-bounce" style={{ width:5, height:5, borderRadius:'50%', background:T.green }}/>
+              <span className="dot-bounce" style={{ width:5, height:5, borderRadius:'50%', background:T.green, animationDelay:'.2s' }}/>
+              <span className="dot-bounce" style={{ width:5, height:5, borderRadius:'50%', background:T.green, animationDelay:'.4s' }}/>
+            </div>
+          )}
+          {escalated && (
+            <div style={{ padding:16, background:'#F0FAF4', borderRadius:14, border:`1px solid ${T.green}33`, marginTop:10, textAlign:'center' }}>
+              <div style={{ fontSize:11, fontWeight:800, color:T.greenDeep, letterSpacing:'.1em', marginBottom:8 }}>ESCALATED TO HUMAN</div>
+              <Btn size="sm" kind="primary" icon="whatsapp" full onClick={() => window.open('https://wa.me/919999999999')}>Chat with Priyank</Btn>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div style={{ padding:16, borderTop:`1px solid ${T.greyLight}`, background:'#fff' }}>
+          {!loading && !escalated && messages.length < 5 && (
+            <div style={{ display:'flex', gap:8, marginBottom:12, overflowX:'auto', paddingBottom:4 }} className="scroll-x">
+              {presets.map(p => (
+                <button key={p} onClick={() => handleSend(p)} style={{ 
+                  flexShrink:0, padding:'6px 14px', borderRadius:999, background:'#F4F6FA', border:`1px solid ${T.greyLight}`, 
+                  fontSize:12, fontWeight:600, color:T.inkSoft, cursor:'pointer', whiteSpace:'nowrap' 
+                }}>{p}</button>
+              ))}
+            </div>
+          )}
+          <div style={{ display:'flex', gap:10 }}>
+            <input 
+              value={input} 
+              onChange={e=>setInput(e.target.value)} 
+              onKeyDown={e=>e.key==='Enter' && handleSend()} 
+              disabled={escalated}
+              placeholder={escalated ? "Handing over to Priyank..." : "Type your question..."} 
+              style={{ flex:1, height:48, border:`1.5px solid ${T.greyLight}`, borderRadius:14, padding:'0 16px', fontSize:14.5, fontFamily:'inherit', outline:'none', background:escalated?'#F8F9FB':'#fff' }}
+            />
+            <button 
+              onClick={() => handleSend()} 
+              disabled={!input.trim() || loading || escalated}
+              style={{ width:48, height:48, borderRadius:14, background:T.green, border:'none', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', opacity:(!input.trim() || loading || escalated)?0.5:1, transition:'all .2s' }}
+            >
+              <Ico name="send" size={20} color="#fff" stroke={2.5}/>
+            </button>
+          </div>
+        </div>
+      </div>
+      <style>{`
+        @keyframes msgIn { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .dot-bounce { animation: dot-bounce 1s infinite ease-in-out; }
+        @keyframes dot-bounce { 0%, 100% { transform: translateY(0); opacity: 0.4; } 50% { transform: translateY(-4px); opacity: 1; } }
+      `}</style>
+    </div>
+  );
+}
+
+Object.assign(window, { SupportPage, SupportFab, AssistantChat });

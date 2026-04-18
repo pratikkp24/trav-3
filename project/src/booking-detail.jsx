@@ -11,12 +11,13 @@ function BookingDetail({ bookingId, onBack, onInvoice }) {
   const th = personaTheme(b.persona);
   const isSolo = b.persona==='soloFemale';
   const isCorp = b.persona==='corporate';
+  const isMobile = useIsMobile();
   return (
     <div style={{ background:'#F4F6FA', minHeight:'calc(100vh - 64px)', paddingBottom:60 }}>
-      <div style={{ background:isSolo?`linear-gradient(135deg, #2a1218, ${T.ink})`:isCorp?`linear-gradient(135deg, ${T.ink}, #1a2230)`:T.ink, color:'#fff', padding:'24px 36px', borderBottom:isSolo?`3px solid ${T.rose}`:'none' }}>
+      <div style={{ background:isSolo?`linear-gradient(135deg, #2a1218, ${T.ink})`:isCorp?`linear-gradient(135deg, ${T.ink}, #1a2230)`:T.ink, color:'#fff', padding:isMobile?'20px 16px':'24px 36px', borderBottom:isSolo?`3px solid ${T.rose}`:'none' }}>
         <div style={{ maxWidth:1200, margin:'0 auto' }}>
           <div onClick={onBack} style={{ display:'inline-flex', alignItems:'center', gap:6, cursor:'pointer', color:'rgba(255,255,255,.75)', fontSize:13, fontWeight:500, marginBottom:14 }}>
-            <Ico name="arrow-left" size={13} color="rgba(255,255,255,.75)"/>Back to My bookings
+            <Ico name="arrow-left" size={13} color="rgba(255,255,255,.75)"/>{isMobile?'Back':'Back to My bookings'}
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
             <span style={{ background:isUp?'#F0FAF4':'#FBEFE7', color:isUp?T.greenDeep:T.rose, padding:'4px 12px', borderRadius:999, fontSize:10.5, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase' }}>{isUp?'Confirmed':b.status}</span>
@@ -27,11 +28,11 @@ function BookingDetail({ bookingId, onBack, onInvoice }) {
               {b.id} <Ico name={copied?'check':'copy'} size={12} color="rgba(255,255,255,.6)"/>
             </span>
           </div>
-          <h1 style={{ fontSize:40, fontWeight:800, letterSpacing:'-.025em', margin:'10px 0 4px', fontFamily:'Fraunces, serif' }}>{b.trip.dest}</h1>
-          <div style={{ fontSize:14, color:'rgba(255,255,255,.75)' }}>{b.trip.dates} · {b.guests} travelers · Led by {b.trip.creator}</div>
+          <h1 style={{ fontSize:isMobile?32:40, fontWeight:800, letterSpacing:'-.025em', margin:'10px 0 4px', fontFamily:'Fraunces, serif' }}>{b.trip.dest}</h1>
+          <div style={{ fontSize:14, color:'rgba(255,255,255,.75)', lineHeight:1.5 }}>{b.trip.dates} · {b.guests} travelers · Led by {b.trip.creator}</div>
         </div>
       </div>
-      <div style={{ maxWidth:1200, margin:'0 auto', padding:'28px 36px 0', display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:24 }}>
+      <div style={{ maxWidth:1200, margin:'0 auto', padding:isMobile?'20px 16px 0':'28px 36px 0', display:'grid', gridTemplateColumns:isMobile?'1fr':'1.6fr 1fr', gap:24 }}>
         <div style={{ display:'flex', flexDirection:'column', gap:18 }}>
           {isUp && <CountdownCard days={b.departsIn} theme={th} persona={b.persona}/>}
           {isSolo && isUp && <SoloFemaleAssuranceCard/>}
@@ -40,7 +41,7 @@ function BookingDetail({ bookingId, onBack, onInvoice }) {
           <InclusionsCard trip={t}/>
           <PickupCard trip={t}/>
         </div>
-        <div style={{ display:'flex', flexDirection:'column', gap:18, position:'sticky', top:88, alignSelf:'start' }}>
+        <div style={{ display:'flex', flexDirection:'column', gap:18, position:isMobile?'static':'sticky', top:88, alignSelf:'start' }}>
           <PaymentCard b={b} total={total} onInvoice={onInvoice} onCancel={()=>setModal('cancel')} theme={th}/>
           <TripLeadCard persona={b.persona}/>
           <HelpCard isUp={isUp} onReschedule={()=>setModal('reschedule')} onModify={()=>setModal('modify')} onCallback={()=>setModal('callback')} onReview={()=>setModal('review')} status={b.status}/>
@@ -83,7 +84,7 @@ function SoloFemaleAssuranceCard() {
         <Ico name="rose" size={18}/>
         <div style={{ fontSize:11, color:T.rose, letterSpacing:'.12em', fontWeight:800 }}>TRAV.HER PROTECTIONS · ACTIVE</div>
       </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:10 }}>
+      <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3, 1fr)', gap:10 }}>
         {items.map(it => (
           <div key={it.label} style={{ background:'#fff', borderRadius:10, padding:'12px 12px 11px', border:`1px solid ${T.rose}22` }}>
             <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:6 }}>
@@ -110,7 +111,7 @@ function CorporateAssuranceCard() {
         <Ico name="briefcase" size={16} color={T.ink}/>
         <div style={{ fontSize:11, color:T.ink, letterSpacing:'.12em', fontWeight:800 }}>CORPORATE OFF-SITE · ACTIVE</div>
       </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:10 }}>
+      <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3, 1fr)', gap:10 }}>
         {items.map(it => (
           <div key={it.label} style={{ background:'#fff', borderRadius:10, padding:'12px 12px 11px', border:`1px solid ${T.greyLight}` }}>
             <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:6 }}>
@@ -246,7 +247,7 @@ function PickupCard({ trip }) {
   return (
     <div style={{ background:'#fff', borderRadius:14, border:`1px solid ${T.greyLight}`, padding:22 }}>
       <h3 style={{ fontSize:18, fontWeight:700, color:T.ink, letterSpacing:'-.015em', margin:'0 0 14px', fontFamily:'Fraunces, serif' }}>Pickup & drop</h3>
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
+      <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:14 }}>
         {[{t:'Pickup',v:trip.meetingPoint,c:T.greenDeep},{t:'Drop-off',v:trip.returnPoint,c:T.rose}].map(p => (
           <div key={p.t} style={{ border:`1px solid ${T.greyLight}`, borderRadius:12, padding:14 }}>
             <div style={{ fontSize:10.5, fontWeight:700, color:p.c, letterSpacing:'.12em' }}>{p.t.toUpperCase()}</div>
@@ -359,8 +360,9 @@ function Invoice({ bookingId, onBack }) {
   const total = base + tax + fee;
   const subtotal = base + fee;
   const cgst = Math.round(tax/2), sgst = tax - cgst;
+  const isMobile = useIsMobile();
   return (
-    <div style={{ background:'#F4F6FA', minHeight:'calc(100vh - 64px)', padding:'28px 36px 60px' }}>
+    <div style={{ background:'#F4F6FA', minHeight:'calc(100vh - 64px)', padding:isMobile ? '20px 16px 60px' : '28px 36px 60px' }}>
       <style>{`@media print { body { background:#fff!important; } .no-print { display:none!important; } .invoice-sheet { box-shadow:none!important; border:none!important; margin:0!important; } }`}</style>
       <div style={{ maxWidth:860, margin:'0 auto' }}>
         <div className="no-print" style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:20 }}>
@@ -370,7 +372,7 @@ function Invoice({ bookingId, onBack }) {
             <Btn kind="dark" size="sm" icon="download" onClick={()=>window.print()}>Download PDF</Btn>
           </div>
         </div>
-        <div className="invoice-sheet" style={{ background:'#fff', borderRadius:8, border:`1px solid ${T.greyLight}`, boxShadow:'0 2px 12px rgba(0,0,0,.04)', padding:48 }}>
+        <div className="invoice-sheet" style={{ background:'#fff', borderRadius:8, border:`1px solid ${T.greyLight}`, boxShadow:'0 2px 12px rgba(0,0,0,.04)', padding:isMobile?20:48 }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', paddingBottom:24, borderBottom:`2px solid ${T.ink}` }}>
             <div>
               <div style={{ display:'flex', alignItems:'center', gap:4, marginBottom:12 }}>
@@ -386,7 +388,7 @@ function Invoice({ bookingId, onBack }) {
               <div style={{ fontSize:11, color:T.grey }}>Booking ID: {b.id}</div>
             </div>
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:32, padding:'24px 0', borderBottom:`1px solid ${T.greyLight}` }}>
+          <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:32, padding:'24px 0', borderBottom:`1px solid ${T.greyLight}` }}>
             <div>
               <div style={{ fontSize:10.5, fontWeight:700, color:T.grey, letterSpacing:'.12em', marginBottom:6 }}>BILLED TO</div>
               <div style={{ fontSize:13.5, color:T.ink, fontWeight:700 }}>Aditi Rao</div>

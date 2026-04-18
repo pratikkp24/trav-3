@@ -48,10 +48,10 @@ function CustomiseFlow({ onBack, onBookAnother }) {
   if (confirmed) return <CallbackQueued trip={t} onBookAnother={onBookAnother}/>;
 
   return (
-    <div style={{ background:'#F4F6FA', minHeight:'calc(100vh - 64px)', padding:'28px 36px 80px' }}>
+    <div style={{ background:'#F4F6FA', minHeight:'calc(100vh - 64px)', padding:isMobile ? '20px 16px 100px' : '28px 36px 80px' }}>
       <div style={{ maxWidth:1200, margin:'0 auto' }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14, flexWrap:'wrap', gap:10 }}>
-          <Btn kind="ghost" size="sm" icon="arrow-left" onClick={onBack}>Back to itinerary</Btn>
+          <Btn kind="ghost" size="sm" icon="arrow-left" onClick={onBack}>{isMobile ? 'Back' : 'Back to itinerary'}</Btn>
           <button onClick={()=>alert('Our team will call you within 10 minutes.')} style={{
             height:36, padding:'0 14px', borderRadius:999, border:`1px solid ${T.greyLight}`, background:'#fff',
             fontSize:12.5, fontWeight:600, color:T.ink, cursor:'pointer', fontFamily:'inherit',
@@ -65,17 +65,17 @@ function CustomiseFlow({ onBack, onBookAnother }) {
           <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'5px 12px', borderRadius:999, background:T.roseCream, color:T.rose, fontSize:11, fontWeight:800, letterSpacing:'.12em', marginBottom:10 }}>
             <Ico name="rose" size={12}/> CUSTOM QUOTE · CALLBACK
           </div>
-          <h1 style={{ fontSize:34, fontWeight:700, color:T.ink, letterSpacing:'-.025em', margin:0, fontFamily:'Fraunces, serif' }}>Customise your trip</h1>
-          <div style={{ fontSize:14, color:T.grey, marginTop:6, maxWidth:640 }}>
+          <h1 style={{ fontSize:isMobile?28:34, fontWeight:700, color:T.ink, letterSpacing:'-.025em', margin:0, fontFamily:'Fraunces, serif', lineHeight:1.1 }}>Customise your trip</h1>
+          <div style={{ fontSize:14, color:T.grey, marginTop:6, maxWidth:640, lineHeight:1.5 }}>
             Pick what you want. A trav curator calls you in 10 minutes with a personalised quote. No payment taken until you confirm.
           </div>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8, marginTop:14, background:'#EEF2F9', padding:'7px 14px', borderRadius:999, fontSize:12.5, color:T.inkSoft, fontWeight:600 }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, marginTop:14, background:'#EEF2F9', padding:'7px 14px', borderRadius:999, fontSize:12.5, color:T.inkSoft, fontWeight:600, maxWidth:'100%' }}>
             <Ico name="calendar" size={13} color={T.greenDeep}/>
-            Delhi → {t.dest} · 2N/3D · {inr(t.price)}/pp · {t.dates.split(' · ')[1]}
+            <span style={{ overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>Delhi → {t.dest} · 2N/3D · {inr(t.price)}/pp · {t.dates.split(' · ')[1]}</span>
           </div>
         </div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:24, alignItems:'start' }}>
+        <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1.6fr 1fr', gap:24, alignItems:'start' }}>
           <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
             <CardSection title="Who's going?" eyebrow="Step 01">
               <VibePicker vibe={vibe} setVibe={setVibe} isFemale={isFemale} setIsFemale={setIsFemale} travHer={travHer} setTravHer={setTravHer}/>
@@ -200,7 +200,7 @@ function CustomiseFlow({ onBack, onBookAnother }) {
             </CardSection>
           </div>
 
-          <div style={{ alignSelf:'start', position:'sticky', top:88, display:'flex', flexDirection:'column', gap:12 }}>
+          <div style={{ alignSelf:'start', position:isMobile?'static':'sticky', top:88, display:'flex', flexDirection:'column', gap:12, marginTop:isMobile?10:0 }}>
             <PriceCard trip={t} guests={guests} basePerPerson={basePerPerson} base={base} tax={tax} fee={fee} addOns={addOns} th={th} travHer={travHer} transport={transport} stay={stay} meals={meals} addons={addons} total={total} token={token} balance={balance} gstOn={gstOn} mode="customise" onPay={()=>setConfirmed(true)}/>
             <div style={{ padding:'12px 16px', background:'#fff', borderRadius:14, border:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', gap:10 }}>
               <Ico name="shield" size={16} color={T.greenDeep}/>
@@ -238,14 +238,14 @@ function VibePicker({ vibe, setVibe, isFemale, setIsFemale, travHer, setTravHer 
   return (
     <div>
       <div style={{ fontSize:10.5, fontWeight:800, color:T.grey, letterSpacing:'.16em', marginBottom:10 }}>SELECT YOUR VIBE</div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:10 }}>
+      <div style={{ display:'grid', gridTemplateColumns:isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap:10 }}>
         {vibes.map(v => {
           const a = vibe===v.id;
           const soloFem = v.id==='solo' && isFemale;
           const activeColor = soloFem && a ? T.rose : T.green;
           return (
             <div key={v.id} onClick={()=>setVibe(v.id)} style={{
-              padding:'16px 10px', borderRadius:14, cursor:'pointer', textAlign:'center', position:'relative',
+              padding:isMobile ? '12px 8px' : '16px 10px', borderRadius:14, cursor:'pointer', textAlign:'center', position:'relative',
               background: a ? activeColor : '#fff',
               color: a ? '#fff' : T.ink,
               border: `1.5px solid ${a ? activeColor : T.greyLight}`,
@@ -258,7 +258,7 @@ function VibePicker({ vibe, setVibe, isFemale, setIsFemale, travHer, setTravHer 
               <div style={{ display:'flex', justifyContent:'center', marginBottom:6 }}>
                 {v.id==='couple' ? <Ico name="heart" size={22} color={a?'#fff':T.ink}/> : v.id==='solo' && isFemale ? <Ico name="rose" size={22}/> : <Ico name={v.icon} size={22} color={a?'#fff':T.ink}/>}
               </div>
-              <div style={{ fontSize:13, fontWeight:700 }}>{v.label}</div>
+              <div style={{ fontSize:isMobile?12:13, fontWeight:700 }}>{v.label}</div>
             </div>
           );
         })}
@@ -317,8 +317,9 @@ function SpotsFilledBar({ trip }) {
 }
 
 function OptionGrid({ value, setValue, opts }) {
+  const isMobile = useIsMobile();
   return (
-    <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:10 }}>
+    <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3, 1fr)', gap:10 }}>
       {opts.map(o => {
         const a = value===o.id;
         return (
@@ -326,14 +327,19 @@ function OptionGrid({ value, setValue, opts }) {
             padding:'14px 12px', borderRadius:12, cursor:'pointer', position:'relative',
             border:`1.5px solid ${a?T.green:T.greyLight}`,
             background:a?'#F0FAF4':'#fff',
-            transition:'all .15s'
+            transition:'all .15s',
+            display:isMobile?'flex':'block',
+            alignItems:isMobile?'center':'stretch',
+            gap:isMobile?12:0
           }}>
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:6 }}>
-              <span style={{ fontSize:10, fontWeight:800, color:a?T.greenDeep:T.grey, letterSpacing:'.14em' }}>{o.tag}</span>
-              {a && <div style={{ width:18, height:18, borderRadius:'50%', background:T.green, display:'flex', alignItems:'center', justifyContent:'center' }}><Ico name="check" size={10} color="#fff" stroke={3}/></div>}
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:isMobile?0:6, width:isMobile?32:undefined, flexShrink:0 }}>
+              {!isMobile && <span style={{ fontSize:10, fontWeight:800, color:a?T.greenDeep:T.grey, letterSpacing:'.14em' }}>{o.tag}</span>}
+              <div style={{ width:18, height:18, borderRadius:'50%', border:`1.5px solid ${a?T.green:T.greyLight}`, background:a?T.green:'transparent', display:'flex', alignItems:'center', justifyContent:'center' }}>{a && <Ico name="check" size={10} color="#fff" stroke={3}/>}</div>
             </div>
-            <div style={{ fontSize:13.5, fontWeight:700, color:T.ink, lineHeight:1.3 }}>{o.name}</div>
-            <div style={{ fontSize:11.5, color:o.delta<0?T.greenDeep:o.delta>0?T.rose:T.grey, fontWeight:600, marginTop:4 }}>{o.note}</div>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:13.5, fontWeight:700, color:T.ink, lineHeight:1.3 }}>{o.name}</div>
+              <div style={{ fontSize:11.5, color:o.delta<0?T.greenDeep:o.delta>0?T.rose:T.grey, fontWeight:600, marginTop:4 }}>{o.note}</div>
+            </div>
           </div>
         );
       })}
@@ -647,10 +653,10 @@ function QuickBook({ onBack, onBookAnother, onViewBookings }) {
   }
 
   return (
-    <div style={{ background:'#F4F6FA', minHeight:'calc(100vh - 64px)', padding:'28px 36px 80px' }}>
+    <div style={{ background:'#F4F6FA', minHeight:'calc(100vh - 64px)', padding:isMobile?'20px 16px 100px':'28px 36px 80px' }}>
       <div style={{ maxWidth:1000, margin:'0 auto' }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18 }}>
-          <Btn kind="ghost" size="sm" icon="arrow-left" onClick={onBack}>Back to itinerary</Btn>
+          <Btn kind="ghost" size="sm" icon="arrow-left" onClick={onBack}>{isMobile?'Back':'Back to itinerary'}</Btn>
           <div style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:11.5, color:T.grey, fontWeight:600 }}>
             <Ico name="shield" size={13} color={T.greenDeep}/> Secure payment · SSL encrypted
           </div>
@@ -660,17 +666,17 @@ function QuickBook({ onBack, onBookAnother, onViewBookings }) {
           <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'5px 12px', borderRadius:999, background:'#F0FAF4', color:T.greenDeep, fontSize:11, fontWeight:800, letterSpacing:'.12em', marginBottom:10, border:`1px solid ${T.green}33` }}>
             <Ico name="fire" size={11} color={T.greenDeep}/> QUICK BOOK · PAY NOW
           </div>
-          <h1 style={{ fontSize:34, fontWeight:700, color:T.ink, letterSpacing:'-.025em', margin:0, fontFamily:'Fraunces, serif' }}>Lock your spot</h1>
-          <div style={{ fontSize:14, color:T.grey, marginTop:6, maxWidth:640 }}>
+          <h1 style={{ fontSize:isMobile?28:34, fontWeight:700, color:T.ink, letterSpacing:'-.025em', margin:0, fontFamily:'Fraunces, serif', lineHeight:1.1 }}>Lock your spot</h1>
+          <div style={{ fontSize:14, color:T.grey, marginTop:6, maxWidth:640, lineHeight:1.5 }}>
             Standard inclusions for {t.dest}. Pay the {inr(p.token)} token — balance auto-collected 7 days before departure.
           </div>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8, marginTop:14, background:'#EEF2F9', padding:'7px 14px', borderRadius:999, fontSize:12.5, color:T.inkSoft, fontWeight:600 }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, marginTop:14, background:'#EEF2F9', padding:'7px 14px', borderRadius:999, fontSize:12.5, color:T.inkSoft, fontWeight:600, maxWidth:'100%' }}>
             <Ico name="calendar" size={13} color={T.greenDeep}/>
-            Delhi → {t.dest} · 2N/3D · {inr(t.price)}/pp · {t.dates.split(' · ')[1]}
+            <span style={{ overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>Delhi → {t.dest} · 2N/3D · {inr(t.price)}/pp · {t.dates.split(' · ')[1]}</span>
           </div>
         </div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'1.5fr 1fr', gap:20, alignItems:'start' }}>
+        <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1.5fr 1fr', gap:20, alignItems:'start' }}>
           <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
             <CardSection title="Travelers" eyebrow="Step 01">
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:14, background:'#F7F9FB', borderRadius:12 }}>
@@ -739,7 +745,7 @@ function QuickBook({ onBack, onBookAnother, onViewBookings }) {
             </CardSection>
           </div>
 
-          <div style={{ alignSelf:'start', position:'sticky', top:88, display:'flex', flexDirection:'column', gap:12 }}>
+          <div style={{ alignSelf:'start', position:isMobile?'static':'sticky', top:88, display:'flex', flexDirection:'column', gap:12, marginTop:isMobile?10:0 }}>
             <div style={{ background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`, overflow:'hidden' }}>
               <div style={{ height:130, position:'relative' }}>
                 <ImgPlaceholder {...t.img} radius={0} overlay={false}/>

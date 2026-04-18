@@ -10,6 +10,9 @@ function App() {
   const [theme, setTheme] = React.useState(() => {
     try { return localStorage.getItem('trav.theme') || 'light'; } catch { return 'light'; }
   });
+  const [aiOpen, setAiOpen] = React.useState(false);
+  const isMobile = useIsMobile();
+
   React.useEffect(()=>{ try { localStorage.setItem('trav.view', JSON.stringify(view)); } catch {} }, [view]);
   React.useEffect(()=>{ try { localStorage.setItem('trav.loggedIn', loggedIn?'1':'0'); } catch {} }, [loggedIn]);
   React.useEffect(()=>{
@@ -42,6 +45,7 @@ function App() {
   React.useEffect(() => {
     window.openFaq = openFaq;
     window.openSupport = openSupport;
+    window.openAiAssist = () => setAiOpen(true);
   }, []);
 
   const handleLoginClick = () => { if(loggedIn) openProfile(); else setShowLogin(true); };
@@ -77,6 +81,7 @@ function App() {
       <ResumePaymentToast view={view} onResume={()=>set({ screen:'booking', tripId:(getPendingBooking()?.trip?.id)||view.tripId||null, bookingId:null, mode:'quick' })}/>
       <ExitIntentModal view={view} loggedIn={loggedIn} onBrowse={openAllTrips} onLogin={handleLoginClick}/>
       <BrowseResumePill view={view} onOpenTrip={openTrip}/>
+      {aiOpen && <AssistantChat isMobile={isMobile} onClose={()=>setAiOpen(false)}/>}
     </div>
   );
 }
@@ -87,6 +92,7 @@ function App() {
    the login modal and sets the FIRSTRIP coupon so the first checkout auto-applies.
 ============================================================================= */
 function FirstTripBanner({ view, loggedIn, onLogin }) {
+  const isMobile = useIsMobile();
   const [dismissed, setDismissed] = React.useState(() => {
     try { return localStorage.getItem('trav.hook.firstTripDismissed')==='1'; } catch { return false; }
   });
@@ -96,9 +102,9 @@ function FirstTripBanner({ view, loggedIn, onLogin }) {
   const take = () => { setActiveCoupon('FIRSTRIP'); onLogin(); };
   return (
     <div style={{
-      position:'fixed', left:20, bottom:20, zIndex:70, maxWidth:340,
+      position:'fixed', left:isMobile?16:20, bottom:isMobile?84:20, zIndex:70, maxWidth:isMobile?'calc(100% - 32px)':340,
       background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`,
-      boxShadow:'0 18px 40px rgba(15,30,46,.18)', padding:'14px 16px 14px 14px',
+      boxShadow:'0 18px 40px rgba(15,30,46,.18)', padding:isMobile?'12px 14px':'14px 16px 14px 14px',
       display:'flex', gap:12, alignItems:'flex-start',
     }}>
       <div style={{ width:36, height:36, borderRadius:10, background:'#F0FAF4', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
@@ -127,6 +133,7 @@ function FirstTripBanner({ view, loggedIn, onLogin }) {
    every page until they either pay or explicitly drop the hold.
 ============================================================================= */
 function PaymentPendingBanner({ view, onResume, onDismiss }) {
+  const isMobile = useIsMobile();
   const [, tick] = React.useState(0);
   const pending = getPendingBooking();
   if (!pending) return null;
@@ -135,9 +142,9 @@ function PaymentPendingBanner({ view, onResume, onDismiss }) {
   const drop = () => { onDismiss(); tick(t=>t+1); };
   return (
     <div style={{
-      position:'fixed', right:20, bottom:20, zIndex:71, maxWidth:360,
+      position:'fixed', right:isMobile?16:20, bottom:isMobile?84:20, zIndex:71, maxWidth:isMobile?'calc(100% - 32px)':360,
       background:'#fff', borderRadius:16, border:`1.5px solid ${T.amber}55`,
-      boxShadow:'0 18px 40px rgba(15,30,46,.18)', padding:'14px 16px 14px 14px',
+      boxShadow:'0 18px 40px rgba(15,30,46,.18)', padding:isMobile?'12px 14px':'14px 16px 14px 14px',
       display:'flex', gap:12, alignItems:'flex-start',
     }}>
       <div style={{ width:36, height:36, borderRadius:10, background:'#FFF5D6', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
@@ -258,6 +265,7 @@ function ExitIntentModal({ view, loggedIn, onBrowse, onLogin }) {
    last-viewed trip id in localStorage so it survives reloads.
 ============================================================================= */
 function BrowseResumePill({ view, onOpenTrip }) {
+  const isMobile = useIsMobile();
   const [dismissed, setDismissed] = React.useState(false);
   // Record last-viewed trip whenever the user lands on a detail page.
   React.useEffect(() => {
@@ -275,8 +283,8 @@ function BrowseResumePill({ view, onOpenTrip }) {
   if (hasBooked) return null;
   const dest = last.id === 'trip-nainital' ? 'Nainital' : last.id === 'trip-jaipur' ? 'Jaipur' : 'Rishikesh';
   return (
-    <div style={{ position:'fixed', left:'50%', transform:'translateX(-50%)', bottom:20, zIndex:68, maxWidth:'calc(100vw - 40px)' }}>
-      <div style={{ display:'flex', alignItems:'center', gap:10, background:T.ink, color:'#fff', borderRadius:999, padding:'10px 14px 10px 16px', boxShadow:'0 18px 40px rgba(15,30,46,.28)' }}>
+    <div style={{ position:'fixed', left:'50%', transform:'translateX(-50%)', bottom:isMobile?84:20, zIndex:68, width:isMobile?'calc(100% - 32px)':'auto', maxWidth:isMobile?undefined:'calc(100vw - 40px)' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:10, background:T.ink, color:'#fff', borderRadius:isMobile?16:999, padding:isMobile?'12px 14px':'10px 14px 10px 16px', boxShadow:'0 18px 40px rgba(15,30,46,.28)' }}>
         <Ico name="arrow-right" size={13} color="#fff" stroke={2.4}/>
         <div style={{ fontSize:12.5, fontWeight:600 }}>Pick up where you left off · <b style={{ fontWeight:800 }}>{dest}</b></div>
         <button onClick={()=>onOpenTrip(last.id)} style={{ height:28, padding:'0 12px', borderRadius:999, background:T.green, color:'#fff', border:'none', fontSize:11.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }}>See trip</button>
