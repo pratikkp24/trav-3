@@ -1,4 +1,4 @@
-function Profile({ onLogout, onOpenBooking, onOpenInvoice, onOpenTrip, onTravHer }) {
+function Profile({ onLogout, onOpenBooking, onOpenInvoice, onOpenTrip, onTravHer, onOpenTravCoins, onBrowseTrips }) {
   const isMobile = useIsMobile();
   const [tab, setTab] = React.useState('upcoming');
   const [nav, setNav] = React.useState('bookings');
@@ -49,6 +49,7 @@ function Profile({ onLogout, onOpenBooking, onOpenInvoice, onOpenTrip, onTravHer
             <div style={{ background:'#fff', borderRadius:16, padding:12, border:`1px solid ${T.greyLight}` }}>
               {[
                 { id:'bookings', label:'My bookings', icon:'bag' },
+                { id:'wallet',   label:'Wallet',       icon:'coin',  gold:true },
                 { id:'requests', label:'Custom requests', icon:'spark', count:CUSTOM_REQUESTS.filter(r=>['submitted','curating','quote-ready'].includes(r.state)).length },
                 { id:'wishlist', label:'Wishlist',     icon:'heart', count:5 },
                 { id:'refer',    label:'Refer & earn', icon:'gift',  comingSoon:true },
@@ -101,6 +102,7 @@ function Profile({ onLogout, onOpenBooking, onOpenInvoice, onOpenTrip, onTravHer
                 </div>
               </div>
             )}
+            {nav==='wallet'   && <WalletPanel isMobile={isMobile} onOpenExplainer={onOpenTravCoins} onBrowseTrips={onBrowseTrips}/>}
             {nav==='requests' && <CustomRequestsPanel isMobile={isMobile}/>}
             {nav==='wishlist' && <WishlistPanel onOpenTrip={onOpenTrip} isMobile={isMobile}/>}
             {nav==='refer'    && <ComingSoonPanel title="Refer & earn" tagline="Bring your travel buddies. Earn ₹500 each time they book." icon="gift"/>}
@@ -410,12 +412,29 @@ function DropTeaser() {
   );
 }
 
+/* =============================================================================
+   Growth hook — empty-state CTA
+   When the user has no bookings in the current tab, nudge them back to browse.
+   For "upcoming" we pitch the Thursday drop; for past/cancelled we keep it soft.
+============================================================================= */
 function EmptyState({ tab }) {
+  const isUp = tab==='upcoming';
   return (
-    <div style={{ padding:'48px 20px', textAlign:'center', color:T.grey }}>
-      <div style={{ fontSize:32, marginBottom:10 }}>🧳</div>
-      <div style={{ fontSize:14, fontWeight:600, color:T.ink, marginBottom:4 }}>No {tab} bookings</div>
-      <div style={{ fontSize:12.5 }}>Your {tab} trips will show up here.</div>
+    <div style={{ padding:'40px 20px', textAlign:'center', background:isUp?'linear-gradient(135deg, #F0FAF4, #FAFBFC)':'transparent', border:isUp?`1px dashed ${T.green}44`:'none', borderRadius:14 }}>
+      <div style={{ width:52, height:52, borderRadius:'50%', background:'#fff', margin:'0 auto 12px', display:'flex', alignItems:'center', justifyContent:'center', border:`1px solid ${T.greyLight}` }}>
+        <Ico name={isUp?'spark':'bag'} size={22} color={isUp?T.green:T.grey}/>
+      </div>
+      <div style={{ fontSize:16, fontWeight:700, color:T.ink, marginBottom:4, fontFamily:'Fraunces, serif' }}>
+        {isUp ? 'Your weekend calendar is empty.' : `No ${tab} bookings yet.`}
+      </div>
+      <div style={{ fontSize:12.5, color:T.grey, maxWidth:360, margin:'0 auto 14px', lineHeight:1.5 }}>
+        {isUp ? '3 curated trips ship every Thursday. Grab one before they fill.' : `Your ${tab} trips will show up here.`}
+      </div>
+      {isUp && (
+        <button onClick={()=>{ try { const v = JSON.parse(localStorage.getItem('trav.view')||'{}'); localStorage.setItem('trav.view', JSON.stringify({ ...v, screen:'all-trips', tripId:null, bookingId:null })); window.location.reload(); } catch {} }} style={{ height:36, padding:'0 16px', borderRadius:999, background:T.green, color:'#fff', border:'none', fontSize:12.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:6 }}>
+          Browse trips <Ico name="arrow-right" size={12} color="#fff" stroke={2.4}/>
+        </button>
+      )}
     </div>
   );
 }

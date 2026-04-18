@@ -429,6 +429,10 @@ function Row2({ icon, l, r }) {
 }
 
 function ConfirmedOnePage({ trip, guests, total, token, onBookAnother, onRetry, onViewBookings, bookingId, payment, status='success' }) {
+  // WhatsApp recovery deep link — prefilled message so the ops team has context.
+  const waMsg = encodeURIComponent(`Hi trav, I need help with booking ${bookingId || ''} for ${trip.dest} (${guests} ${guests===1?'traveler':'travelers'}). Status: ${status}.`);
+  const waHref = `https://wa.me/919999999999?text=${waMsg}`;
+  const dropHold = () => { try { clearPendingBooking(); } catch {} onBookAnother && onBookAnother(); };
   const isTH = !!trip.travHer;
   const accent = isTH ? T.rose : T.green;
   const accentDeep = isTH ? '#9c3a2a' : T.greenDeep;
@@ -490,10 +494,12 @@ function ConfirmedOnePage({ trip, guests, total, token, onBookAnother, onRetry, 
         </div>
         <div style={{ display:'flex', gap:10, marginTop:22, justifyContent:'center', flexWrap:'wrap' }}>
           {status==='failed' && <Btn kind="primary" size="lg" icon="refresh" onClick={onRetry}>Retry payment</Btn>}
-          {status==='pending' && <Btn kind="primary" size="lg" icon="refresh" onClick={onRetry}>Check status</Btn>}
+          {status==='pending' && <Btn kind="primary" size="lg" icon="refresh" onClick={onRetry}>Resume payment</Btn>}
           {(status==='success' || status==='simulated') && <Btn kind="dark" size="lg" icon="whatsapp">Join WhatsApp group</Btn>}
           {(status==='success' || status==='simulated') && <Btn kind="outline" size="lg" onClick={onViewBookings}>View my bookings</Btn>}
-          <Btn kind={status==='failed'?'outline':'outline'} size="lg" onClick={onBookAnother}>{status==='failed'?'Browse other trips':'Book another'}</Btn>
+          {(status==='failed' || status==='pending') && <a href={waHref} target="_blank" rel="noreferrer" style={{ textDecoration:'none' }}><Btn kind="outline" size="lg" icon="whatsapp">WhatsApp us</Btn></a>}
+          {status==='pending' && <Btn kind="ghost" size="lg" onClick={dropHold}>Drop hold</Btn>}
+          {status!=='pending' && <Btn kind="outline" size="lg" onClick={onBookAnother}>{status==='failed'?'Browse other trips':'Book another'}</Btn>}
         </div>
         {(status==='success' || status==='simulated') && (
           <div style={{ marginTop:20, padding:'12px 16px', background:'#FFF5D6', borderRadius:12, border:`1px solid ${T.amber}55`, display:'flex', alignItems:'center', gap:10, textAlign:'left' }}>
@@ -610,7 +616,14 @@ function QuickBook({ onBack, onBookAnother, onViewBookings }) {
         setPayStatus(status);
         setActiveCoupon('');
       },
-      onDismiss: () => { setPaying(false); },
+      onDismiss: () => {
+        setPaying(false);
+        // User closed Razorpay before completing — treat as pending hold so the
+        // PaymentPendingBanner/Inline hooks pick it up and the confirmation
+        // page renders the "pending" state with Resume CTA.
+        persistBooking('pending');
+        setPayStatus('pending');
+      },
       onFailure: (err) => {
         setPaying(false);
         setPayment({ razorpay_payment_id: err?.metadata?.payment_id, errorDescription: err?.description });

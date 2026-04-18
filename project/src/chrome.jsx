@@ -40,9 +40,9 @@ function Nav({ onLogo, active='destinations', loggedIn, onLogin, onProfile, onTr
   );
 }
 
-function Footer({ onTravelogue, onInvestor, onSupport, onAbout }) {
+function Footer({ onTravelogue, onInvestor, onSupport, onAbout, onTravCoins }) {
   const cols = [
-    { h:'Explore', items:[{label:'Destinations'},{label:'Weekend Trips'},{label:'Travelogue', onClick:onTravelogue}] },
+    { h:'Explore', items:[{label:'Destinations'},{label:'Weekend Trips'},{label:'Travelogue', onClick:onTravelogue},{label:'Trav Coins · Rewards', onClick:onTravCoins, gold:true}] },
     { h:'Company', items:[{label:'About us', onClick:onAbout},{label:'trav.her', highlight:true},{label:'For Creators'},{label:'Investors', onClick:onInvestor},{label:'Support', onClick:onSupport}] },
   ];
   return (
@@ -63,7 +63,7 @@ function Footer({ onTravelogue, onInvestor, onSupport, onAbout }) {
           <div key={col.h}>
             <div style={{ fontSize:14, fontWeight:700, color:T.ink, marginBottom:14 }}>{col.h}</div>
             {col.items.map(i => (
-              <div key={i.label} onClick={i.onClick} style={{ fontSize:13.5, color:i.highlight?T.rose:T.ink, fontWeight:i.highlight?700:500, marginBottom:10, cursor:'pointer' }}>{i.label}</div>
+              <div key={i.label} onClick={i.onClick} style={{ fontSize:13.5, color:i.highlight?T.rose:(i.gold?T.goldDeep:T.ink), fontWeight:(i.highlight||i.gold)?700:500, marginBottom:10, cursor:'pointer' }}>{i.label}</div>
             ))}
           </div>
         ))}

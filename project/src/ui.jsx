@@ -5,6 +5,8 @@ const T = {
   grey:'#6E6E6E', greyLight:'#E6E6E6',
   rose:'#C14A36', roseSoft:'#E8614D',
   amber:'#E6A33A', amberSoft:'#FFF5D6', fire:'#F97316',
+  // Trav Coins gold — a touch warmer than amber. goldSoft = hero gradient base.
+  gold:'#F5A623', goldDeep:'#C17F12', goldSoft:'#FFF6E0',
 };
 
 function Ico({ name, size=16, color='currentColor', stroke=1.8, fill='none' }) {
@@ -50,6 +52,8 @@ function Ico({ name, size=16, color='currentColor', stroke=1.8, fill='none' }) {
     case 'alert': return <svg {...p}><path d="M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>;
     case 'minus': return <svg {...p}><path d="M5 12h14"/></svg>;
     case 'plus': return <svg {...p}><path d="M12 5v14M5 12h14"/></svg>;
+    case 'coin': return <svg viewBox="0 0 24 24" width={size} height={size}><circle cx="12" cy="12" r="10" fill={color==='currentColor'?'#F5A623':color} stroke="#C17F12" strokeWidth="1.2"/><text x="12" y="16" textAnchor="middle" fontSize="12" fontWeight="800" fill="#fff" fontFamily="Poppins, sans-serif">₹</text></svg>;
+    case 'sparkle-ring': return <svg {...p}><circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>;
     default: return null;
   }
 }

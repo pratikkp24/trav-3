@@ -16,8 +16,8 @@ function CapturedMoments({ photos }) {
   const [light, setLight] = React.useState(null);
   // Use a masonry-ish grid with two "tall" tiles for rhythm.
   return (
-    <div style={{ maxWidth:1200, margin:'72px auto 0', padding:'0 36px' }}>
-      <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:22 }}>
+    <div style={{ maxWidth:1200, margin:'40px auto 0', padding:'0 36px' }}>
+      <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:16 }}>
         <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:0 }}>Captured Moments</h2>
         <div style={{ fontSize:12.5, color:T.grey }}>{photos.length} photos · tap to expand</div>
       </div>
@@ -56,9 +56,9 @@ function TasteMemories({ items }) {
   const [idx, setIdx] = React.useState(0);
   const visible = items.slice(idx, idx+3);
   return (
-    <div style={{ maxWidth:1080, margin:'72px auto 0', padding:'0 36px' }}>
-      <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, textAlign:'center', margin:'0 0 22px' }}>Taste Memories</h2>
-      <div style={{ position:'relative', background:'linear-gradient(100deg, #F9E4E8 0%, #F4E3DA 50%, #E4EEDE 100%)', borderRadius:20, padding:'36px 72px', border:`1px solid ${T.greyLight}` }}>
+    <div style={{ maxWidth:1080, margin:'40px auto 0', padding:'0 36px' }}>
+      <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, textAlign:'center', margin:'0 0 16px' }}>Taste Memories</h2>
+      <div style={{ position:'relative', background:'linear-gradient(100deg, #F9E4E8 0%, #F4E3DA 50%, #E4EEDE 100%)', borderRadius:20, padding:'24px 56px', border:`1px solid ${T.greyLight}` }}>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:28 }}>
           {visible.map((t, i) => (
             <div key={i} style={{ textAlign:'center' }}>
@@ -105,9 +105,9 @@ function TasteGlyph({ i, tone }) {
 
 function NotesForTravelers({ notes }) {
   return (
-    <div style={{ maxWidth:960, margin:'80px auto 0', padding:'0 36px' }}>
-      <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, textAlign:'center', margin:'0 0 28px' }}>Notes for Future Travelers</h2>
-      <div style={{ position:'relative', padding:28, borderRadius:20, border:`2px solid ${T.green}`, background:'#fff' }}>
+    <div style={{ maxWidth:960, margin:'40px auto 0', padding:'0 36px' }}>
+      <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, textAlign:'center', margin:'0 0 16px' }}>Notes for Future Travelers</h2>
+      <div style={{ position:'relative', padding:22, borderRadius:20, border:`2px solid ${T.green}`, background:'#fff' }}>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
           {notes.map((n, i) => (
             <div key={i} style={{ background:n.tone, borderRadius:14, padding:'18px 18px 18px 18px', display:'flex', gap:14 }}>
@@ -145,8 +145,8 @@ function RelatedItineraries({ tripIds, onOpenTrip }) {
   const trips = tripIds.map(id => WEEKEND_TRIPS.find(t=>t.id===id)).filter(Boolean);
   if (!trips.length) return null;
   return (
-    <div style={{ maxWidth:1200, margin:'80px auto 0', padding:'0 36px' }}>
-      <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:22 }}>
+    <div style={{ maxWidth:1200, margin:'48px auto 0', padding:'0 36px' }}>
+      <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:16 }}>
         <div>
           <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:'0 0 4px' }}>Related Itineraries</h2>
           <div style={{ fontSize:13, color:T.grey }}>Like what you read? These trips let you live it.</div>
@@ -176,7 +176,7 @@ function RelatedItineraries({ tripIds, onOpenTrip }) {
 
 function InspireCTA() {
   return (
-    <div style={{ maxWidth:1200, margin:'80px auto 0', padding:'0 36px 80px' }}>
+    <div style={{ maxWidth:1200, margin:'48px auto 0', padding:'0 36px 60px' }}>
       <div style={{ background:T.offWhite, border:`1px solid ${T.greyLight}`, borderRadius:22, overflow:'hidden', display:'grid', gridTemplateColumns:'1fr 1.1fr', minHeight:280 }}>
         <div style={{ position:'relative', minHeight:260 }}>
           <ImgPlaceholder src="https://loremflickr.com/1200/800/bonfire,night,friends?lock=451" tone="#2a1f18" ink="#0a0502" accent="#e6a33a" label="Bonfire" radius={0}/>

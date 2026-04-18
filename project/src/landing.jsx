@@ -104,6 +104,7 @@ function LiveTicker({ items, isMobile, onCta }) {
 }
 
 function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrips, onSearch, isMobile }) {
+  const [showLongWeekends, setShowLongWeekends] = React.useState(false);
   const UN = (id) => `https://images.unsplash.com/photo-${id}?w=400&q=80&auto=format&fit=crop`;
   const LFT = (tags, lock) => `https://loremflickr.com/400/400/${tags}?lock=${lock}`;
   const leftTiles = [
@@ -139,6 +140,11 @@ function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrip
           <Btn kind="primary" size="lg" full trailing="arrow-right" onClick={onSeeTrips}>See this weekend's trips</Btn>
           <Btn kind="outline" size="lg" full icon="whatsapp">Get Thursday Drops</Btn>
         </div>
+        <div style={{ marginTop:18, textAlign:'center' }}>
+          <button onClick={()=>setShowLongWeekends(true)} style={{ background:'transparent', border:'none', color:T.greenDeep, fontSize:13.5, fontWeight:700, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:6, textDecoration:'underline', textDecorationColor:`${T.greenDeep}44`, textUnderlineOffset:4 }}>
+            <Ico name="calendar" size={14} color={T.greenDeep}/> View 2026 Long Weekends
+          </button>
+        </div>
         <div className="scroll-x" style={{ marginTop:24, display:'flex', gap:10, overflowX:'auto', margin:'24px -16px 0', padding:'2px 16px 8px' }}>
           {[...leftTiles, ...rightTiles].slice(0, 8).map(t => (
             <div key={t.k} className="snap" style={{ flex:'0 0 110px', height:140, borderRadius:14, overflow:'hidden', boxShadow:'0 6px 18px rgba(15,30,46,.1)' }}>
@@ -146,6 +152,7 @@ function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrip
             </div>
           ))}
         </div>
+        {showLongWeekends && <LongWeekendsModal onClose={()=>setShowLongWeekends(false)} />}
       </div>
     );
   }
@@ -172,11 +179,17 @@ function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrip
             <Btn kind="primary" size="lg" trailing="arrow-right" onClick={onSeeTrips}>See this weekend's trips</Btn>
             <Btn kind="outline" size="lg" icon="whatsapp">Get Thursday Drops</Btn>
           </div>
+          <div style={{ marginTop:24 }}>
+            <button onClick={()=>setShowLongWeekends(true)} style={{ background:'transparent', border:'none', color:T.greenDeep, fontSize:14, fontWeight:700, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:6, textDecoration:'underline', textDecorationColor:`${T.greenDeep}44`, textUnderlineOffset:4 }}>
+              <Ico name="calendar" size={15} color={T.greenDeep}/> Plan ahead: View 2026 Long Weekends
+            </button>
+          </div>
         </div>
         <div style={{ position:'relative', height:420, marginTop:40, minWidth:0 }}>
           <div style={{ position:'absolute', left:20, top:0, width:360, height:400, maxWidth:'calc(100% - 20px)' }}>{rightTiles.map(t=><PhotoTile key={t.k} t={t}/>)}</div>
         </div>
       </div>
+      {showLongWeekends && <LongWeekendsModal onClose={()=>setShowLongWeekends(false)} />}
     </div>
   );
 }
@@ -557,4 +570,53 @@ function GoingLonger({ isMobile }) {
   );
 }
 
-Object.assign(window, { Landing });
+function LongWeekendsModal({ onClose }) {
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+  const LONG_WEEKENDS_2026 = [
+    { month: 'January', title: 'Republic Day', dates: 'Jan 24–26', days: 3, strategy: 'Public holiday on Mon' },
+    { month: 'March', title: 'Holi Weekend', dates: 'Mar 1–4', days: 4, strategy: 'Take Mar 2 (Mon) off' },
+    { month: 'April', title: 'Good Friday', dates: 'Apr 3–5', days: 3, strategy: 'Public holiday on Fri' },
+    { month: 'May', title: 'Buddha Purnima', dates: 'May 1–3', days: 3, strategy: 'Public holiday on Fri' },
+    { month: 'August', title: 'Independence Day', dates: 'Aug 14–16', days: 3, strategy: 'Take Aug 14 (Fri) off' },
+    { month: 'October', title: 'Gandhi Jayanti', dates: 'Oct 2–4', days: 3, strategy: 'Public holiday on Fri' },
+    { month: 'November', title: 'Diwali', dates: 'Nov 7–9', days: 3, strategy: 'Public holiday on Mon' },
+    { month: 'December', title: 'Christmas', dates: 'Dec 25–27', days: 3, strategy: 'Public holiday on Fri' }
+  ];
+  return (
+    <div style={{ position:'fixed', inset:0, background:'rgba(15,30,46,.4)', backdropFilter:'blur(4px)', zIndex:999, display:'flex', alignItems:'center', justifyContent:'center', padding:20 }} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{ background:'#fff', borderRadius:24, width:'100%', maxWidth:500, maxHeight:'85vh', display:'flex', flexDirection:'column', boxShadow:'0 24px 60px rgba(15,30,46,.2)', position:'relative', animation:'modalFade .2s ease' }}>
+        <div style={{ padding:'24px 24px 16px', borderBottom:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <h2 style={{ margin:0, fontSize:22, fontWeight:800, color:T.ink, fontFamily:'Fraunces, serif' }}>2026 Long Weekends</h2>
+          <button onClick={onClose} style={{ background:'transparent', border:'none', cursor:'pointer', padding:6, display:'flex' }}><Ico name="x" size={20} color={T.ink}/></button>
+        </div>
+        <div style={{ padding:24, overflowY:'auto', flex:1 }}>
+          <div style={{ fontSize:14, color:T.grey, marginBottom:20, lineHeight:1.5 }}>Plan ahead and claim your leaves early. Here’s a list of major long weekends to help you perfectly travel this year.</div>
+          <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+            {LONG_WEEKENDS_2026.map((w, i) => (
+              <div key={i} style={{ display:'flex', gap:16, alignItems:'center', background:'#F9FAFB', padding:14, borderRadius:16, border:`1px solid ${T.greyLight}` }}>
+                <div style={{ width:48, height:48, borderRadius:12, background:'#F0FAF4', color:T.greenDeep, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                  <div style={{ fontSize:11, fontWeight:800, textTransform:'uppercase' }}>{w.month.slice(0,3)}</div>
+                  <div style={{ fontSize:16, fontWeight:800, lineHeight:1.1 }}>{w.days}</div>
+                </div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:16, fontWeight:700, color:T.ink, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{w.title} <span style={{ fontWeight:400, color:T.grey, fontSize:13 }}>· {w.dates}</span></div>
+                  <div style={{ fontSize:13, color:T.grey, marginTop:2, display:'inline-flex', alignItems:'center', gap:4, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', maxWidth:'100%' }}><Ico name="spark" size={11} color={T.amber}/> {w.strategy}</div>
+                </div>
+                <div style={{ flexShrink:0, fontSize:13, fontWeight:700, color:T.ink, background:'#E6E6E6', padding:'4px 10px', borderRadius:999 }}>{w.days} days</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ padding:20, borderTop:`1px solid ${T.greyLight}`, textAlign:'center', background:'#FAFBFC', borderBottomLeftRadius:24, borderBottomRightRadius:24 }}>
+          <Btn kind="primary" size="md" full onClick={onClose}>Done planning</Btn>
+        </div>
+        <style>{`@keyframes modalFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { Landing, LongWeekendsModal });

@@ -202,8 +202,44 @@ function TripDetail({ onBack, onBook, onCustomise, onOpenArticle }) {
         </div>
       </div>
       {isMobile && <StickyBookingBar trip={t} onBook={onBook} onCustomise={onCustomise}/>}
+      <ScarcityStickyBar trip={t} isMobile={isMobile}/>
       {reviewsOpen && <ReviewsAllModal trip={t} onClose={()=>setReviewsOpen(false)} onBook={onBook} isMobile={isMobile}/>}
       {lightbox && <PhotoLightbox photos={lightbox.photos} startIdx={lightbox.startIdx} title={lightbox.title} onClose={closeLightbox} isMobile={isMobile}/>}
+    </div>
+  );
+}
+
+/* =============================================================================
+   Growth hook 6 — scarcity sticky bar on detail
+   Appears at top of detail page when spotsLeft <= 3. Dismissable; dismissal
+   persists per-trip so a returning user who already saw it isn't nagged.
+   Hidden on mobile where StickyBookingBar already carries "N left".
+============================================================================= */
+function ScarcityStickyBar({ trip, isMobile }) {
+  const key = 'trav.hook.scarcityDismissed.'+trip.id;
+  const [dismissed, setDismissed] = React.useState(() => { try { return localStorage.getItem(key)==='1'; } catch { return false; } });
+  const [scrolled, setScrolled] = React.useState(false);
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 400);
+    window.addEventListener('scroll', onScroll, { passive:true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  if (isMobile || dismissed || trip.spotsLeft > 3 || !scrolled) return null;
+  const dismiss = () => { setDismissed(true); try { localStorage.setItem(key,'1'); } catch {} };
+  const viewing = trip.viewingNow || (4 + (trip.id.length % 5));
+  return (
+    <div style={{ position:'fixed', top:72, left:'50%', transform:'translateX(-50%)', zIndex:75, maxWidth:560, width:'calc(100vw - 40px)' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:12, background:'#fff', border:`1.5px solid ${T.fire}66`, borderRadius:12, padding:'10px 12px 10px 14px', boxShadow:'0 12px 32px rgba(15,30,46,.15)' }}>
+        <span style={{ width:8, height:8, borderRadius:'50%', background:T.fire, flexShrink:0, boxShadow:`0 0 0 4px ${T.fire}22` }}/>
+        <div style={{ flex:1, fontSize:12.5, color:T.ink, lineHeight:1.4 }}>
+          <b style={{ color:T.fire, fontWeight:800 }}>Only {trip.spotsLeft} spots left</b> · <span style={{ color:T.grey }}>{viewing} travelers viewing now</span>
+        </div>
+        <button onClick={()=>{ const el = document.querySelector('[data-book-cta]'); if (el) el.scrollIntoView({ behavior:'smooth', block:'center' }); else window.scrollTo({ top:document.body.scrollHeight, behavior:'smooth' }); }} style={{ height:28, padding:'0 12px', borderRadius:999, background:T.ink, color:'#fff', border:'none', fontSize:11.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }}>Lock spot</button>
+        <button onClick={dismiss} aria-label="Close" style={{ background:'transparent', border:'none', cursor:'pointer', padding:4 }}>
+          <Ico name="x" size={12} color={T.grey}/>
+        </button>
+      </div>
     </div>
   );
 }

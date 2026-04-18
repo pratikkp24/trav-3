@@ -47,11 +47,9 @@ function TravelogueArticle({ onBack, onOpenTrip }) {
         <MarginRail article={a} readMin={readMin}/>
       </div>
 
-      {/* Trending Videos + Budget side-by-side on desktop */}
-      <div style={{ maxWidth:1200, margin:'28px auto 0', padding:'0 36px', display:'grid', gridTemplateColumns:'1.35fr 1fr', gap:28, alignItems:'start' }}>
-        <TrendingVideos videos={a.videos} compact/>
-        <BudgetBreakdown rows={a.budget} compact/>
-      </div>
+      {/* Editorial block: full-width videos, then centered budget */}
+      <TrendingVideos videos={a.videos}/>
+      <BudgetBreakdown rows={a.budget}/>
 
       {/* Experience Collection */}
       <ExperienceCollection items={a.experiences}/>
@@ -144,35 +142,44 @@ function MarginRail({ article, readMin }) {
 
 function ArticleHero({ article }) {
   return (
-    <div style={{ position:'relative', height:520, overflow:'hidden' }}>
-      <ImgPlaceholder {...article.hero} radius={0} aspect={null}/>
-      {/* overlay tint */}
-      <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(7,29,43,.22) 0%, rgba(7,29,43,.12) 50%, rgba(7,29,43,.28) 100%)' }}/>
-      {/* Title card */}
-      <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', padding:36 }}>
-        <div style={{ maxWidth:640, background:'rgba(14,30,50,.32)', backdropFilter:'blur(14px)', WebkitBackdropFilter:'blur(14px)', border:'1px solid rgba(255,255,255,.22)', borderRadius:20, padding:'32px 36px', color:'#fff', boxShadow:'0 24px 60px rgba(0,0,0,.25)' }}>
-          <h1 style={{ fontFamily:'Fraunces, serif', fontSize:40, fontWeight:700, letterSpacing:'-.02em', margin:'0 0 14px', lineHeight:1.1, textWrap:'pretty' }}>{article.title}</h1>
-          <div style={{ fontSize:14.5, lineHeight:1.55, color:'rgba(255,255,255,.9)', marginBottom:22 }}>{article.dek}</div>
-          <div style={{ display:'flex', alignItems:'center', gap:14, flexWrap:'wrap' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-              <Avatar name={article.author.name} size={32}/>
-              <div style={{ fontSize:13, fontWeight:600, display:'flex', alignItems:'center', gap:6 }}>
-                {article.author.name}
-                {article.author.verified && <span style={{ width:14, height:14, borderRadius:'50%', background:T.green, color:'#fff', fontSize:9, display:'inline-flex', alignItems:'center', justifyContent:'center', fontWeight:800 }}>✓</span>}
+    <div style={{ maxWidth:1200, margin:'24px auto 0', padding:'0 36px' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'1.05fr 1fr', borderRadius:24, overflow:'hidden', border:`1px solid ${T.greyLight}`, boxShadow:'0 18px 48px rgba(7,29,43,.10)', background:'#fff', minHeight:480 }}>
+        {/* Left: clean image, no text overlay */}
+        <div style={{ position:'relative', minHeight:480, height:'100%' }}>
+          <div style={{ position:'absolute', inset:0 }}>
+            <ImgPlaceholder {...article.hero} radius={0} aspect={null}/>
+          </div>
+        </div>
+        {/* Right: text panel */}
+        <div style={{ padding:'44px 44px 36px', display:'flex', flexDirection:'column', justifyContent:'center', gap:20 }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, alignSelf:'flex-start' }}>
+            <span style={{ background:T.green, color:'#fff', padding:'5px 12px', borderRadius:999, fontSize:11.5, fontWeight:700, display:'inline-flex', alignItems:'center', gap:6, letterSpacing:'.02em' }}>
+              <Ico name="spark" size={11} color="#fff"/> {article.category}
+            </span>
+            <span style={{ fontSize:11, fontWeight:700, color:T.grey, letterSpacing:'.16em' }}>· {article.date.toUpperCase()}</span>
+          </div>
+          <h1 style={{ fontFamily:'Fraunces, serif', fontSize:40, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:0, lineHeight:1.1, textWrap:'pretty' }}>{article.title}</h1>
+          <div style={{ fontSize:15, lineHeight:1.6, color:T.inkSoft }}>{article.dek}</div>
+          <div style={{ display:'flex', alignItems:'center', gap:12, paddingTop:6, borderTop:`1px solid ${T.greyLight}`, marginTop:6 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:10, paddingTop:16 }}>
+              <Avatar name={article.author.name} size={36}/>
+              <div style={{ lineHeight:1.2 }}>
+                <div style={{ fontSize:10, color:T.grey, letterSpacing:'.14em', fontWeight:700 }}>WRITTEN BY</div>
+                <div style={{ fontSize:13.5, fontWeight:700, color:T.ink, display:'flex', alignItems:'center', gap:6, marginTop:2 }}>
+                  {article.author.name}
+                  {article.author.verified && <span style={{ width:14, height:14, borderRadius:'50%', background:T.green, color:'#fff', fontSize:9, display:'inline-flex', alignItems:'center', justifyContent:'center', fontWeight:800 }}>✓</span>}
+                </div>
               </div>
             </div>
-            <span style={{ fontSize:13, color:'rgba(255,255,255,.75)' }}>· {article.date}</span>
-            <span style={{ background:T.green, color:'#fff', padding:'5px 12px', borderRadius:999, fontSize:12, fontWeight:700, display:'inline-flex', alignItems:'center', gap:6 }}>
-              <Ico name="spark" size={12} color="#fff"/> {article.category}
-            </span>
-          </div>
-          <div style={{ display:'flex', gap:10, marginTop:18 }}>
-            <button style={{ width:38, height:38, borderRadius:'50%', background:'linear-gradient(135deg, #f09433, #e6683c 40%, #dc2743 60%, #cc2366 80%, #bc1888)', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg>
-            </button>
-            <button style={{ height:38, padding:'0 16px', borderRadius:999, background:'rgba(255,255,255,.18)', color:'#fff', border:'1px solid rgba(255,255,255,.3)', fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:8 }}>
-              <Ico name="send" size={13} color="#fff"/> Share
-            </button>
+            <span style={{ flex:1 }}/>
+            <div style={{ display:'flex', gap:10, paddingTop:16 }}>
+              <button style={{ width:38, height:38, borderRadius:'50%', background:'linear-gradient(135deg, #f09433, #e6683c 40%, #dc2743 60%, #cc2366 80%, #bc1888)', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg>
+              </button>
+              <button style={{ height:38, padding:'0 16px', borderRadius:999, background:'#F4F6FA', color:T.ink, border:`1px solid ${T.greyLight}`, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:8 }}>
+                <Ico name="send" size={13} color={T.ink}/> Share
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -202,12 +209,16 @@ function TrendingVideos({ videos, compact }) {
   const cols = compact ? 2 : 4;
   const wrapStyle = compact
     ? { padding:0 }
-    : { maxWidth:1200, margin:'0 auto', padding:'24px 36px 20px' };
+    : { maxWidth:1200, margin:'36px auto 0', padding:'0 36px' };
   return (
     <div style={wrapStyle}>
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:compact?14:20 }}>
-        <h2 style={{ fontFamily:'Fraunces, serif', fontSize:compact?22:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:0 }}>Trending Videos</h2>
-        <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:compact?11:12, color:T.grey }}>
+      <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:compact?14:18, gap:18, flexWrap:'wrap' }}>
+        <div>
+          <div style={{ fontSize:11, fontWeight:800, color:T.greenDeep, letterSpacing:'.18em', marginBottom:6 }}>ON CAMERA</div>
+          <h2 style={{ fontFamily:'Fraunces, serif', fontSize:compact?22:28, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:0, lineHeight:1.1 }}>Trending on this trail</h2>
+          <div style={{ fontSize:13, color:T.grey, marginTop:6 }}>{videos.length} creator clips worth pausing for</div>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:compact?11:12, color:T.grey, padding:'7px 12px', background:'#F4F6FA', borderRadius:999 }}>
           Powered by
           <span style={{ display:'inline-flex', alignItems:'center', gap:5, color:'#FF0033', fontWeight:700 }}>
             <span style={{ width:compact?16:18, height:compact?16:18, borderRadius:4, background:'#FF0033', display:'inline-flex', alignItems:'center', justifyContent:'center' }}>
