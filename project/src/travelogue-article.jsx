@@ -144,11 +144,29 @@ function TravelogueNewStyle() {
 }
 
 function TravelogueArticle({ onBack, onOpenTrip }) {
+  const isMobile = useIsMobile();
   const a = GOA_ARTICLE;
   const wordCount = [...(a.intro||[]), ...(a.bodyParas||[])].join(' ').split(/\s+/).length;
   const readMin = Math.max(4, Math.round(wordCount / 220));
+
+  const [retentionOpen, setRetentionOpen] = React.useState(false);
+  useExitIntent(() => {
+    if (sessionStorage.getItem('trav.retention.travelogue')) return;
+    setRetentionOpen(true);
+    try { sessionStorage.setItem('trav.retention.travelogue', '1'); } catch {}
+  }, true);
+
+  const goToTrip = () => { setRetentionOpen(false); onOpenTrip('trip-goa'); };
   return (
     <div style={{ background:'#fff' }}>
+      <RetentionModal 
+        isOpen={retentionOpen} 
+        onClose={() => setRetentionOpen(false)} 
+        onExit={onBack} 
+        context="travelogue"
+        tripName={a.title.split(':')[0]}
+        onSecondary={goToTrip}
+      />
       {/* Sub-header breadcrumb */}
       <div style={{ background:'#fff', borderBottom:`1px solid ${T.greyLight}`, padding:'12px 36px', position:'sticky', top:64, zIndex:10, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:14 }}>

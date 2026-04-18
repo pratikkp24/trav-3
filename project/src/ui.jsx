@@ -162,6 +162,87 @@ function ImgPlaceholder({ src, tone='#3b6a4e', ink='#0f2e1f', accent='#e8d9a9', 
     </div>
   );
 }
+function WhatsAppMockup({ children, style }) {
+  return (
+    <div style={{ 
+      width:320, height:650, background:'#000', borderRadius:40, padding:10, 
+      boxShadow:'0 40px 100px rgba(0,0,0,.25)', border:'12px solid #1a1a1a', 
+      position:'relative', overflow:'hidden', ...style 
+    }}>
+      {/* Notch */}
+      <div style={{ position:'absolute', top:0, left:'50%', transform:'translateX(-50%)', width:120, height:24, background:'#1a1a1a', borderRadius:'0 0 16px 16px', zIndex:10 }}/>
+      
+      {/* StatusBar */}
+      <div style={{ height:34, padding:'0 24px', display:'flex', alignItems:'center', justifyContent:'space-between', color:'#fff', fontSize:11, fontWeight:600 }}>
+        <span>9:41</span>
+        <div style={{ display:'flex', gap:5 }}>
+          <Ico name="spark" size={12} color="#fff"/>
+          <Ico name="bell" size={12} color="#fff"/>
+        </div>
+      </div>
+
+      {/* Internal Screen */}
+      <div style={{ 
+        height:'calc(100% - 34px)', background:'#E5DDD5', borderRadius:32, 
+        overflow:'hidden', display:'flex', flexDirection:'column' 
+      }}>
+        {/* WA Header */}
+        <div style={{ background:'#075E54', padding:'12px 14px', display:'flex', alignItems:'center', gap:10, color:'#fff' }}>
+          <Ico name="arrow-left" size={16} color="#fff"/>
+          <div style={{ width:32, height:32, borderRadius:'50%', background:'#444', overflow:'hidden' }}>
+             <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100" alt="av" style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+          </div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:13, fontWeight:700 }}>trav 🏔️</div>
+            <div style={{ fontSize:10, opacity:.8 }}>online</div>
+          </div>
+          <div style={{ display:'flex', gap:12 }}>
+             <Ico name="phone" size={16} color="#fff"/>
+             <Ico name="spark" size={16} color="#fff"/>
+          </div>
+        </div>
+
+        {/* Chat Body */}
+        <div style={{ flex:1, padding:12, overflowY:'auto', display:'flex', flexDirection:'column', gap:8 }}>
+          <div style={{ alignSelf:'center', background:'#D1E9F6', padding:'4px 10px', borderRadius:6, fontSize:10, fontWeight:700, color:'#444', marginBottom:4 }}>TODAY</div>
+          {children}
+        </div>
+
+        {/* Input Area */}
+        <div style={{ padding:8, display:'flex', alignItems:'center', gap:8 }}>
+           <div style={{ flex:1, height:36, background:'#fff', borderRadius:18, display:'flex', alignItems:'center', padding:'0 12px', gap:10 }}>
+              <Ico name="smile" size={18} color="#999"/>
+              <div style={{ flex:1, fontSize:12, color:'#999' }}>Type a message</div>
+              <Ico name="paperclip" size={18} color="#999"/>
+              <Ico name="camera" size={18} color="#999"/>
+           </div>
+           <div style={{ width:36, height:36, borderRadius:'50%', background:'#075E54', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <Ico name="mic" size={18} color="#fff"/>
+           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WhatsAppBubble({ text, time='10:04 AM', items=[] }) {
+  return (
+    <div style={{ alignSelf:'flex-start', maxWidth:'90%', background:'#fff', borderRadius:'0 12px 12px 12px', padding:10, position:'relative', boxShadow:'0 1px 1px rgba(0,0,0,.1)' }}>
+      <div style={{ fontSize:12, color:T.ink, lineHeight:1.4, whiteSpace:'pre-wrap' }}>{text}</div>
+      {items.length > 0 && (
+         <div style={{ marginTop:8, display:'flex', flexDirection:'column', gap:6 }}>
+           {items.map((it, i) => (
+             <div key={i} style={{ padding:6, background:'#f4f4f4', borderRadius:6, fontSize:11 }}>
+                <b style={{ color:T.greenDeep }}>{it.label}</b> · {it.price}
+                <div style={{ fontSize:10, color:T.grey, marginTop:2 }}>{it.sub}</div>
+             </div>
+           ))}
+         </div>
+      )}
+      <div style={{ textAlign:'right', fontSize:9, color:T.grey, marginTop:4 }}>{time}</div>
+    </div>
+  );
+}
 
 function inr(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
 
@@ -173,6 +254,91 @@ function useIsMobile(breakpoint=768) {
     return () => window.removeEventListener('resize', onR);
   }, [breakpoint]);
   return m;
+}
+
+function useExitIntent(onExit, enabled=true) {
+  React.useEffect(() => {
+    if (!enabled) return;
+    const handler = (e) => {
+      if (e.clientY <= 0 && e.relatedTarget === null) {
+        onExit && onExit();
+      }
+    };
+    document.addEventListener('mouseout', handler);
+    return () => document.removeEventListener('mouseout', handler);
+  }, [enabled, onExit]);
+}
+
+function RetentionModal({ isOpen, onClose, onExit, context='booking', tripName='' }) {
+  if (!isOpen) return null;
+  const isMobile = useIsMobile();
+  
+  const content = {
+    booking: {
+      eyebrow: 'WAIT — YOUR SPOT IS HELD',
+      title: 'Sure you want to leave?',
+      body: 'Your dates are almost full. You can lock your spot with a token now and decide later — free cancellation up to 7 days before.',
+      icon: 'clock',
+      iconBg: '#FFF5D6',
+      iconColor: '#A37A1A',
+      secondary: 'Talk to a curator',
+      waMsg: `Hi trav team, I'm on the booking page for ${tripName || 'a trip'} and had a question before locking my spot.`
+    },
+    detail: {
+      eyebrow: 'HAVE A QUESTION?',
+      title: `Planning a trip to ${tripName || 'this destination'}?`,
+      body: 'Our curators have been there multiple times. Instead of browsing more, why not get a quick answer on WhatsApp?',
+      icon: 'spark',
+      iconBg: '#F0FAF4',
+      iconColor: T.greenDeep,
+      secondary: 'Ask on WhatsApp',
+      waMsg: `Hi trav, I was looking at the ${tripName || 'trip'} and wanted to know more about it.`
+    },
+    travelogue: {
+      eyebrow: 'INSPIRED TO TRAVEL?',
+      title: 'Wait, want to see the itinerary?',
+      body: `You've been reading about ${tripName || 'the destination'}. We have a curated trip that follows this exact trail. Want to see the dates and pricing?`,
+      icon: 'map',
+      iconBg: '#E8EEF8',
+      iconColor: '#2d7a9e',
+      secondary: 'View Trip Itinerary',
+      onSecondary: () => {
+        // This will be handled by the onExit callback with a specific flag or by a new prop
+      }
+    }
+  }[context] || content.booking;
+
+  const waHref = `https://wa.me/919999999999?text=${encodeURIComponent(content.waMsg)}`;
+
+  return (
+    <div onClick={onClose} style={{ position:'fixed', inset:0, zIndex:200, background:'rgba(10,15,22,.6)', backdropFilter:'blur(4px)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
+      <div onClick={e=>e.stopPropagation()} style={{ background:'#fff', borderRadius:24, maxWidth:440, width:'100%', padding:isMobile?'28px 20px 24px':'32px 32px 28px', boxShadow:'0 30px 60px rgba(0,0,0,.3)', position:'relative', textAlign:'center' }}>
+        <button onClick={onClose} aria-label="Close" style={{ position:'absolute', top:16, right:16, background:'transparent', border:'none', cursor:'pointer', padding:6 }}>
+          <Ico name="x" size={18} color={T.grey}/>
+        </button>
+        
+        <div style={{ width:64, height:64, borderRadius:'50%', background:content.iconBg, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
+          <Ico name={content.icon} size={28} color={content.iconColor} stroke={2.4}/>
+        </div>
+
+        <div style={{ fontSize:11, fontWeight:800, letterSpacing:'.16em', color:content.iconColor, marginBottom:8 }}>{content.eyebrow}</div>
+        <h3 style={{ fontSize:26, fontWeight:700, color:T.ink, margin:0, fontFamily:'Fraunces, serif', letterSpacing:'-.02em', lineHeight:1.15 }}>{content.title}</h3>
+        <p style={{ fontSize:14.5, color:T.grey, marginTop:12, lineHeight:1.6, marginBottom:24 }}>{content.body}</p>
+
+        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+          <Btn kind="primary" size="lg" full onClick={onClose}>Continue reading</Btn>
+          {content.onSecondary ? (
+            <Btn kind="outline" size="lg" full icon="map" onClick={content.onSecondary}>{content.secondary}</Btn>
+          ) : (
+            <a href={waHref} target="_blank" rel="noreferrer" style={{ textDecoration:'none' }}>
+              <Btn kind="outline" size="lg" full icon="whatsapp">{content.secondary}</Btn>
+            </a>
+          )}
+          <button onClick={onExit} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:13, color:T.grey, fontWeight:500, marginTop:8, textDecoration:'underline' }}>Exit anyway</button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -308,13 +474,30 @@ function newBookingId(trip) {
   return 'TRAV-' + stub + '-' + Math.random().toString(36).slice(2,8).toUpperCase();
 }
 
-// Resolve the currently-viewed trip from localStorage so booking pages don't
-// have to hardcode a trip id.
+// Resolve the currently-viewed trip from localStorage or global constants
 function resolveViewTrip() {
   try {
     const v = JSON.parse(localStorage.getItem('trav.view') || '{}');
-    if (v.tripId === 'trip-nainital' && typeof NAINITAL_TRIP !== 'undefined') return NAINITAL_TRIP;
-  } catch {}
+    const id = v.tripId;
+    if (!id) return typeof RISHIKESH_TRIP !== 'undefined' ? RISHIKESH_TRIP : null;
+    
+    // Check global constants for the full trip object
+    const mapping = {
+      'trip-rishikesh': typeof RISHIKESH_TRIP !== 'undefined' ? RISHIKESH_TRIP : null,
+      'trip-nainital':  typeof NAINITAL_TRIP !== 'undefined' ? NAINITAL_TRIP : null,
+      'trip-thailand':  typeof THAILAND_TRIP !== 'undefined' ? THAILAND_TRIP : null,
+    };
+    
+    if (mapping[id]) return mapping[id];
+    
+    // Fallback search in ALL_TRIPS for basic metadata if constant not found
+    if (typeof ALL_TRIPS !== 'undefined') {
+      const summary = ALL_TRIPS.find(t => t.id === id);
+      if (summary) return { ...RISHIKESH_TRIP, ...summary }; // Merge with a template
+    }
+  } catch (e) {
+    console.error('[trav] resolveViewTrip failed:', e);
+  }
   return typeof RISHIKESH_TRIP !== 'undefined' ? RISHIKESH_TRIP : null;
 }
 
@@ -357,6 +540,8 @@ Object.assign(window, {
   getHookFlag, setHookFlag,
   newBookingId, resolveViewTrip,
   haptic, share, personaTheme,
-  getWishlist, toggleWishlist
+  getWishlist, toggleWishlist,
+  useExitIntent, RetentionModal,
+  WhatsAppMockup, WhatsAppBubble
 });
 

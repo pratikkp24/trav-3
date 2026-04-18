@@ -1,11 +1,13 @@
-function Nav({ onLogo, active='destinations', loggedIn, onLogin, onProfile, onTravHer, onTravelogue, theme='light', onToggleTheme }) {
+function Nav({ onLogo, onDrop, active='destinations', loggedIn, onLogin, onProfile, onTravHer, onTravelogue, theme='light', onToggleTheme }) {
   const isMobile = useIsMobile();
   const isDark = theme==='dark';
   const navBg = isDark ? 'rgba(10,10,10,.85)' : '#fff';
   const border = isDark ? 'rgba(255,255,255,.08)' : T.greyLight;
   const textPri = isDark ? 'rgba(255,255,255,.92)' : T.ink;
   const textSec = isDark ? 'rgba(255,255,255,.58)' : T.grey;
-  const navHeight = isMobile ? (56 + 12) : 64; // Extra space for safe area header if needed
+  
+  const isDrop = active === 'thursday-drop';
+  
   return (
     <div className="safe-top" style={{ 
       height:isMobile ? 56 : 64, 
@@ -21,19 +23,30 @@ function Nav({ onLogo, active='destinations', loggedIn, onLogin, onProfile, onTr
       top:0, 
       zIndex:20 
     }}>
-      <div onClick={onLogo} style={{ display:'flex', alignItems:'center', gap:4, cursor:'pointer' }}>
-        <span style={{ fontSize:isMobile?20:22, fontWeight:800, color:isDark?'#fff':T.greenDark, letterSpacing:'-.03em', fontFamily:'Fraunces, serif' }}>trav</span>
-        <span style={{ width:6, height:6, background:T.green, borderRadius:2, marginBottom:4 }}/>
+      <div onClick={onDrop || onLogo} style={{ display:'flex', alignItems:'center', gap:4, cursor:'pointer' }}>
+        <span style={{ fontSize:isMobile?20:21, fontWeight:800, color:isDark?'#fff':T.ink, letterSpacing:'-.02em', fontFamily:'Fraunces, serif' }}>
+          {isDrop ? 'Thursday Drop' : 'trav'}
+        </span>
+        {!isDrop && <span style={{ width:6, height:6, background:T.green, borderRadius:2, marginBottom:4 }}/>}
       </div>
       {!isMobile && (
-        <div style={{ display:'flex', gap:26 }}>
-          {[{id:'destinations',label:'Destinations'},{id:'travelogue',label:'Travelogue'},{id:'travher',label:'trav.her'}].map(l => {
-            const a = active===l.id;
-            const clr = l.id==='travher' ? T.rose : (a ? (isDark?'#fff':T.greenDeep) : textPri);
-            const bb = l.id==='travher' && a ? `2px solid ${T.rose}` : (a?`2px solid ${isDark?T.green:T.greenDeep}`:'2px solid transparent');
-            const onC = l.id==='travher' ? onTravHer : (l.id==='travelogue' ? onTravelogue : undefined);
-            return <span key={l.id} onClick={onC} style={{ fontSize:14, fontWeight:a||l.id==='travher'?700:500, color:clr, borderBottom:bb, paddingBottom:3, cursor:'pointer' }}>{l.label}</span>;
-          })}
+        <div style={{ display:'flex', gap:26, marginLeft:isDrop?40:0 }}>
+          {isDrop ? (
+            <>
+              <span onClick={onLogo} style={{ fontSize:14, fontWeight:500, color:textPri, cursor:'pointer' }}>Trips</span>
+              <span onClick={onTravHer} style={{ fontSize:14, fontWeight:700, color:T.rose, cursor:'pointer' }}>trav.her</span>
+              <span style={{ fontSize:14, fontWeight:500, color:textPri, cursor:'pointer' }}>Community</span>
+              <span onClick={onTravelogue} style={{ fontSize:14, fontWeight:500, color:textPri, cursor:'pointer' }}>Journal</span>
+            </>
+          ) : (
+            [{id:'destinations',label:'Destinations'},{id:'travelogue',label:'Travelogue'},{id:'travher',label:'trav.her'}].map(l => {
+              const a = active===l.id;
+              const clr = l.id==='travher' ? T.rose : (a ? (isDark?'#fff':T.greenDeep) : textPri);
+              const bb = l.id==='travher' && a ? `2px solid ${T.rose}` : (a?`2px solid ${isDark?T.green:T.greenDeep}`:'2px solid transparent');
+              const onC = l.id==='travher' ? onTravHer : (l.id==='travelogue' ? onTravelogue : undefined);
+              return <span key={l.id} onClick={onC} style={{ fontSize:14, fontWeight:a||l.id==='travher'?700:500, color:clr, borderBottom:bb, paddingBottom:3, cursor:'pointer' }}>{l.label}</span>;
+            })
+          )}
         </div>
       )}
       <div style={{ flex:1 }}/>

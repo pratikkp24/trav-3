@@ -40,7 +40,8 @@ function App() {
   const openTravCoins = () => set({ screen:'travcoins', tripId:null, bookingId:null });
   const openFaq = () => set({ screen:'faq', tripId:null, bookingId:null });
   const openBookingDetail = (bookingId) => set({ screen:'booking-detail', tripId:null, bookingId });
-  const openInvoice = (bookingId) => set({ screen:'invoice', tripId:null, bookingId });
+   const openInvoice = (bookingId) => set({ screen:'invoice', tripId:null, bookingId });
+  const openDrop = () => set({ screen:'thursday-drop', tripId:null, bookingId:null });
 
   React.useEffect(() => {
     window.openFaq = openFaq;
@@ -54,9 +55,20 @@ function App() {
 
   return (
     <div style={{ background: theme==='dark'?'#0a0a0a':'#fff', minHeight:'100vh' }}>
-      <Nav onLogo={goHome} active={view.screen==='travher'?'travher':(view.screen==='travelogue'||view.screen==='travelogue-article'?'travelogue':'destinations')} loggedIn={loggedIn} onLogin={handleLoginClick} onProfile={openProfile} onTravHer={openTravHer} onTravelogue={openTravelogue} theme={theme} onToggleTheme={toggleTheme}/>
+      <Nav 
+        onLogo={goHome} 
+        onDrop={openDrop}
+        active={view.screen==='travher'?'travher':(view.screen==='travelogue'||view.screen==='travelogue-article'?'travelogue':(view.screen==='thursday-drop'?'thursday-drop':'destinations'))} 
+        loggedIn={loggedIn} 
+        onLogin={handleLoginClick} 
+        onProfile={openProfile} 
+        onTravHer={openTravHer} 
+        onTravelogue={openTravelogue} 
+        theme={theme} 
+        onToggleTheme={toggleTheme}
+      />
       <div className="theme-flip">
-        {view.screen==='landing' && <Landing onOpenTrip={openTrip} onViewAllTrips={openAllTrips}/>}
+        {view.screen==='landing' && <Landing onOpenTrip={openTrip} onViewAllTrips={openAllTrips} onOpenDrop={openDrop}/>}
         {view.screen==='all-trips' && <AllTripsIndex onOpenTrip={openTrip} filterDest={view.filterDest}/>}
         {view.screen==='investor' && <InvestorPage onBack={goHome}/>}
         {view.screen==='support' && <SupportPage onBack={goHome}/>}
@@ -65,12 +77,13 @@ function App() {
         {view.screen==='travcoins' && <TravCoinsPage onBack={goHome} onSignup={handleLoginClick} onOpenWallet={openProfile} loggedIn={loggedIn}/>}
         {view.screen==='detail' && <TripDetail tripId={view.tripId} onBack={goHome} onBook={openBooking} onCustomise={openCustomise} onOpenArticle={openArticle}/>}
         {view.screen==='booking' && <Booking mode={view.mode||'quick'} onBack={backToDetail} onBookAnother={goHome} onViewBookings={openProfile}/>}
-        {view.screen==='profile' && <Profile onLogout={handleLogout} onOpenBooking={openBookingDetail} onOpenInvoice={openInvoice} onOpenTrip={openTrip} onTravHer={openTravHer}/>}
+        {view.screen==='profile' && <Profile onLogout={handleLogout} onOpenBooking={openBookingDetail} onOpenInvoice={openInvoice} onOpenTrip={openTrip} onTravHer={openTravHer} onOpenDrop={openDrop}/>}
         {view.screen==='booking-detail' && <BookingDetail bookingId={view.bookingId} onBack={openProfile} onInvoice={()=>openInvoice(view.bookingId)}/>}
         {view.screen==='invoice' && <Invoice bookingId={view.bookingId} onBack={()=>openBookingDetail(view.bookingId)}/>}
         {view.screen==='travher' && <TravHerPage onJoin={()=>alert('Opening WhatsApp group…')}/>}
-        {view.screen==='travelogue' && <TravelogueIndex onOpenArticle={openArticle}/>}
+         {view.screen==='travelogue' && <TravelogueIndex onOpenArticle={openArticle}/>}
         {view.screen==='travelogue-article' && <TravelogueArticle onBack={openTravelogue} onOpenTrip={openTrip}/>}
+        {view.screen==='thursday-drop' && <ThursdayDropPage onOpenTrip={openTrip} onBack={goHome}/>}
         {!['booking','profile','booking-detail','invoice'].includes(view.screen) && <Footer onTravelogue={openTravelogue} onInvestor={openInvestor} onSupport={openSupport} onAbout={openAbout} onTravCoins={openTravCoins}/>}
       </div>
       <MobileBottomNavWrapper view={view} loggedIn={loggedIn} onHome={goHome} onTrips={openAllTrips} onTravelogue={openTravelogue} onProfile={openProfile} onLogin={handleLoginClick} onSearch={openAllTrips} theme={theme}/>

@@ -8,7 +8,7 @@ const LANDING_TICKER = [
   { id:'t4', kind:'offer',    tripId:null,             icon:'gift',     text:'Code',                                     highlight:'WKND20 · 20% off this weekend', cta:'Apply & browse' },
 ];
 
-function Landing({ onOpenTrip, onViewAllTrips }) {
+function Landing({ onOpenTrip, onViewAllTrips, onOpenDrop }) {
   const [fromCity, setFromCity] = React.useState('Delhi');
   const [mode, setMode] = React.useState('weekend'); // weekend | long
   const [query, setQuery] = React.useState('');
@@ -22,14 +22,15 @@ function Landing({ onOpenTrip, onViewAllTrips }) {
     else scrollToWeekend();
   };
   const onTickerCta = (item) => {
-    if (item.tripId && onOpenTrip) onOpenTrip(item.tripId);
+    if (item.kind === 'drop' && onOpenDrop) onOpenDrop();
+    else if (item.tripId && onOpenTrip) onOpenTrip(item.tripId);
     else if (onViewAllTrips) onViewAllTrips();
     else scrollToWeekend();
   };
   return (
     <>
       <LiveTicker items={LANDING_TICKER} isMobile={isMobile} onCta={onTickerCta}/>
-      <Hero fromCity={fromCity} setFromCity={setFromCity} mode={mode} setMode={setMode} query={query} setQuery={setQuery} onSeeTrips={scrollToWeekend} onSearch={onSearch} isMobile={isMobile}/>
+      <Hero fromCity={fromCity} setFromCity={setFromCity} mode={mode} setMode={setMode} query={query} setQuery={setQuery} onSeeTrips={scrollToWeekend} onSearch={onSearch} isMobile={isMobile} onOpenDrop={onOpenDrop}/>
       <WeekendTrips fromCity={fromCity} onOpen={onOpenTrip} onViewAll={onViewAllTrips} isMobile={isMobile}/>
       <HowTraveling isMobile={isMobile}/>
       <HowItWorks isMobile={isMobile}/>
@@ -103,7 +104,7 @@ function LiveTicker({ items, isMobile, onCta }) {
   );
 }
 
-function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrips, onSearch, isMobile }) {
+function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrips, onSearch, isMobile, onOpenDrop }) {
   const [showLongWeekends, setShowLongWeekends] = React.useState(false);
   const UN = (id) => `https://images.unsplash.com/photo-${id}?w=400&q=80&auto=format&fit=crop`;
   const LFT = (tags, lock) => `https://loremflickr.com/400/400/${tags}?lock=${lock}`;
@@ -126,7 +127,7 @@ function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrip
   if (isMobile) {
     return (
       <div style={{ position:'relative', background:'#fff', overflow:'hidden', padding:'20px 16px 32px' }}>
-        <div style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#F0FAF4', color:T.greenDeep, padding:'5px 12px', borderRadius:999, fontSize:11, fontWeight:600, marginBottom:14, border:`1px solid ${T.green}33` }}>
+        <div onClick={onOpenDrop} style={{ cursor:'pointer', display:'inline-flex', alignItems:'center', gap:6, background:'#F0FAF4', color:T.greenDeep, padding:'5px 12px', borderRadius:999, fontSize:11, fontWeight:600, marginBottom:14, border:`1px solid ${T.green}33` }}>
           <span style={{ width:6, height:6, borderRadius:'50%', background:T.green }}/>New drop · {TRAV.nextDrop}
         </div>
         <h1 style={{ fontSize:36, fontWeight:700, letterSpacing:'-.03em', lineHeight:1.05, margin:0, color:T.ink, fontFamily:'Fraunces, serif' }}>
@@ -138,7 +139,7 @@ function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrip
         <SearchBar mode={mode} setMode={setMode} fromCity={fromCity} setFromCity={setFromCity} query={query} setQuery={setQuery} onSearch={onSearch} isMobile/>
         <div style={{ marginTop:14, display:'flex', flexDirection:'column', gap:8 }}>
           <Btn kind="primary" size="lg" full trailing="arrow-right" onClick={onSeeTrips}>See this weekend's trips</Btn>
-          <Btn kind="outline" size="lg" full icon="whatsapp">Get Thursday Drops</Btn>
+          <Btn kind="outline" size="lg" full icon="whatsapp" onClick={onOpenDrop}>Get Thursday Drops</Btn>
         </div>
         <div style={{ marginTop:18, textAlign:'center' }}>
           <button onClick={()=>setShowLongWeekends(true)} style={{ background:'transparent', border:'none', color:T.greenDeep, fontSize:13.5, fontWeight:700, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:6, textDecoration:'underline', textDecorationColor:`${T.greenDeep}44`, textUnderlineOffset:4 }}>
@@ -165,7 +166,7 @@ function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrip
         </div>
         <div style={{ padding:'100px 20px 80px', textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', position:'relative', zIndex:2 }}>
           <div style={{ position:'absolute', inset:'40px -40px 40px -40px', background:'radial-gradient(ellipse at center, rgba(255,255,255,.96) 0%, rgba(255,255,255,.88) 55%, rgba(255,255,255,0) 100%)', pointerEvents:'none', zIndex:-1 }}/>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'#F0FAF4', color:T.greenDeep, padding:'6px 14px', borderRadius:999, fontSize:12, fontWeight:600, marginBottom:22, border:`1px solid ${T.green}33` }}>
+          <div onClick={onOpenDrop} style={{ cursor:'pointer', display:'inline-flex', alignItems:'center', gap:8, background:'#F0FAF4', color:T.greenDeep, padding:'6px 14px', borderRadius:999, fontSize:12, fontWeight:600, marginBottom:22, border:`1px solid ${T.green}33` }}>
             <span style={{ width:6, height:6, borderRadius:'50%', background:T.green }}/>New drop · {TRAV.nextDrop}
           </div>
           <h1 style={{ fontSize:76, fontWeight:700, letterSpacing:'-.04em', lineHeight:1.02, margin:0, color:T.ink, fontFamily:'Fraunces, serif' }}>
@@ -177,7 +178,7 @@ function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrip
           <SearchBar mode={mode} setMode={setMode} fromCity={fromCity} setFromCity={setFromCity} query={query} setQuery={setQuery} onSearch={onSearch} isMobile={false}/>
           <div style={{ display:'flex', gap:12, marginTop:18, flexWrap:'wrap', justifyContent:'center' }}>
             <Btn kind="primary" size="lg" trailing="arrow-right" onClick={onSeeTrips}>See this weekend's trips</Btn>
-            <Btn kind="outline" size="lg" icon="whatsapp">Get Thursday Drops</Btn>
+            <Btn kind="outline" size="lg" icon="whatsapp" onClick={onOpenDrop}>Get Thursday Drops</Btn>
           </div>
           <div style={{ marginTop:24 }}>
             <button onClick={()=>setShowLongWeekends(true)} style={{ background:'transparent', border:'none', color:T.greenDeep, fontSize:14, fontWeight:700, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:6, textDecoration:'underline', textDecorationColor:`${T.greenDeep}44`, textUnderlineOffset:4 }}>
@@ -379,7 +380,12 @@ function WeekendTrips({ fromCity, onOpen, onViewAll, isMobile }) {
             <Ico name="arrow-right" size={15} color={T.ink} stroke={2.2}/>
           </button>
         </div>
-      </divfunction TripCard({ trip, onOpen }) {
+      </div>
+    </div>
+  );
+}
+
+function TripCard({ trip, onOpen }) {
   const [hover, setHover] = React.useState(false);
   const [wished, setWished] = React.useState(() => getWishlist().includes(trip.id));
   const isTH = !!trip.travHer;
@@ -427,9 +433,7 @@ function WeekendTrips({ fromCity, onOpen, onViewAll, isMobile }) {
           display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer',
           boxShadow:'0 4px 12px rgba(0,0,0,.15)', transition:'transform .2s'
         }} onMouseEnter={e=>e.currentTarget.style.transform='scale(1.1)'} onMouseLeave={e=>e.currentTarget.style.transform='scale(1)'}>
-          <svg width={18} height={18} viewBox="0 0 24 24" fill={wished ? T.rose : 'none'} stroke={wished ? T.rose : T.ink} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" style={{ transition:'all .2s' }}>
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.85-8.85 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
+          <Ico name="heart" size={20} color={wished ? T.rose : T.ink} fill={wished ? T.rose : 'none'} stroke={2.2}/>
         </button>
 
         <div style={{ position:'absolute', bottom:12, left:12, background:'rgba(20,30,40,.75)', color:'#fff', padding:'5px 11px 5px 5px', borderRadius:999, fontSize:12, fontWeight:500, display:'inline-flex', alignItems:'center', gap:7 }}>
@@ -453,10 +457,6 @@ function WeekendTrips({ fromCity, onOpen, onViewAll, isMobile }) {
         {trip.heat==='almost-full' && <><Ico name="spark" size={14} color="#e11d48"/><span style={{ fontSize:12.5, color:'#e11d48', fontWeight:600 }}>{trip.spotsLeft} of {trip.spotsTotal} spots · almost full</span></>}
         {!trip.heat && <><Ico name="users" size={14} color={T.grey}/><span style={{ fontSize:12.5, color:T.grey, fontWeight:500 }}>{trip.spotsLeft} of {trip.spotsTotal} spots left</span></>}
       </div>
-    </div>
-  );
-}
-/div>
     </div>
   );
 }

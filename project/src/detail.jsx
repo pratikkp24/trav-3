@@ -22,9 +22,27 @@ function TripDetail({ tripId, onBack, onBook, onCustomise, onOpenArticle }) {
     const el = document.getElementById(`day-${i}`);
     if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
   };
+  const [retentionOpen, setRetentionOpen] = React.useState(false);
+  
+  // Detect exit intent (mouse leaving window)
+  useExitIntent(() => {
+    // Session-scoped: once shown on this trip, don't show again this session
+    const key = `trav.retention.shown.${tripId}`;
+    if (sessionStorage.getItem(key)) return;
+    setRetentionOpen(true);
+    try { sessionStorage.setItem(key, '1'); } catch {}
+  }, true);
+
   const sidePad = isMobile ? 16 : 36;
   return (
     <div style={{ background:'#F4F6FA', paddingBottom:isMobile?100:40 }}>
+      <RetentionModal 
+        isOpen={retentionOpen} 
+        onClose={() => setRetentionOpen(false)} 
+        onExit={() => setRetentionOpen(false)} 
+        context="detail"
+        tripName={t.dest}
+      />
       <div style={{ maxWidth:1200, margin:'0 auto', padding:`${isMobile?14:24}px ${sidePad}px 0` }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:isMobile?12:18 }}>
           <Btn kind="outline" size="sm" icon="arrow-left" onClick={onBack}>{isMobile?'Back':'Back to trips'}</Btn>

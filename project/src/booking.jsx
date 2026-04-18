@@ -3,11 +3,36 @@
 // price-details panel on the right. After submit, shows the confirmation state.
 
 function Booking({ mode='quick', onBack, onBookAnother, onViewBookings }) {
-  if (mode === 'quick') return <QuickBook onBack={onBack} onBookAnother={onBookAnother} onViewBookings={onViewBookings}/>;
-  return <CustomiseFlow onBack={onBack} onBookAnother={onBookAnother}/>;
+  const [showRetention, setShowRetention] = React.useState(false);
+  const t = React.useMemo(() => resolveViewTrip() || RISHIKESH_TRIP, []);
+  
+  // Intercept the back action
+  const handleBackIntercept = () => setShowRetention(true);
+  
+  // Detect exit intent (mouse leaving window)
+  useExitIntent(() => setShowRetention(true), !showRetention);
+
+  return (
+    <>
+      {mode === 'quick' ? (
+        <QuickBook onBack={handleBackIntercept} onBookAnother={onBookAnother} onViewBookings={onViewBookings}/>
+      ) : (
+        <CustomiseFlow onBack={handleBackIntercept} onBookAnother={onBookAnother}/>
+      )}
+      
+      <RetentionModal 
+        isOpen={showRetention} 
+        onClose={() => setShowRetention(false)} 
+        onExit={onBack} 
+        context="booking"
+        tripName={t.dest}
+      />
+    </>
+  );
 }
 
 function CustomiseFlow({ onBack, onBookAnother }) {
+  const isMobile = useIsMobile();
   const t = React.useMemo(() => resolveViewTrip() || RISHIKESH_TRIP, []);
   const [confirmed, setConfirmed] = React.useState(false);
 
@@ -534,6 +559,7 @@ const stepBtn3 = { width:30, height:30, borderRadius:8, border:`1px solid ${T.gr
 
 // ───── QUICK BOOK — fast payment page (just pick travelers, pay) ─────
 function QuickBook({ onBack, onBookAnother, onViewBookings }) {
+  const isMobile = useIsMobile();
   // Trip-aware: resolve from the current view (Rishikesh / Nainital / future trips)
   const t = React.useMemo(() => resolveViewTrip() || RISHIKESH_TRIP, []);
   const isTH = !!t.travHer;

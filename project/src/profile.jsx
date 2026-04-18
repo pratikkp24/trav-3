@@ -1,4 +1,4 @@
-function Profile({ onLogout, onOpenBooking, onOpenInvoice, onOpenTrip, onTravHer, onOpenTravCoins, onBrowseTrips }) {
+function Profile({ onLogout, onOpenBooking, onOpenInvoice, onOpenTrip, onTravHer, onOpenTravCoins, onBrowseTrips, onOpenDrop }) {
   const isMobile = useIsMobile();
   const [tab, setTab] = React.useState('upcoming');
   const [nav, setNav] = React.useState('bookings');
@@ -127,7 +127,7 @@ function Profile({ onLogout, onOpenBooking, onOpenInvoice, onOpenTrip, onTravHer
                   {current.length===0 && <EmptyState tab={tab}/>}
                   {current.map(b => <BookingRow key={b.id} b={b} onOpenBooking={onOpenBooking} onOpenInvoice={onOpenInvoice}/>)}
                   {tab==='upcoming' && <ReferralInline/>}
-                  {tab==='upcoming' && <DropTeaser/>}
+                  {tab==='upcoming' && <DropTeaser onOpen={onOpenDrop}/>}
                 </div>
               </div>
             )}
@@ -427,7 +427,7 @@ function BookingRow({ b, onOpenBooking, onOpenInvoice }) {
   );
 }
 
-function DropTeaser() {
+function DropTeaser({ onOpen }) {
   return (
     <div style={{ background:'linear-gradient(135deg, #F0FAF4, #FAFBFC)', border:`1px dashed ${T.green}55`, borderRadius:14, padding:20, display:'flex', alignItems:'center', gap:14 }}>
       <div style={{ width:44, height:44, borderRadius:'50%', background:'#fff', display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -437,7 +437,7 @@ function DropTeaser() {
         <div style={{ fontSize:14, fontWeight:700, color:T.ink, fontFamily:'Fraunces, serif' }}>Thursday Drop lands in 2 days</div>
         <div style={{ fontSize:12.5, color:T.grey, marginTop:2 }}>3 new trips from Delhi. You've got early access as a past traveler.</div>
       </div>
-      <Btn kind="primary" size="sm" trailing="arrow-right">Preview</Btn>
+      <Btn kind="primary" size="sm" trailing="arrow-right" onClick={onOpen}>Preview</Btn>
     </div>
   );
 }
