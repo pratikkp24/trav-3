@@ -30,13 +30,20 @@ function App() {
   const openTravHer = () => set({ screen:'travher', tripId:null, bookingId:null });
   const openTravelogue = () => set({ screen:'travelogue', tripId:null, bookingId:null });
   const openArticle = (articleId) => set({ screen:'travelogue-article', tripId:null, bookingId:null, articleId });
-  const openAllTrips = () => set({ screen:'all-trips', tripId:null, bookingId:null });
+  const openAllTrips = (dest) => set({ screen:'all-trips', tripId:null, bookingId:null, filterDest: typeof dest === 'string' ? dest : null });
   const openInvestor = () => set({ screen:'investor', tripId:null, bookingId:null });
   const openSupport = () => set({ screen:'support', tripId:null, bookingId:null });
   const openAbout = () => set({ screen:'about', tripId:null, bookingId:null });
   const openTravCoins = () => set({ screen:'travcoins', tripId:null, bookingId:null });
+  const openFaq = () => set({ screen:'faq', tripId:null, bookingId:null });
   const openBookingDetail = (bookingId) => set({ screen:'booking-detail', tripId:null, bookingId });
   const openInvoice = (bookingId) => set({ screen:'invoice', tripId:null, bookingId });
+
+  React.useEffect(() => {
+    window.openFaq = openFaq;
+    window.openSupport = openSupport;
+  }, []);
+
   const handleLoginClick = () => { if(loggedIn) openProfile(); else setShowLogin(true); };
   const handleLoginSuccess = () => { setLoggedIn(true); setShowLogin(false); openProfile(); };
   const handleLogout = () => { setLoggedIn(false); goHome(); };
@@ -46,12 +53,13 @@ function App() {
       <Nav onLogo={goHome} active={view.screen==='travher'?'travher':(view.screen==='travelogue'||view.screen==='travelogue-article'?'travelogue':'destinations')} loggedIn={loggedIn} onLogin={handleLoginClick} onProfile={openProfile} onTravHer={openTravHer} onTravelogue={openTravelogue} theme={theme} onToggleTheme={toggleTheme}/>
       <div className="theme-flip">
         {view.screen==='landing' && <Landing onOpenTrip={openTrip} onViewAllTrips={openAllTrips}/>}
-        {view.screen==='all-trips' && <AllTripsIndex onOpenTrip={openTrip}/>}
+        {view.screen==='all-trips' && <AllTripsIndex onOpenTrip={openTrip} filterDest={view.filterDest}/>}
         {view.screen==='investor' && <InvestorPage onBack={goHome}/>}
         {view.screen==='support' && <SupportPage onBack={goHome}/>}
+        {view.screen==='faq' && <FaqPage onBack={goHome}/>}
         {view.screen==='about' && <AboutPage onBack={goHome} onOpenAllTrips={openAllTrips} onTravHer={openTravHer} onSupport={openSupport}/>}
         {view.screen==='travcoins' && <TravCoinsPage onBack={goHome} onSignup={handleLoginClick} onOpenWallet={openProfile} loggedIn={loggedIn}/>}
-        {view.screen==='detail' && <TripDetail onBack={goHome} onBook={openBooking} onCustomise={openCustomise} onOpenArticle={openArticle}/>}
+        {view.screen==='detail' && <TripDetail tripId={view.tripId} onBack={goHome} onBook={openBooking} onCustomise={openCustomise} onOpenArticle={openArticle}/>}
         {view.screen==='booking' && <Booking mode={view.mode||'quick'} onBack={backToDetail} onBookAnother={goHome} onViewBookings={openProfile}/>}
         {view.screen==='profile' && <Profile onLogout={handleLogout} onOpenBooking={openBookingDetail} onOpenInvoice={openInvoice} onOpenTrip={openTrip} onTravHer={openTravHer}/>}
         {view.screen==='booking-detail' && <BookingDetail bookingId={view.bookingId} onBack={openProfile} onInvoice={()=>openInvoice(view.bookingId)}/>}

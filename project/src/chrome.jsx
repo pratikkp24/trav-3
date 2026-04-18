@@ -23,7 +23,14 @@ function Nav({ onLogo, active='destinations', loggedIn, onLogin, onProfile, onTr
         </div>
       )}
       <div style={{ flex:1 }}/>
-      {!isMobile && <span style={{ fontSize:14, fontWeight:600, color:isDark?T.green:T.greenDeep, cursor:'pointer' }}>Weekend Trips</span>}
+      {!isMobile && (
+        <div style={{ display:'flex', alignItems:'center', gap:20 }}>
+          <span onClick={()=>{window.openFaq&&window.openFaq();}} style={{ fontSize:14, fontWeight:600, color:textPri, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4, padding:'4px 10px', borderRadius:999, background:isDark?'rgba(255,255,255,.05)':'#F4F6FA' }}>
+            FAQ <Ico name="arrow-right" size={12}/>
+          </span>
+          <span style={{ fontSize:14, fontWeight:600, color:isDark?T.green:T.greenDeep, cursor:'pointer' }}>Weekend Trips</span>
+        </div>
+      )}
       <button onClick={onToggleTheme} aria-label="Toggle theme" title={isDark?'Switch to light':'Switch to dark'} style={{ width:isMobile?34:38, height:isMobile?34:38, borderRadius:'50%', background:'transparent', border:`1px solid ${border}`, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', padding:0 }}>
         <Ico name={isDark?'sun':'moon'} size={isMobile?15:16} color={textPri} stroke={2}/>
       </button>
@@ -43,7 +50,7 @@ function Nav({ onLogo, active='destinations', loggedIn, onLogin, onProfile, onTr
 function Footer({ onTravelogue, onInvestor, onSupport, onAbout, onTravCoins }) {
   const cols = [
     { h:'Explore', items:[{label:'Destinations'},{label:'Weekend Trips'},{label:'Travelogue', onClick:onTravelogue},{label:'Trav Coins · Rewards', onClick:onTravCoins, gold:true}] },
-    { h:'Company', items:[{label:'About us', onClick:onAbout},{label:'trav.her', highlight:true},{label:'For Creators'},{label:'Investors', onClick:onInvestor},{label:'Support', onClick:onSupport}] },
+    { h:'Company', items:[{label:'About us', onClick:onAbout},{label:'trav.her', highlight:true},{label:'For Creators'},{label:'Investors', onClick:onInvestor},{label:'Support', onClick:onSupport},{label:'FAQ', onClick:()=>window.openFaq&&window.openFaq()}] },
   ];
   return (
     <div style={{ background:'#fff', borderTop:`1px solid ${T.greyLight}`, padding:'56px 36px 24px', marginTop:60 }}>

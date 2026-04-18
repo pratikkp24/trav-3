@@ -41,6 +41,35 @@ function Profile({ onLogout, onOpenBooking, onOpenInvoice, onOpenTrip, onTravHer
               ))}
             </div>
           </div>
+
+          {/* Traveler Badges (Gamification) */}
+          <div style={{ marginTop:isMobile?24:32, paddingTop:isMobile?20:24, borderTop:'1px solid rgba(255,255,255,.08)' }}>
+            <div style={{ fontSize:10.5, color:'rgba(255,255,255,.6)', letterSpacing:'.14em', fontWeight:800, marginBottom:12 }}>TRAVELER PASSPORT</div>
+            <div className="scroll-x" style={{ display:'flex', gap:10, overflowX:'auto', margin:'0 -16px', padding:'0 16px', WebkitOverflowScrolling:'touch' }}>
+              {[
+                { label:'Himalayan High', desc:'2+ Mountain Trips', icon:'spark', active:true },
+                { label:'Solo Pioneer', desc:'trav.her Verified', icon:'rose', active:true },
+                { label:'Desert Drifter', desc:'Rajasthan unlocked', icon:'sun', active:false },
+                { label:'Early Bird', desc:'Booked 30 days prior', icon:'clock', active:true },
+                { label:'Party Starter', desc:'Group booked 5+ pax', icon:'users', active:false }
+              ].map(b => (
+                <div key={b.label} className="snap" style={{
+                  flex:'0 0 auto', padding:'10px 14px', borderRadius:10,
+                  background: b.active ? 'rgba(255,255,255,.1)' : 'rgba(255,255,255,.03)',
+                  border:`1px solid ${b.active ? 'rgba(255,255,255,.2)' : 'transparent'}`,
+                  display:'flex', alignItems:'center', gap:12, filter: b.active ? 'grayscale(0%)' : 'grayscale(100%) opacity(50%)'
+                }}>
+                  <div style={{ width:34, height:34, borderRadius:'50%', background: b.active ? (b.icon==='rose'?T.rose:T.green) : 'rgba(255,255,255,.1)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <Ico name={b.icon} size={16} color="#fff" stroke={2.2}/>
+                  </div>
+                  <div>
+                    <div style={{ fontSize:13, fontWeight:700, color:'#fff', letterSpacing:'-.01em', marginBottom:2 }}>{b.label}</div>
+                    <div style={{ fontSize:10.5, color:'rgba(255,255,255,.6)', fontWeight:600 }}>{b.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
       <div style={{ maxWidth:1200, margin:'-48px auto 0', padding:isMobile?'0 16px 30px':'0 36px 60px', position:'relative' }}>
@@ -510,8 +539,10 @@ function RequestCard({ r }) {
       onFailure: (err) => alert('Payment failed: ' + (err?.description || 'Please try again.')),
     });
   };
+  const [detailsOpen, setDetailsOpen] = React.useState(false);
   return (
-    <div style={{ border:`1px solid ${T.greyLight}`, borderRadius:14, overflow:'hidden', background:'#fff' }}>
+    <>
+    <div onClick={()=>setDetailsOpen(true)} style={{ border:`1px solid ${T.greyLight}`, borderRadius:14, overflow:'hidden', background:'#fff', cursor:'pointer', transition:'box-shadow .2s', ':hover':{boxShadow:'0 4px 12px rgba(15,30,46,.04)'} }}>
       <div style={{ padding:'14px 16px', display:'flex', gap:14, alignItems:'flex-start', flexWrap:'wrap' }}>
         <div style={{ width:46, height:46, borderRadius:10, background:th.soft, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
           <Ico name="pin" size={20} color={th.deep} stroke={1.8}/>
@@ -557,16 +588,18 @@ function RequestCard({ r }) {
         <div style={{ fontSize:12, color:T.grey }}>{paid ? 'Your trip docs will land on WhatsApp within 2 hours.' : s.helper}</div>
         <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
           {r.state==='quote-ready' && !paid && <>
-            <Btn kind="ghost" size="sm" icon="send">Message curator</Btn>
-            <Btn kind="primary" size="sm" trailing="arrow-right" onClick={bookQuote}>Review &amp; book · {inr(token)} token</Btn>
+            <Btn kind="ghost" size="sm" icon="send" onClick={(e)=>{ e.stopPropagation(); window.openSupport && window.openSupport(); }}>Message curator</Btn>
+            <Btn kind="primary" size="sm" trailing="arrow-right" onClick={(e)=>{ e.stopPropagation(); bookQuote(); }}>Review &amp; book · {inr(token)} token</Btn>
           </>}
-          {r.state==='curating' && <Btn kind="ghost" size="sm" icon="whatsapp">Chat curator</Btn>}
-          {r.state==='submitted' && <Btn kind="ghost" size="sm" onClick={()=>{}} style={{ color:T.rose }}>Cancel request</Btn>}
-          {r.state==='confirmed' && <Btn kind="dark" size="sm" trailing="chevron-right">View trip</Btn>}
-          {r.state==='expired' && <Btn kind="outline" size="sm" icon="refresh">Resubmit</Btn>}
+          {r.state==='curating' && <Btn kind="ghost" size="sm" icon="whatsapp" onClick={(e)=>{ e.stopPropagation(); alert(`Opening WhatsApp chat with ${r.curator||'@trav.team'}`); }}>Chat curator</Btn>}
+          {r.state==='submitted' && <Btn kind="ghost" size="sm" onClick={(e)=>{ e.stopPropagation(); alert('Request cancelled. We will archive this brief.'); }} style={{ color:T.rose }}>Cancel request</Btn>}
+          {r.state==='confirmed' && <Btn kind="dark" size="sm" trailing="chevron-right" onClick={(e)=>{ e.stopPropagation(); alert('Opening custom trip itinerary...'); }}>View trip</Btn>}
+          {r.state==='expired' && <Btn kind="outline" size="sm" icon="refresh" onClick={(e)=>{ e.stopPropagation(); alert('Opening form prefilled with your brief...'); }}>Resubmit</Btn>}
         </div>
       </div>
     </div>
+    {detailsOpen && <RequestDetailsModal r={r} s={s} th={th} onClose={()=>setDetailsOpen(false)}/>}
+    </>
   );
 }
 
@@ -594,7 +627,56 @@ function NewRequestModal({ onClose }) {
         </div>
         <div style={{ display:'flex', gap:10, marginTop:18, justifyContent:'flex-end' }}>
           <Btn kind="ghost" size="md" onClick={onClose}>Close</Btn>
-          <Btn kind="primary" size="md" trailing="arrow-right" onClick={onClose}>Submit request</Btn>
+          <Btn kind="primary" size="md" trailing="arrow-right" onClick={()=>{ alert('Request submitted successfully!'); onClose(); }}>Submit request</Btn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RequestDetailsModal({ r, s, th, onClose }) {
+  const isMobile = window.innerWidth <= 767;
+  return (
+    <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(10,15,22,.55)', backdropFilter:'blur(4px)', zIndex:100, display:'flex', alignItems:isMobile?'flex-end':'center', justifyContent:'center', padding:isMobile?0:20 }}>
+      <div onClick={e=>e.stopPropagation()} style={{ background:'#fff', borderRadius:isMobile?'18px 18px 0 0':18, width:'100%', maxWidth:560, padding:isMobile?'24px 20px':'32px 36px', boxShadow:'0 24px 60px rgba(0,0,0,.25)', maxHeight:'90vh', overflowY:'auto' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:s.bg, color:s.fg, padding:'3px 10px 3px 8px', borderRadius:999, fontSize:10.5, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase' }}>
+            <Ico name={s.icon} size={10} color={s.fg} stroke={2.4}/> {s.label}
+          </div>
+          <button onClick={onClose} style={{ background:'transparent', border:'none', cursor:'pointer' }}><Ico name="x" size={16} color={T.grey}/></button>
+        </div>
+        
+        <h3 style={{ fontSize:isMobile?22:26, fontWeight:700, color:T.ink, margin:'0 0 6px', fontFamily:'Fraunces, serif', letterSpacing:'-.02em' }}>{r.title}</h3>
+        <div style={{ fontSize:13, color:T.grey, marginBottom:22 }}>Request ID: {r.id} {r.submittedDaysAgo!=null && `· Submitted ${r.submittedDaysAgo}d ago`}</div>
+
+        <div style={{ padding:16, borderRadius:12, border:`1px solid ${T.greyLight}`, background:'#FAFBFC', display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:24 }}>
+          <div><div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.1em', fontWeight:700, marginBottom:4 }}>DESTINATION</div><div style={{ fontSize:13.5, fontWeight:600, color:T.ink }}>{r.dest}</div></div>
+          <div><div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.1em', fontWeight:700, marginBottom:4 }}>DATES</div><div style={{ fontSize:13.5, fontWeight:600, color:T.ink }}>{r.dates}</div></div>
+          <div><div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.1em', fontWeight:700, marginBottom:4 }}>TRAVELERS</div><div style={{ fontSize:13.5, fontWeight:600, color:T.ink }}>{r.travelers} Persons</div></div>
+          <div><div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.1em', fontWeight:700, marginBottom:4 }}>BUDGET / HEAD</div><div style={{ fontSize:13.5, fontWeight:600, color:T.ink }}>{r.budget}</div></div>
+        </div>
+
+        {r.quote && (
+          <div style={{ padding:20, borderRadius:12, background:'#F0FAF4', border:`1px solid ${T.green}44`, marginBottom:24 }}>
+            <div style={{ fontSize:10.5, color:T.greenDeep, letterSpacing:'.12em', fontWeight:800, marginBottom:8 }}>CURATOR QUOTE</div>
+            <div style={{ display:'flex', alignItems:'baseline', gap:8, marginBottom:4 }}>
+              <span style={{ fontSize:28, fontWeight:800, color:T.greenDeep, fontFamily:'Fraunces, serif', letterSpacing:'-.02em' }}>{r.quote.price ? '₹'+r.quote.price.toLocaleString('en-IN') : '--'}</span>
+              <span style={{ fontSize:13, fontWeight:600, color:T.grey }}>/ person</span>
+            </div>
+            <div style={{ fontSize:13, color:T.inkSoft, lineHeight:1.5 }}>Includes {r.quote.tripsCount||1} tailored itinerary options specifically built around your brief. Click "Review & book" to lock it in.</div>
+          </div>
+        )}
+
+        {r.notes && (
+          <div style={{ marginBottom:24 }}>
+            <div style={{ fontSize:10.5, color:T.grey, letterSpacing:'.1em', fontWeight:700, marginBottom:6 }}>ADDITIONAL NOTES</div>
+            <div style={{ fontSize:14, color:T.inkSoft, lineHeight:1.6, background:'#fff', padding:16, border:`1px dashed ${T.greyLight}`, borderRadius:10 }}>"{r.notes}"</div>
+          </div>
+        )}
+
+        <div style={{ borderTop:`1px solid ${T.greyLight}`, paddingTop:20, display:'flex', gap:10, justifyContent:'flex-end', flexWrap:'wrap' }}>
+          <Btn kind="ghost" size="md" onClick={onClose}>Close</Btn>
+          {(r.state==='curating' || r.state==='quote-ready') && <Btn kind="outline" size="md" icon="whatsapp" onClick={()=>{ alert('Opening WhatsApp chat with curator...'); onClose(); }}>Chat with curator</Btn>}
         </div>
       </div>
     </div>

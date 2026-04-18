@@ -1,6 +1,148 @@
 // Travelogue Article — upper half (hero, meta, prose, pull quotes, videos, budget).
 // Pairs with travelogue-article-lower.jsx.
 
+function TravelogueNewStyle() {
+  return (
+    <style dangerouslySetInnerHTML={{__html: `
+:root {
+  --green: #1DBF73;
+  --green-deep: #169E5A;
+  --green-ink: #0e6b3d;
+  --tint: #E8F8F2;
+  --tint-2: #d8f1e4;
+  --off: #FAFAFA;
+  --paper: #ffffff;
+  --ink: #111111;
+  --ink-2: #2a2a2a;
+  --grey: #6E6E6E;
+  --grey-2: #9a9a9a;
+  --line: #E6E6E6;
+  --line-2: #f1f1f1;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow-1: 0 1px 0 rgba(17,17,17,0.04), 0 12px 30px -18px rgba(17,17,17,0.18);
+  --shadow-2: 0 24px 60px -30px rgba(17,17,17,0.25);
+}
+.chapter {
+  display: grid;
+  grid-template-columns: 140px 1fr auto;
+  gap: 32px; align-items: center;
+  padding: 22px 36px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin: 0px auto 44px;
+  max-width: 1192px;
+}
+.chapter .num {
+  font-family: "Fraunces", serif; font-weight: 500; font-size: 64px; line-height: 1;
+  color: var(--green); font-variation-settings: "opsz" 144;
+}
+.chapter .num span { color: var(--grey-2); font-size: 18px; display:block; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 4px; font-family: "Inter", sans-serif; font-weight: 600; }
+.chapter .title {
+  font-family: "Fraunces", serif; font-weight: 500; font-size: 38px; line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.chapter .title em { font-style: italic; color: var(--green); font-weight: 500; }
+.chapter .title small { display:block; font-family:"Inter",sans-serif; font-size: 13px; color: var(--grey); font-weight: 400; margin-top: 6px; letter-spacing: 0; text-transform: none; }
+.chapter .meta {
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--grey);
+  text-align: right;
+}
+.chapter .meta b { display:block; color: var(--ink); font-size: 14px; letter-spacing: 0.06em; margin-top: 4px; font-weight: 600; }
+
+.hero {
+  padding-top: 40px; padding-bottom: 40px;
+  display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; max-width: 1192px; margin: 0 auto; padding: 0 36px;
+}
+.hero-polaroids { position: relative; height: 520px; }
+.polaroid {
+  position: absolute; background: #fff; padding: 14px 14px 42px;
+  box-shadow: 0 26px 50px -20px rgba(17,17,17,0.35), 0 2px 0 rgba(0,0,0,0.02);
+  border-radius: 3px;
+}
+.polaroid .ph { width: 240px; aspect-ratio: 4/5; position: relative; overflow: hidden; }
+.polaroid .cap {
+  font-family: "Caveat", cursive; font-size: 20px; color: var(--ink);
+  text-align: center; margin-top: 10px; line-height: 1;
+}
+.polaroid::after {
+  content:""; position: absolute; top: -14px; left: 50%; width: 80px; height: 22px;
+  background: rgba(220, 210, 170, 0.55); transform: translateX(-50%) rotate(-3deg);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+.p1 { top: 18px; left: 0; transform: rotate(-6deg); z-index: 1; }
+.p2 { top: 40px; left: 210px; transform: rotate(3deg); z-index: 3; }
+.p3 { top: 220px; left: 80px; transform: rotate(-2deg); z-index: 2; }
+.ph-pal   { background: #2f5a3a; }
+.ph-beach { background: #d9a467; }
+.ph-fort  { background: #c46a4c; }
+
+.hero-copy .kicker {
+  display:inline-flex; align-items:center; gap: 10px;
+  padding: 6px 12px; border-radius: 999px;
+  background: var(--tint); color: var(--green-deep);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+}
+.hero-copy .date { display:inline-block; margin-left: 12px; color: var(--grey); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500; }
+.hero-copy h1 { font-family: "Fraunces", serif; font-weight: 500; font-size: 64px; line-height: 1.02; letter-spacing: -0.03em; margin: 20px 0 20px; }
+.hero-copy h1 em { font-style: italic; color: var(--green); font-weight: 500; }
+.hero-copy .deck { font-size: 17px; line-height: 1.6; color: var(--grey); max-width: 46ch; margin: 0 0 28px; }
+.hero-copy .actions { display: flex; gap: 12px; margin-bottom: 34px; }
+.btn {
+  display:inline-flex; align-items:center; gap: 8px; padding: 12px 22px; border-radius: 999px;
+  font-weight: 600; font-size: 14px; text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: 0.2s;
+}
+.btn.primary { background: var(--green); color: #fff; }
+.btn.ghost { border-color: var(--line); color: var(--ink); background: #fff; }
+.hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); padding-top: 22px; gap: 16px; }
+.hero-stats div small { display:block; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--grey); font-weight: 600; margin-bottom: 4px; }
+.hero-stats div b { font-family: "Fraunces", serif; font-size: 20px; font-weight: 600; }
+
+.ledger-wrap { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 24px; align-items: stretch; max-width: 1192px; margin: 0 auto; padding: 0 36px; }
+.panel { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow-1); display: flex; flex-direction: column; }
+.panel-head { display:flex; align-items: center; justify-content: space-between; padding-bottom: 18px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+.panel-head .t { font-family: "Fraunces", serif; font-weight: 600; font-size: 22px; letter-spacing: -0.01em; }
+.panel-head .t em { font-style: italic; color: var(--green); }
+.panel-head .m { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey); }
+
+.ledger .row { display:grid; grid-template-columns: 40px 1fr auto; align-items:center; gap: 16px; padding: 14px 4px; border-bottom: 1px solid var(--line-2); }
+.ledger .ic { width: 36px; height: 36px; border-radius: 10px; background: var(--tint); display:grid; place-items:center; color: var(--green-deep); }
+.ledger .nm { font-weight: 600; font-size: 14px; }
+.ledger .nm small { display:block; font-size: 12px; color: var(--grey); font-weight: 400; margin-top: 1px; }
+.ledger .amt { font-family: "Fraunces", serif; font-weight: 600; font-size: 17px; font-variant-numeric: tabular-nums; text-align:right; }
+.ledger .amt small { display:block; font-size: 11px; color: var(--grey); font-weight: 400; font-family:"Inter",sans-serif; }
+.total-bar { margin-top: 18px; background: var(--green); color: #fff; border-radius: 12px; padding: 16px 22px; display:flex; justify-content: space-between; align-items: center; }
+.total-bar .l { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; }
+.total-bar .v { font-family: "Fraunces", serif; font-weight: 700; font-size: 26px; font-variant-numeric: tabular-nums; }
+
+.xp-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.xp { display:grid; grid-template-columns: 34px 1fr; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; transition: 0.2s; }
+.xp .ic { width: 34px; height: 34px; border-radius: 10px; background: var(--tint); color: var(--green-deep); display:grid; place-items:center; }
+.xp .num { font-size: 10px; letter-spacing: 0.2em; color: var(--grey); text-transform: uppercase; font-weight: 600; }
+.xp h4 { font-family: "Fraunces", serif; font-weight: 600; font-size: 15px; margin: 2px 0 6px; }
+.xp p { font-size: 12.5px; color: var(--grey); line-height: 1.5; margin: 0; }
+
+.trend-head { display:flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; max-width: 1192px; margin: 0 auto; padding: 0 36px; }
+.trend-head .l .eyebrow { font-size: 11px; letter-spacing: 0.22em; color: var(--green-deep); text-transform: uppercase; font-weight: 700; }
+.trend-head .l h2 { font-family: "Fraunces", serif; font-size: 36px; margin: 6px 0 4px; letter-spacing: -0.02em; font-weight: 600; }
+.trend-head .l p { color: var(--grey); margin: 0; }
+.trend-head .r { display:flex; align-items:center; gap: 10px; background: #fff; border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; font-size: 12px; color: var(--grey); }
+.trend-head .r .yt { background: #FF0000; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.clips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; max-width: 1192px; margin: 0 auto; padding: 0 36px; }
+.clip { position: relative; aspect-ratio: 9/16; border-radius: 14px; overflow: hidden; cursor: pointer; }
+.clip .thumb { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.clip .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 14px; color: #fff; }
+.clip .creator { display:flex; align-items: center; gap: 8px; font-size: 12px; }
+.clip .creator .av { width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.9); }
+.clip .creator .who b { display:block; font-size: 12px; font-weight: 600; }
+.clip .creator .who small { font-size: 10px; opacity: 0.9; }
+.clip .play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 54px; height: 54px; border-radius: 50%; background: var(--green); display:grid; place-items:center; }
+.clip .play svg { width: 22px; height: 22px; color: #fff; }
+.clip .time { font-family: "Inter", sans-serif; font-weight: 600; font-size: 11px; padding: 3px 8px; background: rgba(0,0,0,0.6); border-radius: 4px; align-self: flex-end; }
+`}} />
+  );
+}
+
 function TravelogueArticle({ onBack, onOpenTrip }) {
   const a = GOA_ARTICLE;
   const wordCount = [...(a.intro||[]), ...(a.bodyParas||[])].join(' ').split(/\s+/).length;
@@ -33,7 +175,7 @@ function TravelogueArticle({ onBack, onOpenTrip }) {
       <ArticleHero article={a}/>
 
       {/* Journal-style meta strip */}
-      <JournalMetaStrip article={a} readMin={readMin} wordCount={wordCount}/>
+      {/* <JournalMetaStrip article={a} readMin={readMin} wordCount={wordCount}/> */}
 
       {/* Body: two-column journal prose with drop cap + margin rail */}
       <div style={{ maxWidth:1120, margin:'0 auto', padding:'28px 36px 8px', display:'grid', gridTemplateColumns:'1fr 220px', gap:40 }}>
@@ -48,11 +190,14 @@ function TravelogueArticle({ onBack, onOpenTrip }) {
       </div>
 
       {/* Editorial block: full-width videos, then centered budget */}
-      <TrendingVideos videos={a.videos}/>
-      <BudgetBreakdown rows={a.budget}/>
+      <ChapterDivider num="02" roman="II" title="<em>On</em> Camera<small>Four creator clips worth pausing for — picked from the trail.</small>" metaL="Trending" metaR="This week" />
 
-      {/* Experience Collection */}
-      <ExperienceCollection items={a.experiences}/>
+      <TrendingVideosNew videos={a.videos}/>
+
+      <ChapterDivider num="03" roman="III" title="The <em>Ledger</em> &amp; the Days<small>What it cost, and what it was worth — side by side.</small>" metaL="Per person" metaR="5 nights" />
+
+      <LedgerAndExperience budget={a.budget} experiences={a.experiences}/>
+
 
       {/* Gallery, Taste, Notes, Related, CTA are in lower file */}
       <TravelogueLowerSections article={a} onOpenTrip={onOpenTrip}/>
@@ -141,51 +286,95 @@ function MarginRail({ article, readMin }) {
 }
 
 function ArticleHero({ article }) {
+  const [leftTitle, rightTitle] = article.title.split('—');
+  const photos = article.gallery || [];
   return (
-    <div style={{ maxWidth:1200, margin:'24px auto 0', padding:'0 36px' }}>
-      <div style={{ display:'grid', gridTemplateColumns:'1.05fr 1fr', borderRadius:24, overflow:'hidden', border:`1px solid ${T.greyLight}`, boxShadow:'0 18px 48px rgba(7,29,43,.10)', background:'#fff', minHeight:480 }}>
-        {/* Left: clean image, no text overlay */}
-        <div style={{ position:'relative', minHeight:480, height:'100%' }}>
-          <div style={{ position:'absolute', inset:0 }}>
-            <ImgPlaceholder {...article.hero} radius={0} aspect={null}/>
-          </div>
+    <>
+    <TravelogueNewStyle />
+    <section className="hero">
+      <div className="hero-polaroids">
+        <div className="polaroid p1">
+          <div className="ph" style={{backgroundImage: photos[0] ? `url(${photos[0].src})` : '', backgroundSize: 'cover', backgroundPosition: 'center'}}></div>
+          <div className="cap">{photos[0] ? photos[0].label : 'palm hour'}</div>
         </div>
-        {/* Right: text panel */}
-        <div style={{ padding:'44px 44px 36px', display:'flex', flexDirection:'column', justifyContent:'center', gap:20 }}>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8, alignSelf:'flex-start' }}>
-            <span style={{ background:T.green, color:'#fff', padding:'5px 12px', borderRadius:999, fontSize:11.5, fontWeight:700, display:'inline-flex', alignItems:'center', gap:6, letterSpacing:'.02em' }}>
-              <Ico name="spark" size={11} color="#fff"/> {article.category}
-            </span>
-            <span style={{ fontSize:11, fontWeight:700, color:T.grey, letterSpacing:'.16em' }}>· {article.date.toUpperCase()}</span>
-          </div>
-          <h1 style={{ fontFamily:'Fraunces, serif', fontSize:40, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:0, lineHeight:1.1, textWrap:'pretty' }}>{article.title}</h1>
-          <div style={{ fontSize:15, lineHeight:1.6, color:T.inkSoft }}>{article.dek}</div>
-          <div style={{ display:'flex', alignItems:'center', gap:12, paddingTop:6, borderTop:`1px solid ${T.greyLight}`, marginTop:6 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:10, paddingTop:16 }}>
-              <Avatar name={article.author.name} size={36}/>
-              <div style={{ lineHeight:1.2 }}>
-                <div style={{ fontSize:10, color:T.grey, letterSpacing:'.14em', fontWeight:700 }}>WRITTEN BY</div>
-                <div style={{ fontSize:13.5, fontWeight:700, color:T.ink, display:'flex', alignItems:'center', gap:6, marginTop:2 }}>
-                  {article.author.name}
-                  {article.author.verified && <span style={{ width:14, height:14, borderRadius:'50%', background:T.green, color:'#fff', fontSize:9, display:'inline-flex', alignItems:'center', justifyContent:'center', fontWeight:800 }}>✓</span>}
-                </div>
-              </div>
-            </div>
-            <span style={{ flex:1 }}/>
-            <div style={{ display:'flex', gap:10, paddingTop:16 }}>
-              <button style={{ width:38, height:38, borderRadius:'50%', background:'linear-gradient(135deg, #f09433, #e6683c 40%, #dc2743 60%, #cc2366 80%, #bc1888)', border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg>
-              </button>
-              <button style={{ height:38, padding:'0 16px', borderRadius:999, background:'#F4F6FA', color:T.ink, border:`1px solid ${T.greyLight}`, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:8 }}>
-                <Ico name="send" size={13} color={T.ink}/> Share
-              </button>
-            </div>
-          </div>
+        <div className="polaroid p2">
+          <div className="ph" style={{backgroundImage: photos[1] ? `url(${photos[1].src})` : '', backgroundSize: 'cover', backgroundPosition: 'center'}}></div>
+          <div className="cap">{photos[1] ? photos[1].label : 'sunrise run'}</div>
+        </div>
+        <div className="polaroid p3">
+          <div className="ph" style={{backgroundImage: photos[2] ? `url(${photos[2].src})` : '', backgroundSize: 'cover', backgroundPosition: 'center'}}></div>
+          <div className="cap">{photos[2] ? photos[2].label : 'cliff picnic'}</div>
         </div>
       </div>
+      <div className="hero-copy">
+        <div>
+          <span className="kicker">{article.category}</span>
+          <span className="date">{article.date}</span>
+        </div>
+        <h1>{leftTitle} {rightTitle ? <>— <em>{rightTitle.trim()}</em></> : ''}</h1>
+        <p className="deck">{article.dek}</p>
+        <div className="actions">
+          <a className="btn primary" onClick={() => alert('Starting journey!')}>▶ Start the journey</a>
+          <a className="btn ghost" onClick={() => alert('Share dialog opening...')}>↗ Share article</a>
+        </div>
+        <div className="hero-stats">
+          <div><small>Issue</small><b>{article.date.split(' ')[0]} · {article.date.split(' ')[2]||'2025'}</b></div>
+          <div><small>Read</small><b>4 min</b></div>
+          <div><small>Photos</small><b>{photos.length}</b></div>
+          <div><small>Dateline</small><b>Goa · IN</b></div>
+        </div>
+      </div>
+    </section>
+    </>
+  );
+}
+
+function ChapterDivider({ num, roman, title, metaL, metaR }) {
+  return (
+    <div className="chapter">
+      <div className="num"><span>Chapter {num}</span>{roman}</div>
+      <div className="title" dangerouslySetInnerHTML={{__html: title}}></div>
+      <div className="meta">{metaL}<b>{metaR}</b></div>
     </div>
   );
 }
+
+function LedgerAndExperience({ budget, experiences }) {
+  const total = budget.reduce((a,r) => a+r.amount, 0);
+  return (
+    <section className="ledger-wrap">
+      <div className="panel">
+        <div className="panel-head"><div className="t">Trip <em>Budget</em></div><div className="m">₹ · Oct 2025</div></div>
+        <div className="ledger">
+          {budget.map((r, i) => (
+            <div className="row" key={i}>
+              <div className="ic"><BudgetIcon name={r.icon} compact={true}/></div>
+              <div className="nm">{r.label}<small>Standard expense</small></div>
+              <div className="amt">₹{r.amount.toLocaleString('en-IN')}<small>{((r.amount/total)*100).toFixed(1)}%</small></div>
+            </div>
+          ))}
+        </div>
+        <div className="total-bar"><div className="l">Total Spend</div><div className="v">₹{total.toLocaleString('en-IN')}</div></div>
+      </div>
+      <div className="panel">
+        <div className="panel-head"><div className="t"><em>Experience</em> Collection</div><div className="m">{experiences.length.toString().padStart(2, '0')} picks</div></div>
+        <div className="xp-grid">
+          {experiences.slice(0, 9).map((xp, i) => (
+            <article className="xp" key={i}>
+              <div className="ic"><ExperienceGlyph name={xp.icon} color="currentColor"/></div>
+              <div>
+                <div className="num">No. {(i+1).toString().padStart(2, '0')}</div>
+                <h4>{xp.title}</h4>
+                <p>{xp.body}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 function PullQuote({ text }) {
   return (
@@ -339,6 +528,27 @@ function ExperienceGlyph({ name, color }) {
     case 'cafe': return <svg {...p}><path d="M4 8h13v6a5 5 0 01-5 5H9a5 5 0 01-5-5V8z"/><path d="M17 10h2a2 2 0 010 4h-2M7 3v2M11 3v2M15 3v2"/></svg>;
     default: return <svg {...p}><circle cx="12" cy="12" r="8"/></svg>;
   }
+}
+
+function TrendingVideosNew({ videos }) {
+  return (
+    <section>
+      <div className="clips">
+        {videos.map((v, i) => (
+          <div className="clip" key={i} onClick={() => alert('Playing clip...')}>
+            <div className="thumb" style={{
+                backgroundImage: v.src ? `linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.5)), url('${v.src}')` : 'linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.5)), repeating-linear-gradient(135deg, #4c5560 0 12px, #5a6572 12px 24px)'
+            }}></div>
+            <div className="overlay">
+              <div className="creator"><div className="av"></div><div className="who"><b>{v.title}</b><small>{v.handle}</small></div></div>
+              <div className="time">0:42</div>
+            </div>
+            <div className="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg></div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 Object.assign(window, { TravelogueArticle });

@@ -7,12 +7,9 @@ function personaTheme(persona) {
   return { primary:T.greenDeep, deep:T.greenDeep, soft:'#F0FAF4', ring:`${T.green}33`, label:null };
 }
 
-function TripDetail({ onBack, onBook, onCustomise, onOpenArticle }) {
-  // Resolve trip by current view's tripId — default to Rishikesh.
-  const tripId = (() => {
-    try { const v=JSON.parse(localStorage.getItem('trav.view')||'{}'); return v.tripId; } catch { return null; }
-  })();
-  const t = tripId === 'trip-nainital' ? NAINITAL_TRIP : RISHIKESH_TRIP;
+function TripDetail({ tripId, onBack, onBook, onCustomise, onOpenArticle }) {
+  // We now receive tripId via props, keeping it instantly synced with view state!
+  const t = tripId === 'trip-nainital' ? NAINITAL_TRIP : (tripId === 'trip-thailand' ? THAILAND_TRIP : RISHIKESH_TRIP);
   const isMobile = useIsMobile();
   const [reviewsOpen, setReviewsOpen] = React.useState(false);
   const [activeDay, setActiveDay] = React.useState(0);
@@ -39,7 +36,19 @@ function TripDetail({ onBack, onBook, onCustomise, onOpenArticle }) {
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:isMobile?12:18 }}>
           <Btn kind="outline" size="sm" icon="arrow-left" onClick={onBack}>{isMobile?'Back':'Back to trips'}</Btn>
           <div style={{ display:'flex', gap:6 }}>
-            <button style={galleryActionBtn}><Ico name="send" size={14} color={T.ink} stroke={2}/>{!isMobile && ' Share'}</button>
+            <button onClick={() => {
+              const text = `Hey guys! 🌴 Check out this weekend trip by trav.\n\n` +
+                           `📍 ${t.dest}\n` +
+                           `📅 ${t.dates.split('·')[1]?.trim()||t.dates}\n` +
+                           `💸 ${inr(t.price)} / head\n\n` +
+                           `${t.tagline}\n\n` +
+                           `Let's lock this in? Only ${t.spotsLeft} spots left! 🔥\n` +
+                           `Link: https://trav.app/trip/${t.id}`;
+              navigator.clipboard.writeText(text);
+              alert('Pitch copied to clipboard! Paste it in your WhatsApp group.');
+            }} style={galleryActionBtn}>
+              <Ico name="whatsapp" size={14} color={T.greenDeep}/>{!isMobile && ' Pitch to group'}
+            </button>
             <button style={galleryActionBtn}><Ico name="heart" size={14} color={T.ink} stroke={2}/>{!isMobile && ' Save'}</button>
           </div>
         </div>
@@ -183,7 +192,14 @@ function TripDetail({ onBack, onBook, onCustomise, onOpenArticle }) {
               </div>
             </Section>
             <WhoIsThisFor persona={persona} setPersona={setPersona} isMobile={isMobile}/>
-            <Section title="FAQ" isMobile={isMobile}><Accordion items={t.faq}/></Section>
+            <Section title="FAQ" isMobile={isMobile}>
+              <Accordion items={t.faq}/>
+              <div style={{ marginTop:8, paddingTop:12, borderTop:`1px solid ${T.greyLight}` }}>
+                <a onClick={(e) => { e.preventDefault(); window.openFaq && window.openFaq(); }} style={{ fontSize:12.5, color:T.greenDeep, fontWeight:700, textDecoration:'none', display:'inline-flex', alignItems:'center', gap:5, cursor:'pointer' }}>
+                  Browse all FAQs <Ico name="arrow-right" size={12} color={T.greenDeep} stroke={2.4}/>
+                </a>
+              </div>
+            </Section>
             <ExploreDeeper articleIds={t.relatedArticleIds} onOpenArticle={onOpenArticle} isMobile={isMobile}/>
             <AfterYouBook isMobile={isMobile}/>
           </div>
@@ -474,7 +490,12 @@ function DayPhotos({ photos, day, dayNum, isMobile, onOpen }) {
 function TripOverview({ trip, isMobile, theme }) {
   const th = theme || { deep:T.greenDeep, soft:'#F0FAF4' };
   const isTravHer = th.deep && th.deep.indexOf('9c3a2a') >= 0;
-  const tiles = [
+  const tiles = trip.isLongHaul ? [
+    { icon:'calendar', label:'DURATION', v1:trip.nightsLabel, v2:trip.duration+' days', tint:isTravHer?'#FBEFE7':'#F0FAF4' },
+    { icon:'bed',   label:'STAY',   v1:trip.hotel.name, v2:trip.hotel.tier, tint:'#FFF5D6' },
+    { icon:'users', label:'FLIGHTS', v1:'Not included', v2:'Custom quotes available', tint:'#F0F6FB' },
+    { icon:'pin',   label:'VISA', v1:'Visa required', v2:'We assist end-to-end', tint:isTravHer?'#F0FAF4':'#FBEFE7' },
+  ] : [
     { icon:'clock', label:'START',  v1:trip.meetingPoint.split('·')[1]?.trim() || 'Fri 9:00 PM', v2:trip.meetingPoint.split('·')[0]?.trim() || 'Akshardham, Delhi', tint:isTravHer?'#FBEFE7':'#F0FAF4' },
     { icon:'bed',   label:'STAY',   v1:trip.hotel.name, v2:trip.hotel.tier, tint:'#FFF5D6' },
     { icon:'car',   label:'RIDE',   v1:'AC Volvo', v2:'Both ways', tint:'#F0F6FB' },
@@ -513,6 +534,18 @@ function TripOverview({ trip, isMobile, theme }) {
           </div>
         ))}
       </div>
+      
+      {/* Long Haul Logistics Extensions */}
+      {trip.isLongHaul && trip.logistics && (
+        <div style={{ padding:isMobile?16:20, borderRadius:12, border:`1px solid ${th.ring||T.greenLight}`, background:th.soft||'#F0FAF4', marginTop:16 }}>
+          <div style={{ fontSize:10.5, color:th.deep||T.greenDeep, letterSpacing:'.1em', fontWeight:800, marginBottom:10 }}>LOGISTICS & PASSPORT</div>
+          <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr 1fr', gap:isMobile?14:16 }}>
+            <div><div style={{ fontSize:10.5, color:T.grey, fontWeight:700, letterSpacing:'.06em', marginBottom:4 }}>VISA</div><div style={{ fontSize:13, fontWeight:600, color:T.inkSoft, lineHeight:1.4 }}>{trip.logistics.visa}</div></div>
+            <div><div style={{ fontSize:10.5, color:T.grey, fontWeight:700, letterSpacing:'.06em', marginBottom:4 }}>FLIGHTS</div><div style={{ fontSize:13, fontWeight:600, color:T.inkSoft, lineHeight:1.4 }}>{trip.logistics.flights}</div></div>
+            <div><div style={{ fontSize:10.5, color:T.grey, fontWeight:700, letterSpacing:'.06em', marginBottom:4 }}>FOREX</div><div style={{ fontSize:13, fontWeight:600, color:T.inkSoft, lineHeight:1.4 }}>{trip.logistics.forex}</div></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -706,6 +739,19 @@ function BookingCard({ trip, onBook, onCustomise, persona='standard', theme }) {
           <div style={{ height:'100%', width:`${pct}%`, background:pct>=60?`linear-gradient(90deg, ${T.fire}, #dc2626)`:`linear-gradient(90deg, ${T.green}, ${T.greenDeep})`, borderRadius:999, transition:'width .3s' }}/>
         </div>
         <div style={{ fontSize:11.5, color:T.grey, marginTop:6 }}>Only <b style={{ color:T.ink, fontWeight:700 }}>{trip.spotsLeft} spots left</b> · {trip.viewingNow} viewing now</div>
+        
+        {/* Vibe Check Snapshot */}
+        <div style={{ marginTop:14, padding:'10px 12px', background:'#FAFBFC', border:`1px solid ${T.greyLight}`, borderRadius:10, display:'flex', alignItems:'center', gap:10 }}>
+          <div style={{ display:'flex' }}>
+            <img src="https://i.pravatar.cc/100?img=12" alt="Traveler" style={{ width:24, height:24, borderRadius:'50%', border:'2px solid #fff' }}/>
+            <img src="https://i.pravatar.cc/100?img=47" alt="Traveler" style={{ width:24, height:24, borderRadius:'50%', border:'2px solid #fff', marginLeft:-8 }}/>
+            <img src="https://i.pravatar.cc/100?img=68" alt="Traveler" style={{ width:24, height:24, borderRadius:'50%', border:'2px solid #fff', marginLeft:-8 }}/>
+          </div>
+          <div style={{ fontSize:11, color:T.inkSoft, lineHeight:1.4 }}>
+            <b style={{ color:T.ink, fontWeight:700 }}>Who's going?</b>
+            <br/>4 Solos · 2 Couples · 3 First-timers
+          </div>
+        </div>
       </div>
       {/* Date selector */}
       <div style={{ border:`1px solid ${T.greyLight}`, borderRadius:10, marginBottom:10, position:'relative' }}>
@@ -751,6 +797,25 @@ function BookingCard({ trip, onBook, onCustomise, persona='standard', theme }) {
           <button onClick={()=>setGuests(Math.min(6,guests+1))} style={stepBtn}>+</button>
         </div>
       </div>
+      
+      {trip.isLongHaul && (
+        <div style={{ marginBottom:14 }}>
+          <div style={{ padding:'10px 12px', background:'#FAFBFC', border:`1px solid ${T.greyLight}`, borderRadius:10 }}>
+            <div style={{ fontSize:11, fontWeight:700, color:T.ink, marginBottom:4, display:'flex', alignItems:'center', gap:6 }}>
+              <Ico name="pin" size={12} color={T.greenDeep} stroke={2.4}/> Passport Required
+            </div>
+            <div style={{ fontSize:11, color:T.grey, lineHeight:1.4 }}>
+              Valid passport with minimum 6 months validity needed.
+            </div>
+            <div style={{ height:1, background:T.greyLight, margin:'8px 0' }}/>
+            <label style={{ display:'flex', alignItems:'center', gap:8, cursor:'pointer' }}>
+              <input type="checkbox" style={{ accentColor:T.greenDeep, width:14, height:14 }} />
+              <div style={{ fontSize:11, color:T.inkSoft, fontWeight:600 }}>I need flights as well (Request quote post-booking)</div>
+            </label>
+          </div>
+        </div>
+      )}
+
       <div style={{ borderTop:`1px dashed ${T.greyLight}`, paddingTop:12, marginBottom:16, display:'flex', justifyContent:'space-between', alignItems:'baseline' }}>
         <span style={{ fontSize:11, color:T.grey, letterSpacing:'.1em', fontWeight:700 }}>TOTAL</span>
         <span style={{ fontSize:22, fontWeight:800, color:tint?th.deep:T.greenDeep, letterSpacing:'-.02em' }}>{inr(total)}</span>

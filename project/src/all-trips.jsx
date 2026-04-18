@@ -1,6 +1,6 @@
 // All Trips filter index — browse every itinerary with a left-side filter rail.
 
-function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)' }) {
+function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)', filterDest }) {
   const isMobile = useIsMobile();
   const [duration, setDuration] = React.useState('all'); // all | weekend | 2-3 | 4-6 | 7+
   const [travelingAs, setTravelingAs] = React.useState(null); // null | friends | solo-female | couple | family
@@ -8,6 +8,24 @@ function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)' }) {
   const [budget, setBudget] = React.useState([]); // ['u5','5to10','10to20','20plus']
   const [sort, setSort] = React.useState('recommended');
   const [filterOpen, setFilterOpen] = React.useState(false);
+
+  const [tripTypeBase, setTripTypeBase] = React.useState(filterDest ? 'long-haul' : 'weekend');
+  const [activeDest, setActiveDest] = React.useState(filterDest);
+
+  React.useEffect(() => {
+    // Switch to long-haul automatically if clicking a long-haul destination
+    if (filterDest) {
+      setTripTypeBase('long-haul');
+      setActiveDest(filterDest);
+    }
+  }, [filterDest]);
+
+  const toggleBase = (base) => {
+    setTripTypeBase(base);
+    setDuration('all');
+    setBudget([]);
+    setActiveDest(null); // Clear destination to see ALL trips in base
+  };
 
   const allVibes = [
     { id:'adventure', label:'Adventure' },
@@ -18,16 +36,43 @@ function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)' }) {
     { id:'mountains', label:'Mountains' },
     { id:'romantic', label:'Romantic' },
   ];
-  const budgetOpts = [
+  
+  const budgetOpts = tripTypeBase === 'weekend' ? [
     { id:'u5', label:'Under ₹5,000', fn:p=>p<5000 },
     { id:'5to10', label:'₹5,000 – ₹10,000', fn:p=>p>=5000&&p<=10000 },
     { id:'10to20', label:'₹10,000 – ₹20,000', fn:p=>p>10000&&p<=20000 },
     { id:'20plus', label:'₹20,000+', fn:p=>p>20000 },
+  ] : [
+    { id:'u50', label:'Under ₹50K', fn:p=>p<50000 },
+    { id:'50to100', label:'₹50K – ₹1 Lakh', fn:p=>p>=50000&&p<=100000 },
+    { id:'100plus', label:'₹1 Lakh+', fn:p=>p>100000 },
+  ];
+
+  const durationOpts = tripTypeBase === 'weekend' ? [
+    { id:'all', label:'All' },
+    { id:'weekend', label:'This Weekend' },
+    { id:'2-3', label:'2–3 Days' },
+    { id:'4-6', label:'4–6 Days' },
+    { id:'7+', label:'7+ Days' },
+  ] : [
+    { id:'all', label:'All' },
+    { id:'5-7', label:'5–7 Days' },
+    { id:'8-10', label:'8–10 Days' },
+    { id:'10-14', label:'10–14 Days' },
+    { id:'14+', label:'14+ Days' },
   ];
 
   const toggle = (arr, setArr, id) => setArr(arr.includes(id) ? arr.filter(x=>x!==id) : [...arr, id]);
 
   const filtered = ALL_TRIPS.filter(t => {
+    // 1. Filter by Base Type (Weekend vs Long Haul)
+    if (tripTypeBase === 'weekend' && t.category !== 'domestic') return false;
+    if (tripTypeBase === 'long-haul' && t.category !== 'long-haul') return false;
+
+    // 2. Filter by Destination Search
+    if (activeDest && !t.region.toLowerCase().includes(activeDest.toLowerCase()) && !t.title.toLowerCase().includes(activeDest.toLowerCase()) && !t.dest.toLowerCase().includes(activeDest.toLowerCase())) return false;
+    
+    // 3. Other Filters
     if (duration!=='all' && t.duration!==duration) return false;
     if (travelingAs && !t.travelingAs.includes(travelingAs)) return false;
     if (vibes.length && !vibes.some(v => t.vibes.includes(v))) return false;
@@ -45,7 +90,7 @@ function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)' }) {
     return 0;
   });
 
-  const clearAll = () => { setDuration('all'); setTravelingAs(null); setVibes([]); setBudget([]); };
+  const clearAll = () => { setDuration('all'); setTravelingAs(null); setVibes([]); setBudget([]); setActiveDest(null); };
   const activeCount = (duration!=='all'?1:0) + (travelingAs?1:0) + vibes.length + budget.length;
 
   return (
@@ -53,6 +98,10 @@ function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)' }) {
       {/* Mobile-only top bar with filter toggle */}
       {isMobile && (
         <div style={{ position:'sticky', top:56, zIndex:10, background:T.offWhite, padding:'0 16px 12px' }}>
+          <div style={{ display:'flex', background:'#E6E9F0', borderRadius:999, padding:4, gap:4, marginBottom:12 }}>
+             <button onClick={()=>toggleBase('weekend')} style={{ flex:1, border:'none', background: tripTypeBase==='weekend' ? '#fff' : 'transparent', color: tripTypeBase==='weekend' ? T.ink : T.grey, padding:'8px 16px', borderRadius:999, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s', boxShadow: tripTypeBase==='weekend' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none' }}>Weekend</button>
+             <button onClick={()=>toggleBase('long-haul')} style={{ flex:1, border:'none', background: tripTypeBase==='long-haul' ? '#fff' : 'transparent', color: tripTypeBase==='long-haul' ? T.ink : T.grey, padding:'8px 16px', borderRadius:999, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s', boxShadow: tripTypeBase==='long-haul' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none' }}>Long Haul</button>
+          </div>
           <div style={{ display:'flex', gap:8, alignItems:'center', justifyContent:'space-between' }}>
             <button onClick={()=>setFilterOpen(true)} style={{ flex:1, height:42, borderRadius:10, border:`1px solid ${T.greyLight}`, background:'#fff', color:T.ink, fontFamily:'inherit', fontSize:13, fontWeight:700, display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8, cursor:'pointer' }}>
               <Ico name="settings" size={14} color={T.greenDeep} stroke={2}/> Filters {activeCount>0 && <span style={{ background:T.green, color:'#fff', borderRadius:999, padding:'1px 7px', fontSize:11, fontWeight:800 }}>{activeCount}</span>}
@@ -103,13 +152,7 @@ function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)' }) {
 
             <FilterBlock label="TRIP TYPE">
               <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
-                {[
-                  { id:'all', label:'All' },
-                  { id:'weekend', label:'This Weekend' },
-                  { id:'2-3', label:'2–3 Days' },
-                  { id:'4-6', label:'4–6 Days' },
-                  { id:'7+', label:'7+ Days' },
-                ].map(x => <Chip key={x.id} active={duration===x.id} onClick={()=>setDuration(x.id)}>{x.label}</Chip>)}
+                {durationOpts.map(x => <Chip key={x.id} active={duration===x.id} onClick={()=>setDuration(x.id)}>{x.label}</Chip>)}
               </div>
             </FilterBlock>
 
@@ -171,13 +214,20 @@ function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)' }) {
             <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:26, flexWrap:'wrap', gap:16 }}>
               <div>
                 <h1 style={{ fontSize:40, fontWeight:800, color:T.ink, letterSpacing:'-.025em', margin:0, fontFamily:'Fraunces, serif', lineHeight:1.1 }}>
-                  Weekend Escapes from {fromCity.split(' ')[0]}
+                  {activeDest ? `Escapes to ${activeDest}` : (tripTypeBase==='weekend' ? `Weekend Escapes from ${fromCity.split(' ')[0]}` : `Long Haul Trips`)}
                 </h1>
                 <div style={{ fontSize:14.5, color:T.grey, marginTop:8, maxWidth:560 }}>
-                  Curated 2–{duration==='7+'?'10':'7'} day adventures tailored for your squad. No planning required.
+                  Curated adventures tailored for your squad. No planning required.
                 </div>
               </div>
-              <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:20 }}>
+                {/* Custom Toggle */}
+                <div style={{ display:'flex', background:'#E6E9F0', borderRadius:999, padding:4, gap:4 }}>
+                  <button onClick={()=>toggleBase('weekend')} style={{ border:'none', background: tripTypeBase==='weekend' ? '#fff' : 'transparent', color: tripTypeBase==='weekend' ? T.ink : T.grey, padding:'8px 16px', borderRadius:999, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s', boxShadow: tripTypeBase==='weekend' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none' }}>Weekend</button>
+                  <button onClick={()=>toggleBase('long-haul')} style={{ border:'none', background: tripTypeBase==='long-haul' ? '#fff' : 'transparent', color: tripTypeBase==='long-haul' ? T.ink : T.grey, padding:'8px 16px', borderRadius:999, fontSize:13, fontWeight:700, cursor:'pointer', transition:'all 0.2s', boxShadow: tripTypeBase==='long-haul' ? '0 2px 8px rgba(0,0,0,0.1)' : 'none' }}>Long Haul</button>
+                </div>
+                {/* Sort By */}
+                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                 <span style={{ fontSize:11, color:T.grey, letterSpacing:'.14em', fontWeight:700 }}>SORT BY</span>
                 <div style={{ position:'relative' }}>
                   <select value={sort} onChange={e=>setSort(e.target.value)} style={{ height:40, padding:'0 34px 0 14px', borderRadius:10, border:`1px solid ${T.greyLight}`, fontSize:13, fontWeight:600, color:T.ink, background:'#fff', fontFamily:'inherit', appearance:'none', cursor:'pointer' }}>
@@ -192,11 +242,12 @@ function AllTripsIndex({ onOpenTrip, fromCity='Delhi (NCR)' }) {
                 </div>
               </div>
             </div>
+            </div>
           )}
           {isMobile && (
             <div style={{ marginBottom:14 }}>
               <h1 style={{ fontSize:24, fontWeight:800, color:T.ink, letterSpacing:'-.025em', margin:0, fontFamily:'Fraunces, serif', lineHeight:1.1 }}>
-                {sorted.length} trips from {fromCity.split(' ')[0]}
+                {sorted.length} trips {activeDest ? `to ${activeDest}` : (tripTypeBase==='weekend' ? `from ${fromCity.split(' ')[0]}` : `(Long Haul)`)}
               </h1>
               <div style={{ fontSize:12.5, color:T.grey, marginTop:4 }}>Curated for your squad. No planning required.</div>
             </div>

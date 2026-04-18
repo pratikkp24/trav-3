@@ -34,7 +34,7 @@ function Landing({ onOpenTrip, onViewAllTrips }) {
       <HowTraveling isMobile={isMobile}/>
       <HowItWorks isMobile={isMobile}/>
       <TravHer isMobile={isMobile}/>
-      <GoingLonger isMobile={isMobile}/>
+      <GoingLonger isMobile={isMobile} onClickDest={onViewAllTrips}/>
     </>
   );
 }
@@ -548,14 +548,14 @@ function TravHer({ isMobile }) {
   );
 }
 
-function GoingLonger({ isMobile }) {
+function GoingLonger({ isMobile, onClickDest }) {
   return (
     <div style={{ background:'#F4F6FA', padding:isMobile?'32px 0 40px':'88px 36px 72px' }}>
       <div style={{ maxWidth:1200, margin:'0 auto', padding:isMobile?'0 16px':0 }}>
         <h2 style={{ fontSize:isMobile?22:40, fontWeight:800, color:T.ink, letterSpacing:'-.025em', margin:`0 0 ${isMobile?16:32}px`, fontFamily:'Fraunces, serif' }}>Going longer</h2>
         <div className={isMobile?'scroll-x':''} style={{ display:isMobile?'flex':'grid', gridTemplateColumns:isMobile?undefined:'repeat(4,1fr)', gap:isMobile?12:20, overflowX:isMobile?'auto':'visible', margin:isMobile?'0 -16px':0, padding:isMobile?'0 16px':0 }}>
           {GOING_LONGER.map(g => (
-            <div key={g.dest} className={isMobile?'snap':''} style={{ borderRadius:16, overflow:'hidden', cursor:'pointer', aspectRatio:'3/4', position:'relative', minWidth:isMobile?200:'auto', flexShrink:0 }}>
+            <div key={g.dest} onClick={() => onClickDest && onClickDest(g.dest)} className={isMobile?'snap':''} style={{ borderRadius:16, overflow:'hidden', cursor:'pointer', aspectRatio:'3/4', position:'relative', minWidth:isMobile?200:'auto', flexShrink:0 }}>
               <ImgPlaceholder src={g.src} tone={g.tone} accent={g.accent} ink="#0a1418" label={g.dest.toLowerCase()} radius={16} overlay={false}/>
               <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,.75) 100%)' }}/>
               <div style={{ position:'absolute', left:18, bottom:18, right:18, color:'#fff' }}>

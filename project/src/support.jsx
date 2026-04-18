@@ -383,7 +383,7 @@ function RightRail({ isMobile, openFaq, setOpenFaq }) {
           })}
         </div>
         <div style={{ marginTop:8, paddingTop:12, borderTop:`1px solid ${T.greyLight}` }}>
-          <a href="#" style={{ fontSize:12.5, color:T.greenDeep, fontWeight:700, textDecoration:'none', display:'inline-flex', alignItems:'center', gap:5 }}>
+          <a onClick={(e) => { e.preventDefault(); window.openFaq && window.openFaq(); }} style={{ fontSize:12.5, color:T.greenDeep, fontWeight:700, textDecoration:'none', display:'inline-flex', alignItems:'center', gap:5, cursor:'pointer' }}>
             Browse all FAQs <Ico name="arrow-right" size={12} color={T.greenDeep} stroke={2.4}/>
           </a>
         </div>

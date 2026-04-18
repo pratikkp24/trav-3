@@ -159,6 +159,59 @@ function ItineraryCard({ trip }) {
                     <div style={{ borderLeft:`1.5px dashed ${T.greyLight}`, paddingLeft:14, paddingBottom:6 }}>
                       <div style={{ fontSize:13.5, fontWeight:700, color:T.ink }}>{blk.title}</div>
                       <div style={{ fontSize:12.5, color:T.grey, marginTop:2, lineHeight:1.5 }}>{blk.body}</div>
+                      
+                      {/* Post-booking Upgrades */}
+                      {/pickup/i.test(blk.title) && (
+                        <div style={{ marginTop:12, padding:'12px', background:'#F4F6FA', borderRadius:10, border:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', gap:12 }}>
+                          <div style={{ width:32, height:32, borderRadius:8, background:'#fff', display:'flex', alignItems:'center', justifyContent:'center', border:`1px solid ${T.greyLight}` }}>
+                            <Ico name="map-pin" size={14} color={T.ink}/>
+                          </div>
+                          <div style={{ flex:1 }}>
+                            <div style={{ fontSize:12.5, fontWeight:700, color:T.ink }}>Gate No. 2, Akshardham Metro</div>
+                            <div style={{ fontSize:11.5, color:T.grey, marginTop:2 }}>Trip Lead Tanya will be holding a 'trav' placard.</div>
+                          </div>
+                          <Btn kind="outline" size="sm" icon="external-link">Map</Btn>
+                        </div>
+                      )}
+                      
+                      {/volvo/i.test(blk.title) && (
+                        <div style={{ marginTop:12, padding:'12px', background:'#F0FAF4', borderRadius:10, border:`1px solid ${T.green}44`, display:'flex', alignItems:'center', gap:12 }}>
+                          <div style={{ width:32, height:32, borderRadius:8, background:'#fff', display:'flex', alignItems:'center', justifyContent:'center', border:`1px solid ${T.green}44` }}>
+                            <Ico name="ticket" size={14} color={T.greenDeep}/>
+                          </div>
+                          <div style={{ flex:1 }}>
+                            <div style={{ fontSize:12.5, fontWeight:800, color:T.greenDeep, letterSpacing:'-.01em' }}>PNR: YT-782910</div>
+                            <div style={{ fontSize:11.5, color:T.greenDeep, marginTop:2, opacity:0.8 }}>Bus HR-38 AB 1120 · Seats {trip.id==='trip-rishikesh'?'12, 13':'8'}</div>
+                          </div>
+                          <Btn kind="ghost" size="sm" style={{ color:T.greenDeep }}>Get PDF</Btn>
+                        </div>
+                      )}
+
+                      {/check-in/i.test(blk.title) && (
+                        <div style={{ marginTop:12, padding:'12px', background:'#FFF7EA', borderRadius:10, border:`1px solid ${T.amber}44`, display:'flex', alignItems:'center', gap:12 }}>
+                          <div style={{ width:32, height:32, borderRadius:8, background:'#fff', display:'flex', alignItems:'center', justifyContent:'center', border:`1px solid ${T.amber}44` }}>
+                            <Ico name="home" size={14} color={T.amber}/>
+                          </div>
+                          <div style={{ flex:1 }}>
+                            <div style={{ fontSize:12.5, fontWeight:700, color:T.ink }}>{trip.hotel?.name || 'Base Camp'} · Tent 4</div>
+                            <div style={{ fontSize:11.5, color:T.grey, marginTop:2 }}>Camp Manager: Sanjay (+91 99882 11223)</div>
+                          </div>
+                          <Btn kind="outline" size="sm" icon="phone">Call</Btn>
+                        </div>
+                      )}
+
+                      {/rafting/i.test(blk.title) && (
+                        <div style={{ marginTop:12, padding:'12px', background:'#F4F6FA', borderRadius:10, border:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', gap:12 }}>
+                          <div style={{ width:32, height:32, borderRadius:8, background:'#fff', display:'flex', alignItems:'center', justifyContent:'center', border:`1px solid ${T.greyLight}` }}>
+                            <Ico name="shield" size={14} color={T.ink}/>
+                          </div>
+                          <div style={{ flex:1 }}>
+                            <div style={{ fontSize:12.5, fontWeight:700, color:T.ink }}>Ganga Wave Riders (License #BR492)</div>
+                            <div style={{ fontSize:11.5, color:T.grey, marginTop:2 }}>Waiver signed digitally · Equipment vetted</div>
+                          </div>
+                        </div>
+                      )}
+
                     </div>
                   </div>
                 ))}
@@ -264,13 +317,16 @@ function HelpCard({ isUp, status, onReschedule, onModify, onCallback, onReview }
   const items = isUp ? [
     { label:'Reschedule dates', icon:'refresh', onClick:onReschedule },
     { label:'Modify travelers', icon:'users',   onClick:onModify },
+    { label:'Browse FAQs',      icon:'help-circle', onClick: () => window.openFaq && window.openFaq() },
     { label:'Request callback', icon:'phone',   onClick:onCallback },
   ] : status==='past' ? [
     { label:'Write a review',   icon:'star',    onClick:onReview },
     { label:'Re-book this trip',icon:'refresh', onClick:()=>{} },
+    { label:'Browse FAQs',      icon:'help-circle', onClick: () => window.openFaq && window.openFaq() },
     { label:'Request callback', icon:'phone',   onClick:onCallback },
   ] : [
     { label:'Re-book this trip',icon:'refresh', onClick:()=>{} },
+    { label:'Browse FAQs',      icon:'help-circle', onClick: () => window.openFaq && window.openFaq() },
     { label:'Request callback', icon:'phone',   onClick:onCallback },
   ];
   return (

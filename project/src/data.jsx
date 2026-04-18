@@ -16,17 +16,22 @@ const WEEKEND_TRIPS = [
 // Expanded catalog for the "View all" filter index
 const ALL_TRIPS = [
   // Weekend
-  { id:'trip-rishikesh', dest:'Rishikesh', region:'UTTARAKHAND', title:'Rafting & Riverside Yoga', duration:'weekend', nights:'2N/3D', price:8499, tags:['Adventure','Wellness'], vibes:['adventure','wellness','nature'], travelingAs:['friends','solo-female','couple'], fillingFast:true, travHerExclusive:false, img:{src:UNSPLASH('1571536802807-30451e3955d8'), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'Rishikesh'} },
-  { id:'trip-jaipur', dest:'Jaipur', region:'RAJASTHAN', title:'Pink City Heritage Walk', duration:'weekend', nights:'2N/3D', price:9999, tags:['Heritage','Food'], vibes:['heritage','culture'], travelingAs:['friends','couple','family'], fillingFast:false, travHerExclusive:false, img:{src:UNSPLASH('1477587458883-47145ed94245'), tone:'#c66a3d', ink:'#4a2414', accent:'#f2d9b3', label:'Jaipur'} },
-  { id:'trip-nainital', dest:'Nainital', region:'UTTARAKHAND', title:'Lake & Pine Mornings', duration:'weekend', nights:'2N/3D', price:7999, tags:['Nature','Mountains'], vibes:['nature','mountains'], travelingAs:['friends','couple','family'], fillingFast:true, travHerExclusive:false, img:{src:UNSPLASH('1626621341517-bbf3d9990a23'), tone:'#355e4a', ink:'#0b2418', accent:'#a6c8b1', label:'Nainital'} },
+  { id:'trip-rishikesh', dest:'Rishikesh', region:'UTTARAKHAND', title:'Rafting & Riverside Yoga', duration:'weekend', nights:'2N/3D', price:8499, tags:['Adventure','Wellness'], vibes:['adventure','wellness','nature'], travelingAs:['friends','solo-female','couple'], fillingFast:true, travHerExclusive:false, category:'domestic', img:{src:UNSPLASH('1571536802807-30451e3955d8'), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'Rishikesh'} },
+  { id:'trip-jaipur', dest:'Jaipur', region:'RAJASTHAN', title:'Pink City Heritage Walk', duration:'weekend', nights:'2N/3D', price:9999, tags:['Heritage','Food'], vibes:['heritage','culture'], travelingAs:['friends','couple','family'], fillingFast:false, travHerExclusive:false, category:'domestic', img:{src:UNSPLASH('1477587458883-47145ed94245'), tone:'#c66a3d', ink:'#4a2414', accent:'#f2d9b3', label:'Jaipur'} },
+  { id:'trip-nainital', dest:'Nainital', region:'UTTARAKHAND', title:'Lake & Pine Mornings', duration:'weekend', nights:'2N/3D', price:7999, tags:['Nature','Mountains'], vibes:['nature','mountains'], travelingAs:['friends','couple','family'], fillingFast:true, travHerExclusive:false, category:'domestic', img:{src:UNSPLASH('1626621341517-bbf3d9990a23'), tone:'#355e4a', ink:'#0b2418', accent:'#a6c8b1', label:'Nainital'} },
   // 2–3 Days
-  { id:'trip-manali', dest:'Old Manali', region:'HIMACHAL, HP', title:'Riverside Glamping & Yoga', duration:'2-3', nights:'3 Days · All Inclusive', price:8499, tags:['Adventure'], vibes:['adventure','nature','wellness'], travelingAs:['solo-female','couple','friends'], fillingFast:true, travHerExclusive:false, img:{src:LF(1200, 800, 'manali,himalaya,pine,valley', 501), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'Old Manali'} },
-  { id:'trip-agra', dest:'Agra', region:'UTTAR PRADESH', title:'Mughal Heritage & High Tea', duration:'2-3', nights:'2 Days · Solo Friendly', price:6200, tags:['Heritage'], vibes:['heritage','culture'], travelingAs:['solo-female','couple'], fillingFast:false, travHerExclusive:true, img:{src:UNSPLASH('1524492412937-b28074a5d7da'), tone:'#c6a45a', ink:'#2a1f0a', accent:'#f7e2b5', label:'Agra'} },
-  { id:'trip-jodhpur', dest:'Jodhpur', region:'RAJASTHAN', title:'The Blue City Photo Walk', duration:'2-3', nights:'2 Days · Urban Legend', price:4500, tags:['Cultural'], vibes:['heritage','culture'], travelingAs:['friends','couple','solo-female'], fillingFast:false, travHerExclusive:false, img:{src:LF(1200, 800, 'jodhpur,bluecity,fort', 502), tone:'#4a6788', ink:'#0c1524', accent:'#e8d8b8', label:'Jodhpur'} },
+  { id:'trip-manali', dest:'Old Manali', region:'HIMACHAL, HP', title:'Riverside Glamping & Yoga', duration:'2-3', nights:'3 Days · All Inclusive', price:8499, tags:['Adventure'], vibes:['adventure','nature','wellness'], travelingAs:['solo-female','couple','friends'], fillingFast:true, travHerExclusive:false, category:'domestic', img:{src:LF(1200, 800, 'manali,himalaya,pine,valley', 501), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'Old Manali'} },
+  { id:'trip-agra', dest:'Agra', region:'UTTAR PRADESH', title:'Mughal Heritage & High Tea', duration:'2-3', nights:'2 Days · Solo Friendly', price:6200, tags:['Heritage'], vibes:['heritage','culture'], travelingAs:['solo-female','couple'], fillingFast:false, travHerExclusive:true, category:'domestic', img:{src:UNSPLASH('1524492412937-b28074a5d7da'), tone:'#c6a45a', ink:'#2a1f0a', accent:'#f7e2b5', label:'Agra'} },
+  { id:'trip-jodhpur', dest:'Jodhpur', region:'RAJASTHAN', title:'The Blue City Photo Walk', duration:'Blue City · 2D/1N', price:4500, tags:['Cultural'], vibes:['heritage','culture'], travelingAs:['friends','couple','solo-female'], fillingFast:false, travHerExclusive:false, category:'domestic', img:{src:LF(1200, 800, 'jodhpur,bluecity,fort', 502), tone:'#4a6788', ink:'#0c1524', accent:'#e8d8b8', label:'Jodhpur'} },
   // 4–6 Days
-  { id:'trip-goa', dest:'South Goa', region:'GOA', title:'Secret Cove & Kayaking', duration:'4-6', nights:'4 Days · Chill Vibes', price:12800, tags:['Beach'], vibes:['beach','nature'], travelingAs:['friends','couple','solo-female'], fillingFast:true, travHerExclusive:false, img:{src:LF(1200, 800, 'goa,palolem,palm,beach', 503), tone:'#2d7a9e', ink:'#071d2b', accent:'#f2d8a6', label:'South Goa'} },
-  { id:'trip-triund', dest:'Triund', region:'HIMACHAL, HP', title:'Starry Night Ridge Hike', duration:'2-3', nights:'2 Days · High Altitude', price:5500, tags:['Trekking'], vibes:['adventure','mountains','nature'], travelingAs:['friends','solo-female'], fillingFast:false, travHerExclusive:false, img:{src:LF(1200, 800, 'triund,mountains,trek,snow', 504), tone:'#4a6788', ink:'#0c1524', accent:'#dfe7f0', label:'Triund'} },
-  { id:'trip-udaipur', dest:'Udaipur', region:'RAJASTHAN', title:'Lake View Suite Retreat', duration:'2-3', nights:'3 Days · Luxury Escape', price:18500, tags:['Romantic'], vibes:['romantic','heritage'], travelingAs:['couple','family'], fillingFast:false, travHerExclusive:false, img:{src:LF(1200, 800, 'udaipur,palace,lake,night', 505), tone:'#c6a45a', ink:'#2a1408', accent:'#f4c896', label:'Udaipur'} },
+  { id:'trip-goa', dest:'South Goa', region:'GOA', title:'Secret Cove & Kayaking', duration:'4-6', nights:'4 Days · Chill Vibes', price:12800, tags:['Beach'], vibes:['beach','nature'], travelingAs:['friends','couple','solo-female'], fillingFast:true, travHerExclusive:false, category:'domestic', img:{src:LF(1200, 800, 'goa,palolem,palm,beach', 503), tone:'#2d7a9e', ink:'#071d2b', accent:'#f2d8a6', label:'South Goa'} },
+  { id:'trip-triund', dest:'Triund', region:'HIMACHAL, HP', title:'Starry Night Ridge Hike', duration:'2-3', nights:'2 Days · High Altitude', price:5500, tags:['Trekking'], vibes:['adventure','mountains','nature'], travelingAs:['friends','solo-female'], fillingFast:false, travHerExclusive:false, category:'domestic', img:{src:LF(1200, 800, 'triund,mountains,trek,snow', 504), tone:'#4a6788', ink:'#0c1524', accent:'#dfe7f0', label:'Triund'} },
+  { id:'trip-udaipur', dest:'Udaipur', region:'RAJASTHAN', title:'Lake View Suite Retreat', duration:'2-3', nights:'3 Days · Luxury Escape', price:18500, tags:['Romantic'], vibes:['romantic','heritage'], travelingAs:['couple','family'], fillingFast:false, travHerExclusive:false, category:'domestic', img:{src:LF(1200, 800, 'udaipur,palace,lake,night', 505), tone:'#c6a45a', ink:'#2a1408', accent:'#f4c896', label:'Udaipur'} },
+  // Long Haul
+  { id:'trip-thailand', dest:'Phuket & Krabi', region:'THAILAND', title:'Island Hopping & Scuba', duration:'5-7', nights:'6N/7D', price:48000, tags:['Beach','Adventure'], vibes:['beach','adventure'], travelingAs:['friends','couple'], fillingFast:true, travHerExclusive:false, category:'long-haul', img:{src:UNSPLASH('1504214208698-ea1916a2195a', 800), tone:'#2d78a8', ink:'#0a1f2b', accent:'#f4d28a', label:'Thailand'} },
+  { id:'trip-kerala', dest:'Munnar & Alleppey', region:'KERALA', title:'Tea Estates & Backwaters', duration:'5-7', nights:'5N/6D', price:24000, tags:['Nature'], vibes:['nature','romantic'], travelingAs:['couple','family'], fillingFast:false, travHerExclusive:false, category:'long-haul', img:{src:UNSPLASH('1593693411515-c20261bcad6e', 800), tone:'#2f6a44', ink:'#0e2417', accent:'#d9c07a', label:'Kerala'} },
+  { id:'trip-kashmir', dest:'Srinagar & Gulmarg', region:'KASHMIR', title:'Snow Peaks & Shikara Rides', duration:'5-7', nights:'6N/7D', price:35000, tags:['Mountains'], vibes:['mountains','romantic'], travelingAs:['couple','friends'], fillingFast:true, travHerExclusive:false, category:'long-haul', img:{src:LF(800, 1100, 'kashmir,dal,shikara', 43), tone:'#4a6788', ink:'#0c1524', accent:'#dfe7f0', label:'Kashmir'} },
+  { id:'trip-bali', dest:'Ubud & Seminyak', region:'BALI', title:'Villa Retreat & Surf', duration:'8-10', nights:'7N/8D', price:65000, tags:['Wellness'], vibes:['wellness','beach'], travelingAs:['friends','solo-female'], fillingFast:false, travHerExclusive:true, category:'long-haul', img:{src:UNSPLASH('1537996194471-e657df975ab4', 800), tone:'#3a6a3a', ink:'#122112', accent:'#e8d49a', label:'Bali'} },
 ];
 
 const HOW_IT_WORKS = [
@@ -340,6 +345,146 @@ const NAINITAL_TRIP = {
   ],
 };
 
+const THAILAND_TRIP = {
+  ...ALL_TRIPS.find(x => x.id === 'trip-thailand'),
+  isLongHaul: true,
+  logistics: {
+    visa: 'Visa on Arrival / Exemption valid for Indians.',
+    flights: 'Land package. Ex-Delhi/BOM (Flights can be requested post-booking)',
+    forex: 'Best to carry 15k INR in local THB cash.'
+  },
+  multiCityRoute: ['Phuket Intl', 'Patong Beach', 'Phi Phi Islands', 'Krabi', 'Phuket Intl'],
+  creator:'@wanderlust_th',
+  spotsLeft:5,
+  spotsTotal:12,
+  viewingNow:28,
+  departures:[
+    { id:'d1', dateRange:'12 May – 18 May', price:48000, status:'filling', note:'Only 5 spots left' },
+    { id:'d2', dateRange:'26 May – 01 Jun', price:48000, status:'open', note:'Available' },
+    { id:'d3', dateRange:'15 Jun – 21 Jun', price:52000, status:'open', note:'Peak season' },
+  ],
+  pricing:{ token:12000, tax:2400, convenience:850 },
+  rating: 4.9,
+  ratingCount: 128,
+  bookingsCount: '450',
+  tagline:'Your definitive tropical island breakout.',
+  dates: '6N/7D · Available weekly',
+  summary:'A 7-day jump across the azure Andaman Sea. Curated cliff hikes, snorkeling, luxury speedboat hops, and deep neon nights. Zero visa stress.',
+  overviewHeadline:'Six nights of sea and limestone.',
+  route:['PHUKET', 'PHI PHI', 'KRABI'],
+  routeDistance:'Island Hopping',
+  nightsLabel:'6 NIGHTS',
+  meetingPoint:'Phuket International Airport (HKT)',
+  returnPoint:'Phuket International Airport (HKT)',
+  hotel:{ name:'Katathani / Zeavola', tier:'Luxury tier' },
+  overviewNotes:[
+    { label:'Check-in:', v:'Phuket, 2:00 PM' },
+    { label:'Return:', v:'Drop to HKT, 11:00 AM' }
+  ],
+  gallery:[
+    { src:UNSPLASH('1504214208698-ea1916a2195a', 1000), caption:'Krabi limestone cliffs', tone:'#2d78a8', ink:'#0a1f2b', accent:'#f4d28a' },
+    { src:UNSPLASH('1584622650111-993a426fbf0a', 1000), caption:'Phi Phi view', tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9' },
+    { src:UNSPLASH('1506544777587-fd17800741da', 1000), caption:'Patong Beach', tone:'#2d7a9e', ink:'#071d2b', accent:'#f2d8a6' },
+    { src:UNSPLASH('1550989461-9c86422d7ba4', 1000), caption:'Luxury villa', tone:'#c6a45a', ink:'#2a1408', accent:'#f4c896' },
+  ],
+  itinerary:[
+    { day:'Day 1', date:'Mon, 12 May', title:'The Phuket Drop', desc:'Land in Phuket. Private transfer to Katathani resort.', img:{ src:UNSPLASH('1584622650111-993a426fbf0a', 1200), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'Phuket landing' }, blocks:[
+      { time:'2:00 PM', title:'Phuket Arrival', body:'Private transfer from HKT to your beachfront resort.', included:true },
+      { time:'8:00 PM', title:'Bangla Road Nightlife', body:'Experience the neon-lit energy of Phuket.', included:false },
+    ]},
+    { day:'Day 2', date:'Tue, 13 May', title:'Phi Phi Bound', desc:'Early morning transfer to a private speedboat. Snorkel at Maya Bay.', img:{ src:UNSPLASH('1506544777587-fd17800741da', 1200), tone:'#2d7a9e', ink:'#071d2b', accent:'#f2d8a6', label:'Phi Phi islands' }, blocks:[
+      { time:'8:00 AM', title:'Speedboat Hop', body:'Private speedboat to Phi Phi Don and Maya Bay.', included:true },
+      { time:'1:00 PM', title:'Island Lunch', body:'Traditional Thai buffet on the beach.', included:true },
+    ]},
+    { day:'Day 3', date:'Wed, 14 May', title:'Island Slowness', desc:'A slow day on Phi Phi. Hike to the viewpoint, go kayaking.', img:{ src:UNSPLASH('1504214208698-ea1916a2195a', 1200), tone:'#3e6a4a', ink:'#0d1f18', accent:'#c9d68a', label:'Island vibes' }, blocks:[
+      { time:'9:00 AM', title:'Phi Phi Viewpoint', body:'Short hike for the iconic twin-bay view.', included:true },
+      { time:'7:00 PM', title:'Fire Show Dinner', body:'Dinner by the shore with spectacular fire twirlers.', included:true },
+    ]},
+  ],
+  videos:[
+    { handle:'@island_hopper', title:'Krabi cliffs', src:LF(400, 700, 'cliff,sea,boat', 91), tone:'#2a5a4a', accent:'#b9e8c9', ink:'#061a12' },
+  ],
+  whatToPack:[
+    { name:'Swimwear (x4)', note:'Crucial. You will live in these.' },
+    { name:'0-Markup Forex Card', note:'Niyo or Fi works perfectly.' },
+    { name:'Dry Bag', note:'For speedboat transfers.' },
+    { name:'Light Linen', note:'Breathable fabrics only for the humidity.' },
+  ],
+  whatsIncluded:[
+    { label:'STAY', v:'6 Nights in 4-star+ rated curated properties.' },
+    { label:'TRANSPORT', v:'Airport drops & premium speedboat transfers.' },
+    { label:'FOOD', v:'Island breakfast daily, plus 2 curated dinners.' },
+    { label:'TRIP CAPTAIN', v:'Bilingual expert throughout.' }
+  ],
+  stay: {
+    name:'Katathani / Zeavola',
+    desc:'Curated boutique luxury. Expect infinity pools plunging into the sea, private cabanas, and world-class hospitality.',
+    img:UNSPLASH('1550989461-9c86422d7ba4', 600)
+  },
+  signatureStay:{
+    name:'The Shore at Katathani',
+    tier:'Luxury tier',
+    type:'Seaview Pool Villa',
+    rating:4.9,
+    reviewsCount:3420,
+    amenities:[
+      { icon:'sun', label:'Infinity pool' },
+      { icon:'shield', label:'Private beach' },
+      { icon:'users', label:'World-class spa' },
+      { icon:'bed', label:'Seaview villas' },
+    ],
+    blurb:'A pocket of pure tropical luxury. Private villas that spill directly into the Andaman Sea, with a staff-to-guest ratio that makes every moment feel personalized.',
+    thumbs: [
+      { src:UNSPLASH('1550989461-9c86422d7ba4', 600), tone:'#2d6a84', ink:'#091824', accent:'#f3d49a', label:'Villa' },
+      { src:UNSPLASH('1584622650111-993a426fbf0a', 600), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'View' },
+    ],
+  },
+  packList:[
+    { cat:'Tropical Ready', icon:'sun', items:['Quick-dry swimwear','Linen shirts','Safety beach-flipflops'] },
+    { cat:'Activity Gear', icon:'spark', items:['Dry bag for boat','GoPro / Waterproof case','Snorkel kit (available)'] },
+  ],
+  tripSnapshot:[
+    { label:'Transport', value:'Speedboat & private AC vans' },
+    { label:'Meals', value:'Breakfast + 2 Dinners' },
+    { label:'Group size', value:'Max 12' },
+    { label:'Trip type', value:'Couples & friends' },
+    { label:'Airfare', value:'Excluded' },
+  ],
+  cancellationPolicy:[
+    { when:'30+ days before', refund:'Full refund', tone:T.greenDeep },
+    { when:'15–29 days before', refund:'50% refund', tone:T.amber },
+    { when:'Less than 15 days', refund:'No refund', tone:T.rose },
+  ],
+  inclusions:[
+    'Luxury villa / boutique stay (6 nights, twin sharing)',
+    'Airport transfers in private AC vans',
+    'Premium speedboat island hopping (Phi Phi / Maya Bay)',
+    'Daily beachfront breakfast + 2 curated dinners',
+    'Bilingual trip captain & local expert lead',
+    'Snorkeling gear & national park entry fees',
+  ],
+  exclusions:[
+    'International flights (can be requested post-booking)',
+    'Lunch & dinner except as mentioned (~$25/day)',
+    'Personal expenses, scuba diving, and tips',
+    'Travel insurance (mandatory)',
+  ],
+  faq:[
+    { q:'Is Visa included?', a:'Visa is on arrival for Indians. We provide a checklist of documents, but the fee (~2000 THB) is to be paid at the airport.' },
+    { q:'Which airport should I fly into?', a:'Phuket International (HKT). Please aim to land before 12:00 PM on Day 1.' },
+    { q:'Can I book this solo?', a:'Absolutely. We will pair you with another solo traveler of the same gender in a twin villa.' },
+  ],
+  reviewStats:{
+    recommend: 98,
+    distribution:[{ stars:5, count:120 },{ stars:4, count:10 },{ stars:3, count:2 },{ stars:2, count:0 },{ stars:1, count:0 }],
+    tags:[{ label:'Scuba', count:100 }, { label:'Vibe', count:89 }]
+  },
+  reviews:[
+    { name:'Aditya P.', city:'Mumbai', tripDate:'Feb 2026', highlight:'The speedboats', quote:'The speedboat transfers make a huge difference. Felt like a premium private tour. Snorkeling at Maya Bay was the highlight.' }
+  ],
+  relatedArticleIds:[]
+};
+
 const USER_BOOKINGS = [
   // Upcoming — trav.her, departs soon, balance due
   { id:'TRAV-RSH-4F2A9C', trip:WEEKEND_TRIPS[0], status:'upcoming', guests:2, paid:4000, balance:5023, departsIn:3, rating:null, persona:'soloFemale', state:'departs-soon' },
@@ -383,4 +528,4 @@ const CANCELLATION_TIERS = [
   { window:'<72 hours',        refund:0.0,  fee:1.0,  note:'No refund · trip is in motion' },
 ];
 
-Object.assign(window, { TRAV, WEEKEND_TRIPS, ALL_TRIPS, HOW_IT_WORKS, GOING_LONGER, RISHIKESH_TRIP, NAINITAL_TRIP, USER_BOOKINGS, CUSTOM_REQUESTS, PERSONAS, CANCELLATION_TIERS });
+Object.assign(window, { TRAV, WEEKEND_TRIPS, ALL_TRIPS, HOW_IT_WORKS, GOING_LONGER, RISHIKESH_TRIP, NAINITAL_TRIP, THAILAND_TRIP, USER_BOOKINGS, CUSTOM_REQUESTS, PERSONAS, CANCELLATION_TIERS });

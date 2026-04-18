@@ -1,204 +1,259 @@
 // Travelogue Article — lower sections (gallery, taste memories, notes, related, CTA).
 
+function TravelogueLowerStyle() {
+  return (
+    <style dangerouslySetInnerHTML={{__html: `
+.mosaic { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; grid-auto-rows: 160px; max-width: 1192px; margin: 0 auto; padding: 0 36px; }
+.tile { border-radius: 12px; overflow: hidden; position: relative; box-shadow: var(--shadow-1); cursor: pointer; }
+.tile .ph { position: absolute; inset: 0; }
+.tile .lbl { position: absolute; left: 12px; bottom: 10px; color: #fff; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; text-shadow: 0 1px 4px rgba(0,0,0,0.6); }
+.tile.big { grid-row: span 2; }
+.tile.wide { grid-column: span 2; }
+
+.taste-split { display:grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; max-width: 1192px; margin: 0 auto; padding: 0 36px; }
+.memo-tactile {
+  position: relative; padding: 44px 42px 52px; background: linear-gradient(#fbfdfb, #f3faf6);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02), 0 30px 60px -36px rgba(17,17,17,0.22), 0 10px 20px -10px rgba(17,17,17,0.1);
+  transform: rotate(-0.5deg); overflow: hidden;
+}
+.memo-tactile::before { content:""; position: absolute; inset: 92px 0 24px 0; background-image: repeating-linear-gradient(to bottom, transparent 0 31px, rgba(29,191,115,0.22) 31px 32px); pointer-events: none; }
+.memo-tactile::after { content:""; position: absolute; top: 0; bottom: 0; left: 72px; width: 1px; background: rgba(233, 80, 80, 0.45); }
+.memo-tactile .holes { position: absolute; left: 16px; top: 30px; display: flex; flex-direction: column; gap: 80px; }
+.memo-tactile .holes span { width: 12px; height: 12px; border-radius: 50%; background: var(--off); box-shadow: inset 0 1px 2px rgba(0,0,0,0.2); }
+.memo-tactile .doodle { position: absolute; right: 24px; top: 30px; font-family: "Caveat", cursive; font-size: 15px; color: var(--green-deep); transform: rotate(4deg); border: 1px dashed var(--green); padding: 5px 10px; border-radius: 4px; background: var(--tint); }
+.memo-tactile h3 { font-family: "Caveat", cursive; font-weight: 700; font-size: 38px; color: var(--ink); margin: 0 0 2px; transform: rotate(-1deg); padding-left: 40px; }
+.memo-tactile .sub { font-family: "Caveat", cursive; font-size: 19px; color: var(--grey); margin-bottom: 20px; padding-left: 40px; transform: rotate(-0.5deg); }
+.memo-tactile ol { list-style: none; padding: 0 0 0 40px; margin: 0; position: relative; font-family: "Kalam", "Caveat", cursive; font-weight: 400; color: var(--ink-2); font-size: 19px; line-height: 32px; }
+.memo-tactile ol li { display: grid; grid-template-columns: 22px 22px 1fr auto; gap: 10px; align-items: baseline; padding: 0; margin-bottom: 0; }
+.memo-tactile ol li .n { font-family: "Caveat", cursive; font-weight: 700; color: var(--green-deep); font-size: 22px; }
+.memo-tactile ol li .emo { font-size: 17px; line-height: 1; }
+.memo-tactile ol li .what em { font-style: italic; color: var(--grey); }
+.memo-tactile ol li .where { color: var(--green-deep); font-size: 15px; font-family: "Caveat", cursive; }
+.memo-tactile ol li.done .what { text-decoration: line-through; text-decoration-color: rgba(29,191,115,0.7); color: var(--grey); }
+.memo-tactile .scribble { font-family: "Caveat", cursive; font-weight: 600; font-size: 20px; color: var(--green-deep); margin: 26px 0 0 40px; display: flex; align-items: center; gap: 10px; transform: rotate(-0.8deg); }
+.memo-tactile .pencil-mark { position: absolute; right: 40px; bottom: 26px; width: 90px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, transparent, rgba(17,17,17,0.35), transparent); transform: rotate(-8deg); filter: blur(0.3px); }
+
+.taste-list { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 24px; box-shadow: var(--shadow-1); }
+.taste-list .head { display:flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.taste-list .head h4 { font-family:"Fraunces",serif; font-size: 18px; margin: 0; font-weight: 600; }
+.taste-list .head .lead { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--grey); font-weight: 600; }
+.taste-list .entry { display: grid; grid-template-columns: 44px 1fr auto; gap: 14px; align-items: center; padding: 14px 4px; border-bottom: 1px solid var(--line-2); }
+.taste-list .entry:last-child { border-bottom: none; }
+.taste-list .entry .glyph { width: 42px; height: 42px; border-radius: 12px; background: var(--tint); display:grid; place-items:center; font-size: 19px; }
+.taste-list .entry .name { font-family:"Fraunces",serif; font-weight: 600; font-size: 16px; }
+.taste-list .entry .name small { display:block; font-family:"Inter",sans-serif; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--grey); margin-top: 2px; font-weight: 500; }
+.taste-list .entry .dish { font-family: "Fraunces", serif; font-style: italic; font-size: 13px; color: var(--grey); text-align: right; }
+.taste-list .entry .dish small { display:block; font-style: normal; font-family:"Inter",sans-serif; font-size: 10px; color: var(--green-deep); letter-spacing: 0.08em; font-weight: 600; }
+
+
+.corkboard { position: relative; padding: 44px 32px 70px; min-height: 560px; border-radius: var(--radius); background: radial-gradient(ellipse at top left, rgba(255,255,255,0.18), transparent 55%), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.38  0 0 0 0 0.2  0 0 0 0.3 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"), linear-gradient(135deg, #c9a776, #a87c45); box-shadow: inset 0 0 60px rgba(0,0,0,0.22), 0 26px 50px -26px rgba(60,40,10,0.45); border: 1px solid rgba(0,0,0,0.12); max-width: 1192px; margin: 0 auto; padding: 0 36px; }
+.corkboard .ticket { position: absolute; top: 22px; right: 30px; padding: 10px 14px; background: var(--tint); color: var(--green-deep); font-family: "JetBrains Mono", monospace; font-size: 10px; letter-spacing: 0.22em; font-weight: 600; transform: rotate(4deg); box-shadow: 0 8px 16px -6px rgba(0,0,0,0.3); border: 1px dashed var(--green); border-radius: 3px; }
+.sticky { position: absolute; width: 210px; min-height: 200px; padding: 24px 20px 22px; font-family: "Kalam", "Caveat", cursive; color: #1a1a1a; box-shadow: 0 2px 0 rgba(0,0,0,0.04), 0 18px 30px -14px rgba(30,20,0,0.38), 0 4px 8px -2px rgba(30,20,0,0.2); line-height: 1.4; border-radius: 2px; }
+.sticky h4 { font-family: "Caveat", cursive; font-weight: 700; font-size: 24px; margin: 12px 0 8px; color: #1a1a1a; }
+.sticky p { font-family: "Kalam", cursive; font-weight: 300; font-size: 14px; line-height: 1.5; margin: 0; color: #2a2a2a; }
+.sticky .pin { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #4be3a0, var(--green-deep) 80%); box-shadow: 0 3px 6px rgba(0,0,0,0.35), inset -2px -2px 4px rgba(0,0,0,0.25); z-index: 2; }
+.sticky .kicker { font-family: "Inter", sans-serif; font-size: 9px; letter-spacing: 0.24em; font-weight: 700; text-transform: uppercase; color: rgba(0,0,0,0.5); }
+.s-yellow { background: #f6e27a; } .s-peach  { background: #f6c9a4; } .s-mint   { background: #c6ecd4; } .s-pink   { background: #f4b7c0; } .s-blue   { background: #bcd7ee; }
+.n1 { top: 30px; left: 28px;  transform: rotate(-4deg); } .n2 { top: 48px; left: 258px; transform: rotate(3deg); } .n3 { top: 280px; left: 58px; transform: rotate(2.5deg); } .n4 { top: 260px; left: 290px; transform: rotate(-3deg); }
+.board-polaroid { position: absolute; top: 170px; right: 28px; width: 180px; padding: 12px 12px 38px; background: #fff; transform: rotate(5deg); box-shadow: 0 14px 28px -10px rgba(0,0,0,0.45); border-radius: 3px; }
+.board-polaroid .ph { aspect-ratio: 1/1; background: linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.4)), repeating-linear-gradient(45deg, #3d6b3a 0 10px, #4e7f48 10px 20px); position: relative; border-radius: 2px; }
+.board-polaroid .ph::after { content:"GOA · 2025"; position: absolute; left: 8px; bottom: 8px; font-family: "JetBrains Mono", monospace; font-size: 9px; letter-spacing: 0.2em; color: rgba(255,255,255,0.85); }
+.board-polaroid .cap { font-family: "Caveat", cursive; font-size: 17px; color: #1a1a1a; text-align: center; margin-top: 8px; transform: rotate(-1deg); }
+.board-polaroid .pin { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ff9999, #b02020 80%); box-shadow: 0 3px 6px rgba(0,0,0,0.35), inset -2px -2px 4px rgba(0,0,0,0.25); }
+
+.related-head { display:flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; max-width: 1192px; margin: 0 auto; padding: 0 36px; }
+.related-head h2 { font-family:"Fraunces",serif; font-size: 36px; margin: 0 0 4px; letter-spacing: -0.02em; font-weight: 600; }
+.related-head p { margin: 0; color: var(--grey); }
+.related-head a { color: var(--green); font-weight: 600; text-decoration: none; font-size: 14px; cursor: pointer; }
+.related-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1192px; margin: 0 auto; padding: 0 36px; }
+.itin { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; transition: 0.2s; cursor:pointer;}
+.itin:hover { border-color: var(--green); box-shadow: var(--shadow-2); }
+.itin .cover { position: relative; aspect-ratio: 16/10; overflow: hidden; }
+.itin .cover .ph { position: absolute; inset: 0; }
+.itin .tag { position: absolute; top: 14px; left: 14px; background: rgba(17,17,17,0.8); color: #fff; padding: 6px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; }
+.itin .body { padding: 16px 18px 20px; }
+.itin .when { font-size: 12px; color: var(--grey); letter-spacing: 0.04em; }
+.itin h4 { font-family:"Fraunces",serif; font-size: 17px; font-weight: 600; margin: 8px 0 6px; }
+.itin h4 span { color: var(--grey); font-weight: 400; }
+.itin .price { display:flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--line-2); margin-top: 12px; }
+.itin .price b { font-family:"Fraunces",serif; font-size: 18px; font-weight: 700; }
+.itin .price a { color: var(--green); font-weight: 600; font-size: 13px; text-decoration: none; }
+
+.cta { background: linear-gradient(135deg, #0f2a1c 0%, #1a3d28 100%); color: #fff; border-radius: var(--radius); display:grid; grid-template-columns: 1fr 1.1fr; gap: 0; overflow: hidden; box-shadow: var(--shadow-2); max-width: 1192px; margin: 0 auto; padding: 0 36px; }
+.cta .imagery { position: relative; min-height: 280px; background: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.6)), repeating-linear-gradient(45deg, #2a1a0a 0 14px, #3a2a1a 14px 28px); }
+.cta .imagery::after { content:""; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 70%, rgba(255,120,60,0.45), transparent 60%); }
+.cta .copy { padding: 44px; }
+.cta .copy h3 { font-family:"Fraunces",serif; font-weight: 500; font-size: 36px; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 14px; }
+.cta .copy h3 em { font-style: italic; color: var(--green); }
+.cta .copy p { color: rgba(255,255,255,0.75); margin: 0 0 22px; max-width: 44ch; }
+.cta .copy .quote { margin-top: 24px; padding: 16px 18px; background: rgba(255,255,255,0.06); border-left: 2px solid var(--green); border-radius: 10px; }
+.cta .copy .quote i { font-family:"Fraunces",serif; font-style: italic; font-size: 14px; color: rgba(255,255,255,0.9); }
+.cta .copy .quote small { display:block; margin-top: 6px; color: var(--grey-2); font-size: 12px; }
+`}} />
+  );
+}
+
+function ChapterDividerLower({ num, roman, title, metaL, metaR }) {
+  return (
+    <div className="chapter">
+      <div className="num"><span>Chapter {num}</span>{roman}</div>
+      <div className="title" dangerouslySetInnerHTML={{__html: title}}></div>
+      <div className="meta">{metaL}<b>{metaR}</b></div>
+    </div>
+  );
+}
+
 function TravelogueLowerSections({ article, onOpenTrip }) {
   return (
     <>
+      <TravelogueLowerStyle/>
+      <ChapterDividerLower num="04" roman="IV" title="<em>Captured</em> Moments<small>Eleven photographs, one afternoon, and a borrowed scooter.</small>" metaL="Gallery" metaR="11 photos"/>
       <CapturedMoments photos={article.gallery}/>
+      
+      <ChapterDividerLower num="05" roman="V" title="<em>Taste</em> Memories<small>Small plates, long evenings, one short list.</small>" metaL="Picks" metaR="07 places"/>
       <TasteMemories items={article.taste}/>
+      
+      <ChapterDividerLower num="06" roman="VI" title="Notes for <em>Future</em> Travelers<small>Four short things I wish someone had told me first.</small>" metaL="Pinned" metaR="04 notes"/>
       <NotesForTravelers notes={article.notes}/>
+      
+      <ChapterDividerLower num="07" roman="VII" title="<em>Related</em> Itineraries<small>Like what you read? These trips let you live it.</small>" metaL="Curated" metaR="03 trips"/>
       <RelatedItineraries tripIds={article.relatedTripIds} onOpenTrip={onOpenTrip}/>
-      <InspireCTA/>
+      
+      <section style={{padding: '72px 0'}}>
+        <InspireCTA/>
+      </section>
     </>
   );
 }
 
 function CapturedMoments({ photos }) {
-  const [light, setLight] = React.useState(null);
-  // Use a masonry-ish grid with two "tall" tiles for rhythm.
   return (
-    <div style={{ maxWidth:1200, margin:'40px auto 0', padding:'0 36px' }}>
-      <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:16 }}>
-        <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:0 }}>Captured Moments</h2>
-        <div style={{ fontSize:12.5, color:T.grey }}>{photos.length} photos · tap to expand</div>
-      </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gridAutoRows:'180px', gap:14 }}>
+    <section>
+      <div className="mosaic">
         {photos.map((p, i) => {
-          const big = i===0 || i===5;
+          let extraClass = '';
+          if (i === 0) extraClass = 'big';
+          if (i === 5) extraClass = 'wide';
           return (
-            <div key={i} onClick={()=>setLight(p)} style={{ gridRow: big ? 'span 2' : 'span 1', borderRadius:14, overflow:'hidden', cursor:'pointer', position:'relative', border:`1px solid ${T.greyLight}` }}>
-              <ImgPlaceholder src={p.src} tone={p.tone} ink={p.ink} accent={p.accent} label={p.label} radius={0}/>
-              <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, transparent 60%, rgba(0,0,0,.3))', display:'flex', alignItems:'flex-end', padding:12 }}>
-                <span style={{ fontSize:11.5, color:'#fff', fontWeight:600, textShadow:'0 1px 3px rgba(0,0,0,.4)' }}>{p.label}</span>
-              </div>
-              <div style={{ position:'absolute', top:10, right:10, width:30, height:30, borderRadius:'50%', background:'rgba(255,255,255,.9)', display:'flex', alignItems:'center', justifyContent:'center', opacity:.0, transition:'opacity .2s' }} className="zoom">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.ink} strokeWidth="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M11 8v6M8 11h6"/></svg>
-              </div>
+            <div className={`tile ${extraClass}`} key={i} onClick={() => alert('Image Lightbox preview coming soon!')}>
+              <div className="ph" style={{
+                  backgroundImage: p.src ? `linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.45)), url(${p.src})` : '',
+                  backgroundSize: 'cover', backgroundPosition: 'center'
+              }}></div>
+              <div className="lbl">{p.label}</div>
             </div>
           );
         })}
       </div>
-      {light && (
-        <div onClick={()=>setLight(null)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,.82)', zIndex:200, display:'flex', alignItems:'center', justifyContent:'center', padding:40 }}>
-          <div style={{ width:'min(900px, 92vw)', height:'min(600px, 80vh)', borderRadius:16, overflow:'hidden', position:'relative' }}>
-            <ImgPlaceholder {...light} radius={0}/>
-            <div style={{ position:'absolute', top:14, right:14, width:38, height:38, borderRadius:'50%', background:'rgba(255,255,255,.95)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
-              <Ico name="x" size={18} color={T.ink}/>
-            </div>
-            <div style={{ position:'absolute', left:20, bottom:18, color:'#fff', fontSize:14, fontWeight:600, textShadow:'0 1px 3px rgba(0,0,0,.4)' }}>{light.label}</div>
-          </div>
-        </div>
-      )}
-    </div>
+    </section>
   );
 }
 
 function TasteMemories({ items }) {
-  const [idx, setIdx] = React.useState(0);
-  const visible = items.slice(idx, idx+3);
   return (
-    <div style={{ maxWidth:1080, margin:'40px auto 0', padding:'0 36px' }}>
-      <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, textAlign:'center', margin:'0 0 16px' }}>Taste Memories</h2>
-      <div style={{ position:'relative', background:'linear-gradient(100deg, #F9E4E8 0%, #F4E3DA 50%, #E4EEDE 100%)', borderRadius:20, padding:'24px 56px', border:`1px solid ${T.greyLight}` }}>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:28 }}>
-          {visible.map((t, i) => (
-            <div key={i} style={{ textAlign:'center' }}>
-              <div style={{ width:84, height:84, borderRadius:'50%', background:'#FBD6DA', margin:'0 auto 14px', display:'flex', alignItems:'center', justifyContent:'center', border:'4px solid #fff', boxShadow:'0 4px 12px rgba(0,0,0,.06)' }}>
-                <TasteGlyph i={idx + i} tone={t.tone}/>
-              </div>
-              <div style={{ fontSize:11.5, fontWeight:700, color:T.ink, letterSpacing:'.08em', marginBottom:4 }}>{t.name.toUpperCase()}</div>
-              <div style={{ fontSize:11, color:T.grey, textTransform:'uppercase', letterSpacing:'.06em' }}>({t.loc})</div>
-            </div>
+    <section className="taste-split">
+      <div className="memo-tactile">
+        <div className="holes"><span></span><span></span><span></span><span></span></div>
+        <div className="doodle">→ keep this one</div>
+        <h3>where to eat in Goa</h3>
+        <div className="sub">(from the notes app, copied over)</div>
+        <ol>
+          {items.map((t, i) => (
+             <li className={i < 2 ? "done" : ""} key={i}>
+               <span className="n">{i+1}.</span>
+               <span className="emo">{['🥟','🍛','🦐','🥐','🍸','🌴','☕'][i%7]}</span>
+               <span className="what">{t.name} — <em>{t.rec || t.loc}</em></span>
+               <span className="where">{t.loc}</span>
+             </li>
           ))}
-        </div>
-        <div style={{ textAlign:'center', marginTop:20, fontSize:13, color:T.inkSoft, fontStyle:'italic' }}>The best places that you can go to!</div>
-        {idx + 3 < items.length && (
-          <button onClick={()=>setIdx(Math.min(idx+1, items.length-3))} style={{ position:'absolute', right:-18, top:'50%', transform:'translateY(-50%)', width:44, height:44, borderRadius:'50%', background:'#fff', border:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,.08)' }}>
-            <Ico name="chevron-right" size={18} color={T.ink}/>
-          </button>
-        )}
-        {idx > 0 && (
-          <button onClick={()=>setIdx(Math.max(0, idx-1))} style={{ position:'absolute', left:-18, top:'50%', transform:'translateY(-50%) rotate(180deg)', width:44, height:44, borderRadius:'50%', background:'#fff', border:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,.08)' }}>
-            <Ico name="chevron-right" size={18} color={T.ink}/>
-          </button>
-        )}
+        </ol>
+        <div className="scribble">the best places you can actually go to.</div>
+        <div className="pencil-mark"></div>
       </div>
-    </div>
-  );
-}
 
-function TasteGlyph({ i, tone }) {
-  // Abstract food bowls — noodle, thali, sashimi, tapas, greens
-  const glyphs = [
-    <g key="a"><ellipse cx="24" cy="28" rx="16" ry="5" fill="#e8c89a"/><path d="M10 26c4-10 24-10 28 0" stroke="#b87430" strokeWidth="1.5" fill="none"/><path d="M16 20c1 2 3 3 5 2M22 18c2 2 4 2 6 0M28 22c1 1 3 1 5-1" stroke="#b87430" strokeWidth="1.3" fill="none"/></g>,
-    <g key="b"><circle cx="24" cy="26" r="14" fill="#f0b87a"/><circle cx="24" cy="26" r="14" fill="none" stroke="#a0623a" strokeWidth="1.5"/><circle cx="19" cy="22" r="3" fill="#c8e394"/><circle cx="28" cy="22" r="3" fill="#ee8a6a"/><circle cx="21" cy="30" r="3" fill="#f2d576"/><circle cx="29" cy="30" r="3" fill="#c3c3e8"/></g>,
-    <g key="c"><ellipse cx="24" cy="26" rx="14" ry="4" fill="#e8a880"/><rect x="12" y="22" width="8" height="5" rx="1.5" fill="#f28a6a"/><rect x="22" y="22" width="8" height="5" rx="1.5" fill="#f0b87a"/><rect x="13" y="22" width="6" height="1.5" fill="#fff"/><rect x="23" y="22" width="6" height="1.5" fill="#fff"/></g>,
-    <g key="d"><path d="M8 26c2-6 30-6 32 0" stroke="#b87430" strokeWidth="2" fill="#f0b87a"/><circle cx="16" cy="22" r="2" fill="#ee8a6a"/><circle cx="24" cy="20" r="2" fill="#c8e394"/><circle cx="32" cy="22" r="2" fill="#f2d576"/></g>,
-    <g key="e"><ellipse cx="24" cy="28" rx="14" ry="5" fill="#c8e394"/><path d="M14 26c3-4 8-5 10-3M22 24c4-3 8-3 12 1" stroke="#4a7a3a" strokeWidth="1.5" fill="none"/></g>,
-  ];
-  return (
-    <svg width="52" height="52" viewBox="0 0 48 48">
-      <circle cx="24" cy="24" r="22" fill="rgba(255,255,255,.5)"/>
-      {glyphs[i % glyphs.length]}
-    </svg>
+      <div className="taste-list">
+        <div className="head"><h4>At a glance</h4><div className="lead">— By neighbourhood —</div></div>
+        {items.slice(0, 5).map((t, i) => (
+          <div className="entry" key={i}>
+            <div className="glyph">{['🥟','🍛','🦐','🍸','☕'][i%5]}</div>
+            <div className="name">{t.name}<small>{t.loc}</small></div>
+            <div className="dish">{t.rec || t.loc}<small>₹ {i===2?'₹ ₹':''}</small></div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
 function NotesForTravelers({ notes }) {
+  const classes = ["s-blue n1", "s-peach n2", "s-mint n3", "s-pink n4"];
   return (
-    <div style={{ maxWidth:960, margin:'40px auto 0', padding:'0 36px' }}>
-      <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, textAlign:'center', margin:'0 0 16px' }}>Notes for Future Travelers</h2>
-      <div style={{ position:'relative', padding:22, borderRadius:20, border:`2px solid ${T.green}`, background:'#fff' }}>
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
-          {notes.map((n, i) => (
-            <div key={i} style={{ background:n.tone, borderRadius:14, padding:'18px 18px 18px 18px', display:'flex', gap:14 }}>
-              <div style={{ width:38, height:38, borderRadius:'50%', background:'#fff', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, boxShadow:'0 1px 3px rgba(0,0,0,.06)' }}>
-                <NoteGlyph name={n.icon} color={n.fg}/>
-              </div>
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontSize:14.5, fontWeight:700, color:T.ink, marginBottom:5 }}>{n.title}</div>
-                <div style={{ fontSize:12.5, color:T.inkSoft, lineHeight:1.55 }}>{n.body}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-        {/* Compass in the center */}
-        <div style={{ position:'absolute', left:'50%', top:'50%', transform:'translate(-50%, -50%)', width:58, height:58, borderRadius:'50%', background:'#fff', border:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 12px rgba(0,0,0,.06)' }}>
-          <svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 2l2 8 8 2-8 2-2 8-2-8-8-2 8-2z" fill={T.ink}/></svg>
+    <section>
+      <div className="corkboard">
+        <div className="ticket">GOA · 2025 · 011</div>
+        {notes.map((n, i) => (
+          <div className={`sticky ${classes[i%classes.length]}`} key={i}>
+            <div className="pin" style={i===1 ? {background:'radial-gradient(circle at 35% 35%,#ffd070,#a8761a 80%)'} : i===3 ? {background:'radial-gradient(circle at 35% 35%,#ff9bbd,#a32555 80%)'} : {}}></div>
+            <div className="kicker">No. 0{i+1} · {n.title}</div>
+            <h4>{n.title}</h4>
+            <p>{n.body}</p>
+          </div>
+        ))}
+        <div className="board-polaroid">
+          <div className="pin"></div>
+          <div className="ph"></div>
+          <div className="cap">the scooter, day 3</div>
         </div>
       </div>
-    </div>
+    </section>
   );
-}
-
-function NoteGlyph({ name, color }) {
-  const p = { width:18, height:18, viewBox:'0 0 24 24', fill:'none', stroke:color, strokeWidth:1.8, strokeLinecap:'round', strokeLinejoin:'round' };
-  switch (name) {
-    case 'car': return <svg {...p}><path d="M5 17h14v-5l-2-5H7l-2 5v5z"/><circle cx="8" cy="17" r="1.5"/><circle cx="16" cy="17" r="1.5"/></svg>;
-    case 'scooter': return <svg {...p}><circle cx="7" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M10 17h6l-3-8h-2M13 9l2-4h3"/></svg>;
-    case 'buoy': return <svg {...p}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M5.6 5.6l3.2 3.2M15.2 15.2l3.2 3.2M18.4 5.6l-3.2 3.2M8.8 15.2l-3.2 3.2"/></svg>;
-    case 'phone': return <svg {...p}><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg>;
-    default: return <svg {...p}><circle cx="12" cy="12" r="8"/></svg>;
-  }
 }
 
 function RelatedItineraries({ tripIds, onOpenTrip }) {
   const trips = tripIds.map(id => WEEKEND_TRIPS.find(t=>t.id===id)).filter(Boolean);
-  if (!trips.length) return null;
   return (
-    <div style={{ maxWidth:1200, margin:'48px auto 0', padding:'0 36px' }}>
-      <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:16 }}>
-        <div>
-          <h2 style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:'0 0 4px' }}>Related Itineraries</h2>
-          <div style={{ fontSize:13, color:T.grey }}>Like what you read? These trips let you live it.</div>
-        </div>
+    <section>
+      <div className="related-head">
+        <div></div>
+        <a onClick={() => window.scrollTo(0,0)}>See all itineraries →</a>
       </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:20 }}>
-        {trips.map(t => (
-          <div key={t.id} onClick={()=>onOpenTrip && onOpenTrip(t.id)} style={{ border:`1px solid ${T.greyLight}`, borderRadius:16, overflow:'hidden', cursor:'pointer', background:'#fff' }}>
-            <div style={{ height:160, position:'relative' }}>
-              <ImgPlaceholder {...t.img} radius={0}/>
-              <div style={{ position:'absolute', top:12, left:12, background:T.ink, color:'#fff', padding:'4px 10px', borderRadius:999, fontSize:11, fontWeight:700 }}>{t.dest}</div>
+      <div className="related-grid">
+        {trips.map((t, i) => (
+          <article className="itin" onClick={() => onOpenTrip && onOpenTrip(t.id)} key={t.id}>
+            <div className="cover">
+              <div className="ph" style={{
+                  backgroundImage: t.image ? `linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.55)), url(${t.image})` : '',
+                  backgroundSize: 'cover', backgroundPosition: 'center'
+              }}></div>
+              <div className="tag">{t.dest}</div>
             </div>
-            <div style={{ padding:'16px 18px' }}>
-              <div style={{ fontSize:12, color:T.grey, marginBottom:4 }}>{t.dates}</div>
-              <div style={{ fontSize:15, fontWeight:700, color:T.ink, marginBottom:8 }}>Weekend · {t.creator}</div>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                <div style={{ fontSize:16, fontWeight:800, color:T.ink, fontFamily:'Fraunces, serif' }}>₹{t.price.toLocaleString('en-IN')}</div>
-                <span style={{ fontSize:12, fontWeight:700, color:T.greenDeep, display:'inline-flex', alignItems:'center', gap:4 }}>View <Ico name="arrow-right" size={12} color={T.greenDeep}/></span>
-              </div>
+            <div className="body">
+              <div className="when">{t.dates}</div>
+              <h4>Weekend <span>· {t.creator}</span></h4>
+              <div className="price"><b>₹{t.price.toLocaleString('en-IN')}</b><a>View →</a></div>
             </div>
-          </div>
+          </article>
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 
 function InspireCTA() {
   return (
-    <div style={{ maxWidth:1200, margin:'48px auto 0', padding:'0 36px 60px' }}>
-      <div style={{ background:T.offWhite, border:`1px solid ${T.greyLight}`, borderRadius:22, overflow:'hidden', display:'grid', gridTemplateColumns:'1fr 1.1fr', minHeight:280 }}>
-        <div style={{ position:'relative', minHeight:260 }}>
-          <ImgPlaceholder src="https://loremflickr.com/1200/800/bonfire,night,friends?lock=451" tone="#2a1f18" ink="#0a0502" accent="#e6a33a" label="Bonfire" radius={0}/>
-          <div style={{ position:'absolute', inset:0, background:'linear-gradient(90deg, transparent 70%, #FAFAFA)' }}/>
+    <div className="cta">
+      <div className="imagery"></div>
+      <div className="copy">
+        <h3>Your journey could <em>inspire thousands</em>.</h3>
+        <p>Share your travel story with us. If selected, we'll publish it on the travelogue for the world to read — and tag you forever.</p>
+        <div className="actions" style={{display:'flex', gap: 10}}>
+          <a className="btn primary">✎ Share my story</a>
+          <a className="btn ghost" style={{background:'transparent', color:'#fff', borderColor:'rgba(255,255,255,0.25)'}}>See how it works →</a>
         </div>
-        <div style={{ padding:'36px 40px', display:'flex', flexDirection:'column', justifyContent:'center' }}>
-          <h2 style={{ fontFamily:'Fraunces, serif', fontSize:28, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:'0 0 10px', lineHeight:1.15 }}>
-            Your Journey Could <span style={{ fontStyle:'italic', color:T.greenDeep }}>Inspire Thousands</span>
-          </h2>
-          <div style={{ fontSize:14, color:T.grey, lineHeight:1.55, marginBottom:20 }}>
-            Share your travel story with us. If selected, we'll publish it on the travelogue for the world to read — and tag you forever.
-          </div>
-          <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:20 }}>
-            <button style={{ height:46, padding:'0 22px', borderRadius:999, background:T.green, border:'none', color:'#fff', fontSize:14, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:8 }}>
-              <Ico name="send" size={14} color="#fff"/> Share my story
-            </button>
-            <span style={{ fontSize:13, fontWeight:600, color:T.greenDeep, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4 }}>See how it works <Ico name="chevron-right" size={13} color={T.greenDeep}/></span>
-          </div>
-          <div style={{ background:'#fff', border:`1px solid ${T.greyLight}`, borderLeft:`3px solid ${T.green}`, borderRadius:'0 10px 10px 0', padding:'12px 16px' }}>
-            <div style={{ fontSize:13, fontStyle:'italic', color:T.inkSoft, lineHeight:1.5, marginBottom:5 }}>“I shared my trekking story and it got featured — hundreds of travelers have reached out since.”</div>
-            <div style={{ fontSize:11.5, color:T.grey, fontWeight:600 }}>— Ananya, Trav Creator</div>
-          </div>
+        <div className="quote">
+          <i>"I shared my trekking story and it got featured — hundreds of travelers reached out since."</i>
+          <small>— Ananya, Trav Creator</small>
         </div>
       </div>
     </div>
