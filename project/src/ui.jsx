@@ -1,0 +1,111 @@
+const T = {
+  green:'#1DBF73', greenDeep:'#169E5A', greenDark:'#0b6f3f',
+  ink:'#0F1E2E', inkSoft:'#1a2e42',
+  offWhite:'#FAFAFA', cream:'#FAF5EE', roseCream:'#FBEFE7',
+  grey:'#6E6E6E', greyLight:'#E6E6E6',
+  rose:'#C14A36', roseSoft:'#E8614D',
+  amber:'#E6A33A', amberSoft:'#FFF5D6', fire:'#F97316',
+};
+
+function Ico({ name, size=16, color='currentColor', stroke=1.8, fill='none' }) {
+  const p = { width:size, height:size, viewBox:'0 0 24 24', fill, stroke:color, strokeWidth:stroke, strokeLinecap:'round', strokeLinejoin:'round' };
+  switch (name) {
+    case 'arrow-right': return <svg {...p}><path d="M5 12h14M13 6l6 6-6 6"/></svg>;
+    case 'arrow-left': return <svg {...p}><path d="M19 12H5M11 6l-6 6 6 6"/></svg>;
+    case 'chevron-down': return <svg {...p}><path d="M6 9l6 6 6-6"/></svg>;
+    case 'chevron-right': return <svg {...p}><path d="M9 6l6 6-6 6"/></svg>;
+    case 'check': return <svg {...p}><path d="M5 12l5 5L20 6"/></svg>;
+    case 'x': return <svg {...p}><path d="M6 6l12 12M18 6L6 18"/></svg>;
+    case 'users': return <svg {...p}><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="8" r="2.5"/><path d="M21.5 19c0-2.5-1.7-4.3-4-4.8"/></svg>;
+    case 'shield': return <svg {...p}><path d="M12 3l8 3v6c0 4.5-3.2 8.5-8 9-4.8-.5-8-4.5-8-9V6l8-3z"/></svg>;
+    case 'star': return <svg {...p} fill={color}><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z"/></svg>;
+    case 'fire': return <svg {...p} fill={color}><path d="M12 2s3 5 3 8a3 3 0 01-6 0c0-1-1-2-1-2s-3 3-3 7a7 7 0 0014 0c0-5-7-13-7-13z"/></svg>;
+    case 'spark': return <svg {...p} fill={color}><path d="M13 2L7 14h5l-1 8 7-12h-5l1-8z"/></svg>;
+    case 'calendar': return <svg {...p}><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>;
+    case 'pin': return <svg {...p}><path d="M12 22s-7-7-7-13a7 7 0 0114 0c0 6-7 13-7 13z"/><circle cx="12" cy="9" r="2.5"/></svg>;
+    case 'clock': return <svg {...p}><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>;
+    case 'bell': return <svg {...p}><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>;
+    case 'download': return <svg {...p}><path d="M12 3v13M6 11l6 6 6-6M4 21h16"/></svg>;
+    case 'phone': return <svg {...p} fill={color}><path d="M6.6 10.8a15.5 15.5 0 006.6 6.6l2.2-2.2a1 1 0 011-.3c1.1.4 2.3.6 3.6.6a1 1 0 011 1v3.5a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.3.2 2.5.6 3.6a1 1 0 01-.3 1z"/></svg>;
+    case 'copy': return <svg {...p}><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>;
+    case 'send': return <svg {...p}><path d="M4 12l16-8-6 18-3-7-7-3z"/></svg>;
+    case 'whatsapp': return <svg viewBox="0 0 24 24" width={size} height={size} fill={color}><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.5-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.6-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 00-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1112 20z"/></svg>;
+    case 'heart': return <svg {...p} fill={color}><path d="M12 20.5l-8-7a5 5 0 117-7l1 1 1-1a5 5 0 117 7l-8 7z"/></svg>;
+    case 'rose': return <svg viewBox="0 0 24 24" width={size} height={size}><path d="M12 3c2 0 3.5 1.5 3.5 3.5 0 1.2-.6 2-1.3 2.5.6.5 1.1 1.4 1.1 2.3 0 1.9-1.5 3.2-3.3 3.2s-3.3-1.3-3.3-3.2c0-.9.5-1.8 1.1-2.3C9 8.5 8.5 7.7 8.5 6.5 8.5 4.5 10 3 12 3z" fill={T.rose}/><path d="M12 14v6M12 20s2-1 2-3M12 20s-2-1-2-3" stroke="#2d5a2a" strokeWidth="1.5" strokeLinecap="round" fill="none"/></svg>;
+    case 'bed': return <svg {...p}><path d="M3 18v-8h18v8M3 14h18M7 10V7a2 2 0 012-2h3a2 2 0 012 2v3"/></svg>;
+    case 'car': return <svg {...p}><path d="M5 17h14v-5l-2-5H7l-2 5v5z"/><circle cx="8" cy="17" r="1.5"/><circle cx="16" cy="17" r="1.5"/></svg>;
+    case 'sun': return <svg {...p}><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.2 4.2l1.5 1.5M18.3 18.3l1.5 1.5M2 12h2M20 12h2M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5"/></svg>;
+    case 'bag': return <svg {...p}><path d="M5 8h14l-1 12a2 2 0 01-2 2H8a2 2 0 01-2-2L5 8z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg>;
+    case 'gift': return <svg {...p}><rect x="3" y="10" width="18" height="11" rx="1"/><path d="M3 10V8h18v2M12 10v11M8 10S6 7 8 5s4 3 4 5c0 0-2-3-4-2zM16 10s2-3 0-5-4 3-4 5c0 0 2-3 4-2z"/></svg>;
+    case 'settings': return <svg {...p}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3 1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9 1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>;
+    case 'logout': return <svg {...p}><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>;
+    case 'sunrise': return <svg {...p}><path d="M3 18h18M5.6 14a6.4 6.4 0 0112.8 0M12 4v3M5 7l1.5 1.5M19 7l-1.5 1.5M2 18h2M20 18h2M8 21h8"/></svg>;
+    case 'moon': return <svg {...p} fill={color}><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>;
+    case 'coffee': return <svg {...p}><path d="M5 9h12v7a4 4 0 01-4 4H9a4 4 0 01-4-4V9z"/><path d="M17 11h2a2 2 0 010 4h-2M8 4s-1 1.5 0 3M12 4s-1 1.5 0 3"/></svg>;
+    case 'mic': return <svg {...p}><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3M9 21h6"/></svg>;
+    case 'play': return <svg {...p} fill={color}><path d="M7 4l12 8-12 8z"/></svg>;
+    default: return null;
+  }
+}
+
+function Btn({ kind='primary', size='md', icon, trailing, full, onClick, children, style }) {
+  const sizes = { sm:{h:34,fs:12.5,pad:'0 14px',gap:6,ico:13}, md:{h:44,fs:14,pad:'0 20px',gap:8,ico:15}, lg:{h:52,fs:15,pad:'0 26px',gap:10,ico:16} }[size];
+  const kinds = {
+    primary:{bg:T.green,fg:'#fff',bd:T.green},
+    dark:{bg:T.ink,fg:'#fff',bd:T.ink},
+    outline:{bg:'transparent',fg:T.ink,bd:T.greyLight},
+    ghost:{bg:'transparent',fg:T.ink,bd:'transparent'},
+    outlineDark:{bg:'rgba(20,30,40,.55)',fg:'#fff',bd:'rgba(255,255,255,.25)'},
+    rose:{bg:T.rose,fg:'#fff',bd:T.rose},
+  }[kind];
+  return (
+    <button onClick={onClick} style={{
+      height:sizes.h, fontSize:sizes.fs, padding:sizes.pad, gap:sizes.gap, borderRadius:999,
+      background:kinds.bg, color:kinds.fg, border:`1.5px solid ${kinds.bd}`,
+      display:'inline-flex', alignItems:'center', justifyContent:'center',
+      fontWeight:600, cursor:'pointer', width:full?'100%':'auto', fontFamily:'inherit',
+      transition:'transform .1s', ...style,
+    }}>
+      {icon && <Ico name={icon} size={sizes.ico} color={kinds.fg} stroke={2}/>}
+      {children}
+      {trailing && <Ico name={trailing} size={sizes.ico} color={kinds.fg} stroke={2}/>}
+    </button>
+  );
+}
+
+function ImgPlaceholder({ src, tone='#3b6a4e', ink='#0f2e1f', accent='#e8d9a9', label='', radius=14, style, overlay=true, aspect }) {
+  const gid = 'gp-' + Math.abs([...label].reduce((a,c)=>a+c.charCodeAt(0),0));
+  return (
+    <div style={{ width:'100%', height:'100%', borderRadius:radius, overflow:'hidden', position:'relative', background:tone, ...(aspect?{aspectRatio:aspect}:{}), ...style }}>
+      <svg viewBox="0 0 400 280" preserveAspectRatio="xMidYMid slice" width="100%" height="100%" style={{ position:'absolute', inset:0 }}>
+        <defs>
+          <linearGradient id={gid+'sky'} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={tone} stopOpacity="0.55"/>
+            <stop offset="60%" stopColor={accent} stopOpacity="0.35"/>
+            <stop offset="100%" stopColor={tone} stopOpacity="1"/>
+          </linearGradient>
+          <radialGradient id={gid+'sun'} cx="72%" cy="24%" r="28%">
+            <stop offset="0%" stopColor={accent} stopOpacity=".95"/>
+            <stop offset="100%" stopColor={accent} stopOpacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="400" height="280" fill={tone}/>
+        <rect width="400" height="280" fill={`url(#${gid}sky)`}/>
+        <circle cx="288" cy="78" r="38" fill={`url(#${gid}sun)`}/>
+        <path d="M0 210 L50 160 L100 190 L160 140 L220 180 L290 150 L360 190 L400 170 L400 280 L0 280 Z" fill={ink} opacity=".35"/>
+        <path d="M0 230 L40 200 L90 220 L140 185 L200 215 L260 195 L330 225 L400 205 L400 280 L0 280 Z" fill={ink} opacity=".55"/>
+        <path d="M0 255 L80 240 L160 250 L240 235 L320 248 L400 238 L400 280 L0 280 Z" fill={ink} opacity=".85"/>
+      </svg>
+      {src && (
+        <img src={src} alt={label||''} loading="lazy" onError={e=>{ e.currentTarget.style.display='none'; }}
+          style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+      )}
+      {overlay && <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.35) 100%)', pointerEvents:'none' }}/>}
+      {label && <div style={{ position:'absolute', left:12, bottom:10, color:'rgba(255,255,255,.72)', fontSize:10, letterSpacing:'.12em', textTransform:'uppercase', fontFamily:'ui-monospace, Menlo, monospace' }}>{label}</div>}
+    </div>
+  );
+}
+
+function inr(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+
+Object.assign(window, { T, Ico, Btn, ImgPlaceholder, inr });
