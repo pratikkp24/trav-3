@@ -85,6 +85,9 @@ function Ico({ name, size=16, color='currentColor', stroke=1.8, fill='none' }) {
     case 'sparkle-ring': return <svg {...p}><circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>;
     case 'search': return <svg {...p}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>;
     case 'share': return <svg {...p}><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>;
+    case 'youtube': return <svg {...p}><path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>;
+    case 'instagram': return <svg {...p}><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>;
+    case 'external': return <svg {...p}><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>;
     default: return null;
   }
 }
@@ -413,8 +416,8 @@ function openRazorpay({
 // Read the saved profile (set on login / settings) so checkout pre-fills.
 function loadTravProfile() {
   try {
-    const s = localStorage.getItem('trav.profile');
-    if (s) return JSON.parse(s);
+    const prefs = typeof GET_USER_PREFS !== 'undefined' ? GET_USER_PREFS() : null;
+    if (prefs && prefs.name) return prefs;
   } catch {}
   return { name:'Aditi Rao', email:'aditi.r@gmail.com', phone:'+91 98••••••12' };
 }

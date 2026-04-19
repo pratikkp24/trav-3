@@ -8,7 +8,8 @@ const LANDING_TICKER = [
   { id:'t4', kind:'offer',    tripId:null,             icon:'gift',     text:'Code',                                     highlight:'WKND20 · 20% off this weekend', cta:'Apply & browse' },
 ];
 
-function Landing({ onOpenTrip, onViewAllTrips, onOpenDrop }) {
+function Landing({ onOpenTrip, onViewAllTrips, onOpenDrop, onOpenProfile, theme='light' }) {
+  const isDark = theme === 'dark';
   const [fromCity, setFromCity] = React.useState('Delhi');
   const [mode, setMode] = React.useState('weekend'); // weekend | long
   const [query, setQuery] = React.useState('');
@@ -29,9 +30,10 @@ function Landing({ onOpenTrip, onViewAllTrips, onOpenDrop }) {
   };
   return (
     <>
-      <LiveTicker items={LANDING_TICKER} isMobile={isMobile} onCta={onTickerCta}/>
-      <Hero fromCity={fromCity} setFromCity={setFromCity} mode={mode} setMode={setMode} query={query} setQuery={setQuery} onSeeTrips={scrollToWeekend} onSearch={onSearch} isMobile={isMobile} onOpenDrop={onOpenDrop}/>
-      <WeekendTrips fromCity={fromCity} onOpen={onOpenTrip} onViewAll={onViewAllTrips} isMobile={isMobile}/>
+      <LiveTicker items={LANDING_TICKER} isMobile={isMobile} onCta={onTickerCta} theme={theme}/>
+      <Hero fromCity={fromCity} setFromCity={setFromCity} mode={mode} setMode={setMode} query={query} setQuery={setQuery} onSeeTrips={scrollToWeekend} onSearch={onSearch} isMobile={isMobile} onOpenDrop={onOpenDrop} theme={theme}/>
+      <WeekendTrips fromCity={fromCity} onOpen={onOpenTrip} onViewAll={onViewAllTrips} isMobile={isMobile} onOpenProfile={onOpenProfile}/>
+      <BrowseCreators onOpen={onOpenProfile} isMobile={isMobile}/>
       <HowTraveling isMobile={isMobile}/>
       <HowItWorks isMobile={isMobile}/>
       <TravHer isMobile={isMobile}/>
@@ -40,8 +42,43 @@ function Landing({ onOpenTrip, onViewAllTrips, onOpenDrop }) {
   );
 }
 
+function BrowseCreators({ onOpen, isMobile }) {
+  const sidePad = isMobile ? 16 : 36;
+  return (
+    <div style={{ background:'#fff', padding:`${isMobile?32:56}px 0` }}>
+      <div style={{ maxWidth:1200, margin:'0 auto', padding:`0 ${sidePad}px` }}>
+        <div style={{ marginBottom:28 }}>
+          <h2 style={{ fontSize:isMobile?24:40, fontWeight:800, color:T.ink, letterSpacing:'-.025em', margin:0, fontFamily:'Fraunces, serif' }}>Browse by creators</h2>
+          <div style={{ fontSize:isMobile?14.5:16, color:T.grey, marginTop:8, maxWidth:600 }}>Hand-picked by people who know the roads better than anyone.</div>
+        </div>
+        
+        <div className="scroll-x" style={{ display:'flex', gap:20, overflowX:'auto', padding:'4px 2px 24px', margin:'0 -4px' }}>
+          {CREATORS.map(c => (
+             <div key={c.id} onClick={() => onOpen(c.id)} className="snap" style={{ flex:'0 0 160px', textAlign:'center', cursor:'pointer' }}>
+                <div style={{ position:'relative', width:120, height:120, margin:'0 auto 16px', transition:'transform .2s' }} onMouseEnter={e=>e.currentTarget.style.transform='scale(1.05)'} onMouseLeave={e=>e.currentTarget.style.transform='scale(1)'}>
+                   <img src={c.avatar} style={{ width:'100%', height:'100%', borderRadius:'50%', objectFit:'cover', border:`4px solid #fff`, boxShadow:'0 12px 30px rgba(15,30,46,.12)' }} />
+                   <div style={{ position:'absolute', bottom:-4, right:-4, background:T.greenDeep, color:'#fff', padding:'3px 8px', borderRadius:999, fontSize:10, fontWeight:800, border:'2px solid #fff' }}>{c.stats.trips} trips</div>
+                </div>
+                <div style={{ fontSize:15, fontWeight:700, color:T.ink }}>{c.name}</div>
+                <div style={{ fontSize:12, fontWeight:600, color:T.green, marginTop:2 }}>{c.handle}</div>
+             </div>
+          ))}
+          {/* Become a creator card */}
+          <div className="snap" style={{ flex:'0 0 160px', textAlign:'center', cursor:'pointer' }}>
+             <div style={{ width:120, height:120, margin:'0 auto 16px', borderRadius:'50%', background:'#F4F6FA', border:`2.5px dashed ${T.greyLight}`, display:'flex', alignItems:'center', justifyContent:'center', color:T.grey }}>
+                <Ico name="plus" size={32} color={T.grey} stroke={2}/>
+             </div>
+             <div style={{ fontSize:15, fontWeight:700, color:T.grey }}>Join us</div>
+             <div style={{ fontSize:11, fontWeight:600, color:T.greyLight, marginTop:2 }}>Lead your trips</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ============ Live ticker (animated, action-led, editable list) ============ */
-function LiveTicker({ items, isMobile, onCta }) {
+function LiveTicker({ items, isMobile, onCta, theme }) {
   const [idx, setIdx] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
   React.useEffect(() => {
@@ -56,10 +93,14 @@ function LiveTicker({ items, isMobile, onCta }) {
     drop:     { fg:T.greenDeep,label:'NEW DROP' },
     offer:    { fg:'#A37A1A',  label:'OFFER LIVE' },
   };
+  const isDark = theme === 'dark';
+  const barBg = isDark ? T.ink : '#F0FAF4';
+  const barFg = isDark ? '#fff' : T.ink;
+
   return (
-    <div onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} style={{ background:T.ink, color:'#fff', position:'relative', overflow:'hidden' }}>
+    <div className={isDark ? 'keep-colors' : ''} onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} style={{ background:barBg, color:barFg, borderBottom:isDark?'none':`1px solid #E0F2F1`, position:'relative', overflow:'hidden' }}>
       {/* moving sheen */}
-      <div style={{ position:'absolute', inset:0, background:`linear-gradient(90deg, transparent 0%, ${T.green}11 30%, transparent 60%)`, animation:'tk-shimmer 6s linear infinite', pointerEvents:'none' }}/>
+      <div style={{ position:'absolute', inset:0, background:`linear-gradient(90deg, transparent 0%, ${isDark?T.green:T.greenDeep}11 30%, transparent 60%)`, animation:'tk-shimmer 6s linear infinite', pointerEvents:'none' }}/>
       <div style={{ maxWidth:1200, margin:'0 auto', padding:isMobile?'9px 14px':'10px 36px', display:'flex', alignItems:'center', gap:isMobile?10:14, position:'relative' }}>
         <span aria-label="live" style={{ position:'relative', width:9, height:9, flexShrink:0 }}>
           <span style={{ position:'absolute', inset:0, borderRadius:'50%', background:T.green, opacity:.55, animation:'tk-pulse 1.5s ease-out infinite' }}/>
@@ -76,11 +117,11 @@ function LiveTicker({ items, isMobile, onCta }) {
                 transition:'opacity .35s ease, transform .35s ease',
                 whiteSpace:'nowrap', overflow:'hidden',
               }}>
-                <span style={{ fontSize:9.5, fontWeight:800, letterSpacing:'.14em', padding:'3px 8px', borderRadius:999, background:`${tone.fg}22`, color:tone.fg, display:'inline-flex', alignItems:'center', gap:5, flexShrink:0 }}>
-                  <Ico name={it.icon} size={10} color={tone.fg}/>{tone.label}
+                <span style={{ fontSize:9.5, fontWeight:800, letterSpacing:'.14em', padding:'3px 8px', borderRadius:999, background:tone.fg, color:'#fff', display:'inline-flex', alignItems:'center', gap:5, flexShrink:0 }}>
+                  <Ico name={it.icon} size={10} color="#fff"/>{tone.label}
                 </span>
-                <span style={{ fontSize:isMobile?12:13, color:'rgba(255,255,255,.78)', fontWeight:500, overflow:'hidden', textOverflow:'ellipsis', minWidth:0 }}>
-                  {it.text} <b style={{ color:'#fff', fontWeight:700 }}>{it.highlight}</b>
+                <span style={{ fontSize:isMobile?12:13, color:isDark?'rgba(255,255,255,.9)':T.ink, fontWeight:500, overflow:'hidden', textOverflow:'ellipsis', minWidth:0 }}>
+                  {it.text} <b style={{ color:isDark?'#fff':T.greenDeep, fontWeight:700 }}>{it.highlight}</b>
                 </span>
               </div>
             );
@@ -91,7 +132,7 @@ function LiveTicker({ items, isMobile, onCta }) {
           background:T.green, color:'#fff', border:'none', fontFamily:'inherit',
           fontSize:isMobile?11.5:12.5, fontWeight:800, cursor:'pointer',
           display:'inline-flex', alignItems:'center', gap:5,
-          boxShadow:`0 4px 12px ${T.green}55`,
+          boxShadow:isDark?`0 4px 12px ${T.green}55`:`0 4px 12px ${T.green}33`,
         }}>
           {isMobile ? 'Book' : items[idx].cta} <Ico name="arrow-right" size={11} color="#fff" stroke={2.5}/>
         </button>
@@ -104,7 +145,8 @@ function LiveTicker({ items, isMobile, onCta }) {
   );
 }
 
-function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrips, onSearch, isMobile, onOpenDrop }) {
+function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrips, onSearch, isMobile, onOpenDrop, theme }) {
+  const isDark = theme === 'dark';
   const [showLongWeekends, setShowLongWeekends] = React.useState(false);
   const UN = (id) => `https://images.unsplash.com/photo-${id}?w=400&q=80&auto=format&fit=crop`;
   const LFT = (tags, lock) => `https://loremflickr.com/400/400/${tags}?lock=${lock}`;
@@ -130,10 +172,10 @@ function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrip
         <div onClick={onOpenDrop} style={{ cursor:'pointer', display:'inline-flex', alignItems:'center', gap:6, background:'#F0FAF4', color:T.greenDeep, padding:'5px 12px', borderRadius:999, fontSize:11, fontWeight:600, marginBottom:14, border:`1px solid ${T.green}33` }}>
           <span style={{ width:6, height:6, borderRadius:'50%', background:T.green }}/>New drop · {TRAV.nextDrop}
         </div>
-        <h1 style={{ fontSize:36, fontWeight:700, letterSpacing:'-.03em', lineHeight:1.05, margin:0, color:T.ink, fontFamily:'Fraunces, serif' }}>
+        <h1 className="keep-colors" style={{ fontSize:36, fontWeight:700, letterSpacing:'-.03em', lineHeight:1.05, margin:0, color:isDark?'#fff':T.ink, fontFamily:'Fraunces, serif' }}>
           Your weekend,<br/>perfectly <span style={{ color:T.green, fontStyle:'italic' }}>travelled.</span>
         </h1>
-        <div style={{ marginTop:10, fontSize:14, color:T.grey, lineHeight:1.55 }}>
+        <div className="keep-colors" style={{ marginTop:10, fontSize:14, color:isDark?'rgba(255,255,255,0.7)':T.grey, lineHeight:1.55 }}>
           Creator-led weekend trips. Just 15 spots. No leaves needed.
         </div>
         <SearchBar mode={mode} setMode={setMode} fromCity={fromCity} setFromCity={setFromCity} query={query} setQuery={setQuery} onSearch={onSearch} isMobile/>
@@ -159,7 +201,6 @@ function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrip
   }
   return (
     <div style={{ position:'relative', background:'#fff', overflow:'hidden' }}>
-      <MonumentBand/>
       <div style={{ position:'relative', minHeight:520, display:'grid', gridTemplateColumns:'minmax(0,1fr) minmax(680px,760px) minmax(0,1fr)', alignItems:'stretch' }}>
         <div style={{ position:'relative', height:420, marginTop:40, minWidth:0 }}>
           <div style={{ position:'absolute', right:20, top:0, width:360, height:400, maxWidth:'calc(100% - 20px)' }}>{leftTiles.map(t=><PhotoTile key={t.k} t={t}/>)}</div>
@@ -169,10 +210,10 @@ function Hero({ fromCity, setFromCity, mode, setMode, query, setQuery, onSeeTrip
           <div onClick={onOpenDrop} style={{ cursor:'pointer', display:'inline-flex', alignItems:'center', gap:8, background:'#F0FAF4', color:T.greenDeep, padding:'6px 14px', borderRadius:999, fontSize:12, fontWeight:600, marginBottom:22, border:`1px solid ${T.green}33` }}>
             <span style={{ width:6, height:6, borderRadius:'50%', background:T.green }}/>New drop · {TRAV.nextDrop}
           </div>
-          <h1 style={{ fontSize:76, fontWeight:700, letterSpacing:'-.04em', lineHeight:1.02, margin:0, color:T.ink, fontFamily:'Fraunces, serif' }}>
+          <h1 className="keep-colors" style={{ fontSize:76, fontWeight:700, letterSpacing:'-.04em', lineHeight:1.02, margin:0, color:isDark?'#fff':T.ink, fontFamily:'Fraunces, serif' }}>
             Your weekend,<br/>perfectly <span style={{ color:T.green, fontStyle:'italic' }}>travelled.</span>
           </h1>
-          <div style={{ marginTop:20, fontSize:17, color:T.grey, lineHeight:1.5, maxWidth:520 }}>
+          <div className="keep-colors" style={{ marginTop:20, fontSize:17, color:isDark?'rgba(255,255,255,0.7)':T.grey, lineHeight:1.5, maxWidth:520 }}>
             Creator-led weekend trips. Friday night → Sunday evening.<br/>₹7–10K. Just 15 spots. No leaves needed.
           </div>
           <SearchBar mode={mode} setMode={setMode} fromCity={fromCity} setFromCity={setFromCity} query={query} setQuery={setQuery} onSearch={onSearch} isMobile={false}/>
@@ -436,9 +477,9 @@ function TripCard({ trip, onOpen }) {
           <Ico name="heart" size={20} color={wished ? T.rose : T.ink} fill={wished ? T.rose : 'none'} stroke={2.2}/>
         </button>
 
-        <div style={{ position:'absolute', bottom:12, left:12, background:'rgba(20,30,40,.75)', color:'#fff', padding:'5px 11px 5px 5px', borderRadius:999, fontSize:12, fontWeight:500, display:'inline-flex', alignItems:'center', gap:7 }}>
-          <span style={{ width:20, height:20, borderRadius:'50%', background:isTH?T.rose:T.green, display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:700, color:'#fff' }}>{trip.creator[1].toUpperCase()}</span>
-          {trip.creator}
+        <div onClick={(e)=>{ e.stopPropagation(); onOpenProfile && onOpenProfile(trip.creatorId); }} style={{ position:'absolute', bottom:12, left:12, background:'rgba(20,30,40,.75)', color:'#fff', padding:'5px 11px 5px 5px', borderRadius:999, fontSize:12, fontWeight:500, display:'inline-flex', alignItems:'center', gap:7, cursor:'pointer' }}>
+          <span style={{ width:20, height:20, borderRadius:'50%', background:isTH?T.rose:T.green, display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:700, color:'#fff' }}>{(CREATORS.find(c=>c.id===trip.creatorId)?.name[0] || 'T').toUpperCase()}</span>
+          {CREATORS.find(c=>c.id===trip.creatorId)?.handle || '@trav'}
         </div>
       </div>
 
@@ -683,4 +724,4 @@ function LongWeekendsModal({ onClose }) {
   );
 }
 
-Object.assign(window, { Landing, LongWeekendsModal });
+Object.assign(window, { Landing, LongWeekendsModal, TripCard });

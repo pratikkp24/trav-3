@@ -11,6 +11,7 @@ function App() {
     try { return localStorage.getItem('trav.theme') || 'light'; } catch { return 'light'; }
   });
   const [aiOpen, setAiOpen] = React.useState(false);
+  const [showOnboarding, setShowOnboarding] = React.useState(false);
   const isMobile = useIsMobile();
 
   React.useEffect(()=>{ try { localStorage.setItem('trav.view', JSON.stringify(view)); } catch {} }, [view]);
@@ -43,6 +44,7 @@ function App() {
    const openInvoice = (bookingId) => set({ screen:'invoice', tripId:null, bookingId });
   const openDrop = () => set({ screen:'thursday-drop', tripId:null, bookingId:null });
   const openPolicies = () => set({ screen:'policies', tripId:null, bookingId:null });
+  const openCreatorProfile = (id) => set({ screen:'creator-profile', creatorId:id });
 
   React.useEffect(() => {
     window.openFaq = openFaq;
@@ -52,7 +54,16 @@ function App() {
   }, []);
 
   const handleLoginClick = () => { if(loggedIn) openProfile(); else setShowLogin(true); };
-  const handleLoginSuccess = () => { setLoggedIn(true); setShowLogin(false); openProfile(); };
+  const handleLoginSuccess = () => { 
+    setLoggedIn(true); 
+    setShowLogin(false); 
+    const prefs = GET_USER_PREFS();
+    if (!prefs.name) {
+      setShowOnboarding(true);
+    } else {
+      openProfile(); 
+    }
+  };
   const handleLogout = () => { setLoggedIn(false); goHome(); };
 
   return (
@@ -70,34 +81,36 @@ function App() {
         onToggleTheme={toggleTheme}
       />
       <div className="theme-flip">
-        {view.screen==='landing' && <Landing onOpenTrip={openTrip} onViewAllTrips={openAllTrips} onOpenDrop={openDrop}/>}
+        {view.screen==='landing' && <Landing onOpenTrip={openTrip} onViewAllTrips={openAllTrips} onOpenDrop={openDrop} onOpenProfile={openCreatorProfile} theme={theme}/>}
         {view.screen==='all-trips' && <AllTripsIndex onOpenTrip={openTrip} filterDest={view.filterDest}/>}
         {view.screen==='investor' && <InvestorPage onBack={goHome}/>}
         {view.screen==='support' && <SupportPage onBack={goHome}/>}
         {view.screen==='faq' && <FaqPage onBack={goHome}/>}
         {view.screen==='about' && <AboutPage onBack={goHome} onOpenAllTrips={openAllTrips} onTravHer={openTravHer} onSupport={openSupport}/>}
         {view.screen==='travcoins' && <TravCoinsPage onBack={goHome} onSignup={handleLoginClick} onOpenWallet={openProfile} loggedIn={loggedIn}/>}
-        {view.screen==='detail' && <TripDetail tripId={view.tripId} onBack={goHome} onBook={openBooking} onCustomise={openCustomise} onOpenArticle={openArticle}/>}
+        {view.screen==='detail' && <TripDetail tripId={view.tripId} onBack={goHome} onBook={openBooking} onCustomise={openCustomise} onOpenArticle={openArticle} onOpenProfile={openCreatorProfile}/>}
         {view.screen==='booking' && <Booking mode={view.mode||'quick'} onBack={backToDetail} onBookAnother={goHome} onViewBookings={openProfile}/>}
         {view.screen==='profile' && <Profile onLogout={handleLogout} onOpenBooking={openBookingDetail} onOpenInvoice={openInvoice} onOpenTrip={openTrip} onTravHer={openTravHer} onOpenDrop={openDrop}/>}
         {view.screen==='booking-detail' && <BookingDetail bookingId={view.bookingId} onBack={openProfile} onInvoice={()=>openInvoice(view.bookingId)}/>}
         {view.screen==='invoice' && <Invoice bookingId={view.bookingId} onBack={()=>openBookingDetail(view.bookingId)}/>}
         {view.screen==='travher' && <TravHerPage onJoin={()=>alert('Opening WhatsApp group…')}/>}
+        {view.screen==='creator-profile' && <CreatorProfile creatorId={view.creatorId} onBack={goHome} onOpenTrip={openTrip} isMobile={isMobile} theme={theme}/>}
          {view.screen==='travelogue' && <TravelogueIndex onOpenArticle={openArticle}/>}
         {view.screen==='travelogue-article' && <TravelogueArticle onBack={openTravelogue} onOpenTrip={openTrip}/>}
         {view.screen==='thursday-drop' && <ThursdayDropPage onOpenTrip={openTrip} onBack={goHome}/>}
-        {view.screen==='policies' && <PoliciesPage onBack={goHome}/>}
-        {!['booking','profile','booking-detail','invoice','policies'].includes(view.screen) && <Footer onTravelogue={openTravelogue} onInvestor={openInvestor} onSupport={openSupport} onAbout={openAbout} onTravCoins={openTravCoins} onPolicies={openPolicies}/>}
+        {view.screen==='policies' && <PoliciesPage onBack={goHome} theme={theme}/>}
+        {!['booking','profile','booking-detail','invoice','policies'].includes(view.screen) && <div className="keep-colors"><Footer onTravelogue={openTravelogue} onInvestor={openInvestor} onSupport={openSupport} onAbout={openAbout} onTravCoins={openTravCoins} onPolicies={openPolicies} theme={theme}/></div>}
       </div>
       <MobileBottomNavWrapper view={view} loggedIn={loggedIn} onHome={goHome} onTrips={openAllTrips} onTravelogue={openTravelogue} onProfile={openProfile} onLogin={handleLoginClick} onSearch={openAllTrips} theme={theme}/>
       <SupportFabWrapper view={view} onOpen={openSupport}/>
       {showLogin && <LoginModal onClose={()=>setShowLogin(false)} onLogin={handleLoginSuccess}/>}
-      <FirstTripBanner view={view} loggedIn={loggedIn} onLogin={handleLoginClick}/>
-      <PaymentPendingBanner view={view} onResume={()=>set({ screen:'booking', tripId:(getPendingBooking()?.trip?.id)||view.tripId||null, bookingId:null, mode:'quick' })} onDismiss={()=>{clearPendingBooking();}}/>
-      <ResumePaymentToast view={view} onResume={()=>set({ screen:'booking', tripId:(getPendingBooking()?.trip?.id)||view.tripId||null, bookingId:null, mode:'quick' })}/>
-      <ExitIntentModal view={view} loggedIn={loggedIn} onBrowse={openAllTrips} onLogin={handleLoginClick}/>
-      <BrowseResumePill view={view} onOpenTrip={openTrip}/>
-      {aiOpen && <AssistantChat isMobile={isMobile} onClose={()=>setAiOpen(false)}/>}
+      <FirstTripBanner view={view} loggedIn={loggedIn} onLogin={handleLoginClick} theme={theme}/>
+      <PaymentPendingBanner view={view} onResume={()=>set({ screen:'booking', tripId:(getPendingBooking()?.trip?.id)||view.tripId||null, bookingId:null, mode:'quick' })} onDismiss={()=>{clearPendingBooking();}} theme={theme}/>
+      <ResumePaymentToast view={view} onResume={()=>set({ screen:'booking', tripId:(getPendingBooking()?.trip?.id)||view.tripId||null, bookingId:null, mode:'quick' })} theme={theme}/>
+      <ExitIntentModal view={view} loggedIn={loggedIn} onBrowse={openAllTrips} onLogin={handleLoginClick} theme={theme}/>
+      <BrowseResumePill view={view} onOpenTrip={openTrip} theme={theme}/>
+      {aiOpen && <AssistantChat isMobile={isMobile} onClose={()=>setAiOpen(false)} theme={theme}/>}
+      {showOnboarding && <OnboardingJourney theme={theme} onComplete={()=>{setShowOnboarding(false); openProfile();}} onSkip={()=>{setShowOnboarding(false); openProfile();}} />}
     </div>
   );
 }
@@ -107,8 +120,9 @@ function App() {
    Floats bottom-left on landing for not-logged-in users. Clicking Login triggers
    the login modal and sets the FIRSTRIP coupon so the first checkout auto-applies.
 ============================================================================= */
-function FirstTripBanner({ view, loggedIn, onLogin }) {
+function FirstTripBanner({ view, loggedIn, onLogin, theme }) {
   const isMobile = useIsMobile();
+  const isDark = theme === 'dark';
   const [dismissed, setDismissed] = React.useState(() => {
     try { return localStorage.getItem('trav.hook.firstTripDismissed')==='1'; } catch { return false; }
   });
@@ -117,27 +131,27 @@ function FirstTripBanner({ view, loggedIn, onLogin }) {
   if (!['landing','all-trips','detail'].includes(view.screen)) return null;
   const take = () => { setActiveCoupon('FIRSTRIP'); onLogin(); };
   return (
-    <div style={{
+    <div className="keep-colors" style={{
       position:'fixed', left:isMobile?16:20, bottom:isMobile?84:20, zIndex:70, maxWidth:isMobile?'calc(100% - 32px)':340,
-      background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`,
-      boxShadow:'0 18px 40px rgba(15,30,46,.18)', padding:isMobile?'12px 14px':'14px 16px 14px 14px',
+      background:isDark?'#1a2e42':'#fff', borderRadius:16, border:`1px solid ${isDark?'rgba(255,255,255,0.1)':T.greyLight}`,
+      boxShadow:isDark?'0 18px 40px rgba(0,0,0,.4)':'0 18px 40px rgba(15,30,46,.18)', padding:isMobile?'12px 14px':'14px 16px 14px 14px',
       display:'flex', gap:12, alignItems:'flex-start',
     }}>
-      <div style={{ width:36, height:36, borderRadius:10, background:'#F0FAF4', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-        <Ico name="gift" size={18} color={T.greenDeep}/>
+      <div style={{ width:36, height:36, borderRadius:10, background:isDark?'rgba(255,255,255,0.05)':'#F0FAF4', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+        <Ico name="gift" size={18} color={isDark?T.green:T.greenDeep}/>
       </div>
       <div style={{ flex:1, minWidth:0 }}>
-        <div style={{ fontSize:13.5, fontWeight:700, color:T.ink, fontFamily:'Fraunces, serif', letterSpacing:'-.01em' }}>Get 10% off your first trip</div>
-        <div style={{ fontSize:12, color:T.grey, marginTop:3, lineHeight:1.4 }}>Login and we'll auto-apply <b style={{ color:T.ink, fontFamily:'ui-monospace, Menlo, monospace' }}>FIRSTRIP</b> at checkout.</div>
+        <div style={{ fontSize:13.5, fontWeight:700, color:isDark?'#fff':T.ink, fontFamily:'Fraunces, serif', letterSpacing:'-.01em' }}>Get 10% off your first trip</div>
+        <div style={{ fontSize:12, color:isDark?'rgba(255,255,255,0.6)':T.grey, marginTop:3, lineHeight:1.4 }}>Login and we'll auto-apply <b style={{ color:isDark?'#fff':T.ink, fontFamily:'ui-monospace, Menlo, monospace' }}>FIRSTRIP</b> at checkout.</div>
         <div style={{ display:'flex', gap:8, marginTop:10, alignItems:'center' }}>
           <button onClick={take} style={{ height:32, padding:'0 14px', borderRadius:999, background:T.green, color:'#fff', border:'none', fontSize:12.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:6 }}>
             Claim offer <Ico name="arrow-right" size={12} color="#fff" stroke={2.4}/>
           </button>
-          <button onClick={dismiss} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:12, color:T.grey, fontFamily:'inherit' }}>Not now</button>
+          <button onClick={dismiss} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:12, color:isDark?'rgba(255,255,255,0.5)':T.grey, fontFamily:'inherit' }}>Not now</button>
         </div>
       </div>
       <button onClick={dismiss} aria-label="Close" style={{ background:'transparent', border:'none', cursor:'pointer', padding:4, marginLeft:-4 }}>
-        <Ico name="x" size={14} color={T.grey}/>
+        <Ico name="x" size={14} color={isDark?'rgba(255,255,255,0.4)':T.grey}/>
       </button>
     </div>
   );
@@ -148,8 +162,9 @@ function FirstTripBanner({ view, loggedIn, onLogin }) {
    If the user exited the checkout with a failed/pending payment, nudge them on
    every page until they either pay or explicitly drop the hold.
 ============================================================================= */
-function PaymentPendingBanner({ view, onResume, onDismiss }) {
+function PaymentPendingBanner({ view, onResume, onDismiss, theme }) {
   const isMobile = useIsMobile();
+  const isDark = theme === 'dark';
   const [, tick] = React.useState(0);
   const pending = getPendingBooking();
   if (!pending) return null;
@@ -157,23 +172,23 @@ function PaymentPendingBanner({ view, onResume, onDismiss }) {
   if (['booking','booking-detail','invoice'].includes(view.screen)) return null;
   const drop = () => { onDismiss(); tick(t=>t+1); };
   return (
-    <div style={{
+    <div className="keep-colors" style={{
       position:'fixed', right:isMobile?16:20, bottom:isMobile?84:20, zIndex:71, maxWidth:isMobile?'calc(100% - 32px)':360,
-      background:'#fff', borderRadius:16, border:`1.5px solid ${T.amber}55`,
-      boxShadow:'0 18px 40px rgba(15,30,46,.18)', padding:isMobile?'12px 14px':'14px 16px 14px 14px',
+      background:isDark?'#1a2e42':'#fff', borderRadius:16, border:`1.5px solid ${isDark?T.amber+'88':T.amber+'55'}`,
+      boxShadow:isDark?'0 18px 40px rgba(0,0,0,.4)':'0 18px 40px rgba(15,30,46,.18)', padding:isMobile?'12px 14px':'14px 16px 14px 14px',
       display:'flex', gap:12, alignItems:'flex-start',
     }}>
-      <div style={{ width:36, height:36, borderRadius:10, background:'#FFF5D6', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-        <Ico name="clock" size={18} color="#A37A1A"/>
+      <div style={{ width:36, height:36, borderRadius:10, background:isDark?'rgba(230,163,58,0.15)':'#FFF5D6', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+        <Ico name="clock" size={18} color={isDark?T.amber:'#A37A1A'}/>
       </div>
       <div style={{ flex:1, minWidth:0 }}>
-        <div style={{ fontSize:13.5, fontWeight:700, color:T.ink, fontFamily:'Fraunces, serif', letterSpacing:'-.01em' }}>Your {pending.trip?.dest||'trip'} hold is still open</div>
-        <div style={{ fontSize:12, color:T.grey, marginTop:3, lineHeight:1.4 }}>Finish paying to lock the spot. We haven't taken any money yet.</div>
+        <div style={{ fontSize:13.5, fontWeight:700, color:isDark?'#fff':T.ink, fontFamily:'Fraunces, serif', letterSpacing:'-.01em' }}>Your {pending.trip?.dest||'trip'} hold is still open</div>
+        <div style={{ fontSize:12, color:isDark?'rgba(255,255,255,0.6)':T.grey, marginTop:3, lineHeight:1.4 }}>Finish paying to lock the spot. We haven't taken any money yet.</div>
         <div style={{ display:'flex', gap:8, marginTop:10, alignItems:'center' }}>
-          <button onClick={onResume} style={{ height:32, padding:'0 14px', borderRadius:999, background:T.ink, color:'#fff', border:'none', fontSize:12.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:6 }}>
+          <button onClick={onResume} style={{ height:32, padding:'0 14px', borderRadius:999, background:isDark?T.green:T.ink, color:'#fff', border:'none', fontSize:12.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:6 }}>
             Resume payment <Ico name="arrow-right" size={12} color="#fff" stroke={2.4}/>
           </button>
-          <button onClick={drop} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:12, color:T.grey, fontFamily:'inherit' }}>Drop hold</button>
+          <button onClick={drop} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:12, color:isDark?'rgba(255,255,255,0.5)':T.grey, fontFamily:'inherit' }}>Drop hold</button>
         </div>
       </div>
     </div>
@@ -186,7 +201,8 @@ function PaymentPendingBanner({ view, onResume, onDismiss }) {
    per session inviting the user to resume. Dismissed per-session so it doesn't
    pile on top of PaymentPendingBanner forever.
 ============================================================================= */
-function ResumePaymentToast({ view, onResume }) {
+function ResumePaymentToast({ view, onResume, theme }) {
+  const isDark = theme === 'dark';
   const [show, setShow] = React.useState(false);
   React.useEffect(() => {
     if (sessionStorage.getItem('trav.hook.resumeToastShown') === '1') return;
@@ -205,19 +221,19 @@ function ResumePaymentToast({ view, onResume }) {
   const pending = getPendingBooking();
   if (!pending) return null;
   return (
-    <div style={{ position:'fixed', top:80, right:20, zIndex:72, maxWidth:320,
-      background:'#fff', borderRadius:14, border:`1.5px solid ${T.amber}66`,
-      boxShadow:'0 18px 40px rgba(15,30,46,.18)', padding:'12px 14px',
+    <div className="keep-colors" style={{ position:'fixed', top:80, right:20, zIndex:72, maxWidth:320,
+      background:isDark?'#1a2e42':'#fff', borderRadius:14, border:`1.5px solid ${isDark?T.amber+'88':T.amber+'66'}`,
+      boxShadow:isDark?'0 18px 40px rgba(0,0,0,.4)':'0 18px 40px rgba(15,30,46,.18)', padding:'12px 14px',
       display:'flex', gap:10, alignItems:'flex-start', animation:'none' }}>
-      <div style={{ width:32, height:32, borderRadius:8, background:'#FFF5D6', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-        <Ico name="clock" size={16} color="#A37A1A"/>
+      <div style={{ width:32, height:32, borderRadius:8, background:isDark?'rgba(230,163,58,0.15)':'#FFF5D6', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+        <Ico name="clock" size={16} color={isDark?T.amber:'#A37A1A'}/>
       </div>
       <div style={{ flex:1, minWidth:0 }}>
-        <div style={{ fontSize:13, fontWeight:700, color:T.ink, fontFamily:'Fraunces, serif' }}>Resume your {pending.trip?.dest||'trip'} payment?</div>
-        <div style={{ fontSize:11.5, color:T.grey, marginTop:2, lineHeight:1.4 }}>Your seats are held. Pay now to lock it in.</div>
+        <div style={{ fontSize:13, fontWeight:700, color:isDark?'#fff':T.ink, fontFamily:'Fraunces, serif' }}>Resume your {pending.trip?.dest||'trip'} payment?</div>
+        <div style={{ fontSize:11.5, color:isDark?'rgba(255,255,255,0.6)':T.grey, marginTop:2, lineHeight:1.4 }}>Your seats are held. Pay now to lock it in.</div>
         <div style={{ display:'flex', gap:8, marginTop:8 }}>
-          <button onClick={()=>{ setShow(false); onResume(); }} style={{ height:28, padding:'0 12px', borderRadius:999, background:T.ink, color:'#fff', border:'none', fontSize:11.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }}>Resume</button>
-          <button onClick={()=>setShow(false)} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:11.5, color:T.grey, fontFamily:'inherit' }}>Later</button>
+          <button onClick={()=>{ setShow(false); onResume(); }} style={{ height:28, padding:'0 12px', borderRadius:999, background:isDark?T.green:T.ink, color:'#fff', border:'none', fontSize:11.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }}>Resume</button>
+          <button onClick={()=>setShow(false)} style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:11.5, color:isDark?'rgba(255,255,255,0.5)':T.grey, fontFamily:'inherit' }}>Later</button>
         </div>
       </div>
     </div>
@@ -230,8 +246,9 @@ function ResumePaymentToast({ view, onResume }) {
    past the viewport edge, pop a single modal offering the first-trip deal.
    Session-scoped: once dismissed or taken, doesn't re-fire in the same tab.
 ============================================================================= */
-function ExitIntentModal({ view, loggedIn, onBrowse, onLogin }) {
+function ExitIntentModal({ view, loggedIn, onBrowse, onLogin, theme }) {
   const [open, setOpen] = React.useState(false);
+  const isDark = theme === 'dark';
   React.useEffect(() => {
     if (loggedIn) return;
     if (sessionStorage.getItem('trav.hook.exitIntentShown') === '1') return;
@@ -248,24 +265,24 @@ function ExitIntentModal({ view, loggedIn, onBrowse, onLogin }) {
   if (!open) return null;
   const take = () => { setActiveCoupon('FIRSTRIP'); setOpen(false); onLogin(); };
   return (
-    <div onClick={()=>setOpen(false)} style={{ position:'fixed', inset:0, zIndex:90, background:'rgba(10,20,30,.55)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
-      <div onClick={e=>e.stopPropagation()} className="keep-colors" style={{ background:'#fff', borderRadius:20, maxWidth:420, width:'100%', padding:'28px 28px 24px', boxShadow:'0 30px 60px rgba(0,0,0,.3)', position:'relative' }}>
+    <div onClick={()=>setOpen(false)} style={{ position:'fixed', inset:0, zIndex:90, background:isDark?'rgba(0,0,0,.7)':'rgba(10,20,30,.55)', backdropFilter:'blur(4px)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
+      <div onClick={e=>e.stopPropagation()} className="keep-colors" style={{ background:isDark?'#1a2e42':'#fff', borderRadius:20, maxWidth:420, width:'100%', padding:'28px 28px 24px', boxShadow:isDark?'0 30px 60px rgba(0,0,0,.5)':'0 30px 60px rgba(0,0,0,.3)', position:'relative', border:isDark?'1px solid rgba(255,255,255,0.1)':'none' }}>
         <button onClick={()=>setOpen(false)} aria-label="Close" style={{ position:'absolute', top:12, right:12, background:'transparent', border:'none', cursor:'pointer', padding:6 }}>
-          <Ico name="x" size={16} color={T.grey}/>
+          <Ico name="x" size={16} color={isDark?'rgba(255,255,255,0.4)':T.grey}/>
         </button>
-        <div style={{ width:56, height:56, borderRadius:'50%', background:'#F0FAF4', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:14 }}>
-          <Ico name="gift" size={26} color={T.greenDeep}/>
+        <div style={{ width:56, height:56, borderRadius:'50%', background:isDark?'rgba(255,255,255,0.05)':'#F0FAF4', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:14 }}>
+          <Ico name="gift" size={26} color={isDark?T.green:T.greenDeep}/>
         </div>
-        <div style={{ fontSize:11, fontWeight:800, letterSpacing:'.14em', color:T.greenDeep, marginBottom:6 }}>WAIT — ONE THING</div>
-        <h3 style={{ fontSize:24, fontWeight:700, color:T.ink, margin:0, fontFamily:'Fraunces, serif', letterSpacing:'-.02em', lineHeight:1.15 }}>Lock 10% off your first trip.</h3>
-        <div style={{ fontSize:13.5, color:T.grey, marginTop:10, lineHeight:1.55 }}>
-          Free cancellation up to 7 days. Login and we'll auto-apply <b style={{ color:T.ink, fontFamily:'ui-monospace, Menlo, monospace' }}>FIRSTRIP</b> at checkout.
+        <div style={{ fontSize:11, fontWeight:800, letterSpacing:'.14em', color:isDark?T.green:T.greenDeep, marginBottom:6 }}>WAIT — ONE THING</div>
+        <h3 style={{ fontSize:24, fontWeight:700, color:isDark?'#fff':T.ink, margin:0, fontFamily:'Fraunces, serif', letterSpacing:'-.02em', lineHeight:1.15 }}>Lock 10% off your first trip.</h3>
+        <div style={{ fontSize:13.5, color:isDark?'rgba(255,255,255,0.6)':T.grey, marginTop:10, lineHeight:1.55 }}>
+          Free cancellation up to 7 days. Login and we'll auto-apply <b style={{ color:isDark?'#fff':T.ink, fontFamily:'ui-monospace, Menlo, monospace' }}>FIRSTRIP</b> at checkout.
         </div>
         <div style={{ display:'flex', gap:10, marginTop:18, flexWrap:'wrap' }}>
           <button onClick={take} style={{ height:40, padding:'0 18px', borderRadius:999, background:T.green, color:'#fff', border:'none', fontSize:13, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:6 }}>
             Claim 10% off <Ico name="arrow-right" size={13} color="#fff" stroke={2.4}/>
           </button>
-          <button onClick={()=>{ setOpen(false); onBrowse(); }} style={{ height:40, padding:'0 16px', borderRadius:999, background:'transparent', color:T.ink, border:`1px solid ${T.greyLight}`, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
+          <button onClick={()=>{ setOpen(false); onBrowse(); }} style={{ height:40, padding:'0 16px', borderRadius:999, background:'transparent', color:isDark?'#fff':T.ink, border:`1px solid ${isDark?'rgba(255,255,255,0.2)':T.greyLight}`, fontSize:13, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
             Just browse
           </button>
         </div>
@@ -280,8 +297,9 @@ function ExitIntentModal({ view, loggedIn, onBrowse, onLogin }) {
    booking, show a bottom-center pill linking back to that trip. Persists the
    last-viewed trip id in localStorage so it survives reloads.
 ============================================================================= */
-function BrowseResumePill({ view, onOpenTrip }) {
+function BrowseResumePill({ view, onOpenTrip, theme }) {
   const isMobile = useIsMobile();
+  const isDark = theme === 'dark';
   const [dismissed, setDismissed] = React.useState(false);
   // Record last-viewed trip whenever the user lands on a detail page.
   React.useEffect(() => {
@@ -300,7 +318,7 @@ function BrowseResumePill({ view, onOpenTrip }) {
   const dest = last.id === 'trip-nainital' ? 'Nainital' : last.id === 'trip-jaipur' ? 'Jaipur' : 'Rishikesh';
   return (
     <div style={{ position:'fixed', left:'50%', transform:'translateX(-50%)', bottom:isMobile?84:20, zIndex:68, width:isMobile?'calc(100% - 32px)':'auto', maxWidth:isMobile?undefined:'calc(100vw - 40px)' }}>
-      <div style={{ display:'flex', alignItems:'center', gap:10, background:T.ink, color:'#fff', borderRadius:isMobile?16:999, padding:isMobile?'12px 14px':'10px 14px 10px 16px', boxShadow:'0 18px 40px rgba(15,30,46,.28)' }}>
+      <div className="keep-colors" style={{ display:'flex', alignItems:'center', gap:10, background:isDark?'#1a2e42':T.ink, color:'#fff', borderRadius:isMobile?16:999, padding:isMobile?'12px 14px':'10px 14px 10px 16px', boxShadow:isDark?'0 18px 40px rgba(0,0,0,0.4)':'0 18px 40px rgba(15,30,46,.28)', border:isDark?'1px solid rgba(255,255,255,0.1)':'none' }}>
         <Ico name="arrow-right" size={13} color="#fff" stroke={2.4}/>
         <div style={{ fontSize:12.5, fontWeight:600 }}>Pick up where you left off · <b style={{ fontWeight:800 }}>{dest}</b></div>
         <button onClick={()=>onOpenTrip(last.id)} style={{ height:28, padding:'0 12px', borderRadius:999, background:T.green, color:'#fff', border:'none', fontSize:11.5, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }}>See trip</button>

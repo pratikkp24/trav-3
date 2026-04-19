@@ -4,20 +4,20 @@ function VehicleTransport({ trip, isMobile }) {
   return (
     <div style={{ background:'#fff', borderRadius:16, padding:isMobile?16:20, border:`1px solid ${T.greyLight}`, display:'flex', flexDirection:isMobile?'column':'row', gap:20 }}>
       {[trip.transport.interCity, trip.transport.intraCity].map((item, idx) => (
-        <div key={idx} style={{ flex:1, display:'flex', alignItems:'center', gap:16, background:'#FBFBFC', padding:'14px 18px', borderRadius:14, border:`1px solid ${T.greyLight}44` }}>
-          <div style={{ width:70, height:45, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+        <div key={idx} style={{ flex:1, display:'flex', alignItems:'center', gap:20, background:'#FBFBFC', padding:isMobile?'14px':'16px 22px', borderRadius:14, border:`1px solid ${T.greyLight}44` }}>
+          <div style={{ width:isMobile?80:120, height:isMobile?50:80, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             {item.img ? (
-              <img src={item.img} style={{ width:'100%', height:'100%', objectFit:'contain' }} alt={item.type}/>
+              <img src={item.img} style={{ width:'100%', height:'100%', objectFit:'contain', transform:'scale(1.15)' }} alt={item.type}/>
             ) : (
-              <div style={{ width:40, height:40, borderRadius:10, background:T.greenLight, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <Ico name={item.icon || 'car'} size={20} color={T.greenDeep}/>
+              <div style={{ width:isMobile?40:50, height:isMobile?40:50, borderRadius:12, background:T.greenLight, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <Ico name={item.icon || 'car'} size={isMobile?20:24} color={T.greenDeep}/>
               </div>
             )}
           </div>
-          <div>
-            <div style={{ fontSize:10.5, fontWeight:800, color:T.grey, letterSpacing:'.1em', marginBottom:4 }}>{item.label}</div>
-            <div style={{ fontSize:13.5, fontWeight:700, color:T.ink }}>{item.type}</div>
-            <div style={{ fontSize:11, color:T.grey, marginTop:2 }}>{item.note}</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:isMobile?9.5:10.5, fontWeight:800, color:T.grey, letterSpacing:'.1em', marginBottom:4 }}>{item.label}</div>
+            <div style={{ fontSize:isMobile?13:16, fontWeight:700, color:T.ink, lineHeight:1.2 }}>{item.type}</div>
+            <div style={{ fontSize:isMobile?10.5:12, color:T.grey, marginTop:4, lineHeight:1.4 }}>{item.note}</div>
           </div>
         </div>
       ))}
@@ -25,7 +25,7 @@ function VehicleTransport({ trip, isMobile }) {
   );
 }
 
-function TripDetail({ tripId, onBack, onBook, onCustomise, onOpenArticle }) {
+function TripDetail({ tripId, onBack, onBook, onCustomise, onOpenArticle, onOpenProfile }) {
 
   // We now receive tripId via props, keeping it instantly synced with view state!
   const t = tripId === 'trip-nainital' ? NAINITAL_TRIP : (tripId === 'trip-thailand' ? THAILAND_TRIP : RISHIKESH_TRIP);
@@ -177,6 +177,10 @@ function TripDetail({ tripId, onBack, onBook, onCustomise, onOpenArticle }) {
             <AvailableDepartures departures={t.departures} isMobile={isMobile}/>
             <TripOverview trip={t} isMobile={isMobile} theme={theme}/>
             <Section title="Itinerary Journey" isMobile={isMobile}>
+              <div onClick={() => onOpenProfile && onOpenProfile(t.creatorId)} style={{ display:'inline-flex', alignItems:'center', gap:8, marginBottom:16, cursor:'pointer', background:'#F1F5F9', padding:'6px 14px 6px 6px', borderRadius:999, border:'1px solid #E2E8F0' }}>
+                <img src={CREATORS.find(c=>c.id===t.creatorId)?.avatar} style={{ width:24, height:24, borderRadius:'50%', objectFit:'cover' }} />
+                <span style={{ fontSize:12.5, fontWeight:700, color:T.inkSoft }}>by <span style={{ color:T.greenDeep }}>{CREATORS.find(c=>c.id===t.creatorId)?.name}</span></span>
+              </div>
               <ItineraryNav days={t.itinerary} active={activeDay} onJump={jumpToDay} isMobile={isMobile} isTravHer={persona==='soloFemale'}/>
               {t.itinerary.map((d,i) => <DayBlock key={i} day={d} idx={i} isLast={i===t.itinerary.length-1} isMobile={isMobile} gallery={t.gallery} onOpenLightbox={openLightbox} isTravHer={persona==='soloFemale'}/>)}
               <ItineraryVideos videos={t.videos} isMobile={isMobile}/>

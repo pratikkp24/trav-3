@@ -467,7 +467,8 @@ function SupportFab({ onOpen, isMobile, hide }) {
 
 /* ============ AI Assistant Chat ============ */
 
-function AssistantChat({ isMobile, onClose }) {
+function AssistantChat({ isMobile, onClose, theme='light' }) {
+  const isDark = theme === 'dark';
   const [messages, setMessages] = React.useState([
     { role:'ai', text:'Hey! I\'m Trav Assist. I can help with booking changes, policy questions, or trip details. What\'s on your mind?' }
   ]);
@@ -516,17 +517,17 @@ function AssistantChat({ isMobile, onClose }) {
   const presets = ['Refund policy', 'Change dates', 'Talk to human'];
 
   return (
-    <div style={{ position:'fixed', inset:0, background:'rgba(10,20,30,.4)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', zIndex:200, display:'flex', alignItems:isMobile?'flex-end':'center', justifyContent:'center' }}>
-      <div className="keep-colors" style={{ width:isMobile?'100%':440, height:isMobile?'85vh':600, background:'#fff', borderRadius:isMobile?'24px 24px 0 0':20, display:'flex', flexDirection:'column', overflow:'hidden', boxShadow:'0 30px 60px rgba(0,0,0,.25)', position:'relative' }}>
+    <div style={{ position:'fixed', inset:0, background:isDark?'rgba(0,0,0,0.6)':'rgba(10,20,30,.4)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', zIndex:200, display:'flex', alignItems:isMobile?'flex-end':'center', justifyContent:'center' }}>
+      <div style={{ width:isMobile?'100%':440, height:isMobile?'85vh':600, background:isDark?'#0a0a0a':'#fff', borderRadius:isMobile?'24px 24px 0 0':20, display:'flex', flexDirection:'column', overflow:'hidden', boxShadow:isDark?'0 30px 60px rgba(0,0,0,.5)':'0 30px 60px rgba(0,0,0,.25)', position:'relative', border:isDark?'1px solid rgba(255,255,255,0.1)':'none' }}>
         
         {/* Header */}
-        <div style={{ padding:isMobile?18:20, borderBottom:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', justifyContent:'space-between', background:T.ink, color:'#fff' }}>
+        <div style={{ padding:isMobile?18:20, borderBottom:`1px solid ${isDark?'rgba(255,255,255,0.1)':T.greyLight}`, display:'flex', alignItems:'center', justifyContent:'space-between', background:isDark?'#1a2e42':T.ink, color:'#fff' }}>
           <div style={{ display:'flex', alignItems:'center', gap:12 }}>
             <div style={{ position:'relative' }}>
               <div style={{ width:36, height:36, borderRadius:'50%', background:T.green, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:`0 0 0 4px ${T.green}33` }}>
                 <Ico name="spark" size={20} color="#fff" stroke={2.5}/>
               </div>
-              <div style={{ position:'absolute', bottom:-1, right:-1, width:10, height:10, borderRadius:'50%', background:T.green, border:'2px solid #fff' }}/>
+              <div style={{ position:'absolute', bottom:-1, right:-1, width:10, height:10, borderRadius:'50%', background:T.green, border:`2px solid ${isDark?'#1a2e42':'#fff'}` }}/>
             </div>
             <div>
               <div style={{ fontSize:15, fontWeight:800, fontFamily:'Fraunces, serif' }}>Trav Assist</div>
@@ -539,19 +540,19 @@ function AssistantChat({ isMobile, onClose }) {
         </div>
         
         {/* Chat window */}
-        <div ref={scrollRef} style={{ flex:1, overflowY:'auto', padding:'20px 16px', display:'flex', flexDirection:'column', gap:16, background:'#F8F9FB' }}>
+        <div ref={scrollRef} style={{ flex:1, overflowY:'auto', padding:'20px 16px', display:'flex', flexDirection:'column', gap:16, background:isDark?'#0a0a0a':'#F8F9FB' }}>
           {messages.map((m, i) => (
             <div key={i} style={{ alignSelf: m.role==='ai' ? 'flex-start' : 'flex-end', maxWidth:'80%' }}>
               <div style={{ 
-                background: m.role==='ai' ? '#fff' : T.green, 
-                color: m.role==='ai' ? T.ink : '#fff', 
+                background: m.role==='ai' ? (isDark?'#1a2e42':'#fff') : T.green, 
+                color: m.role==='ai' ? (isDark?'#fff':T.ink) : '#fff', 
                 padding:'12px 16px', 
                 borderRadius: m.role==='ai' ? '4px 18px 18px 18px' : '18px 18px 4px 18px', 
                 fontSize:14, 
                 lineHeight:1.55, 
                 fontWeight:500,
-                boxShadow: m.role==='ai' ? '0 4px 12px rgba(15,30,46,0.04)' : '0 4px 12px rgba(29,191,115,0.15)',
-                border: m.role==='ai' ? `1px solid ${T.greyLight}` : 'none',
+                boxShadow: m.role==='ai' ? (isDark?'none':'0 4px 12px rgba(15,30,46,0.04)') : '0 4px 12px rgba(29,191,115,0.15)',
+                border: m.role==='ai' ? `1px solid ${isDark?'rgba(255,255,255,0.1)':T.greyLight}` : 'none',
                 animation: 'msgIn .3s ease'
               }}>
                 {m.text}
@@ -559,28 +560,28 @@ function AssistantChat({ isMobile, onClose }) {
             </div>
           ))}
           {loading && (
-            <div style={{ alignSelf:'flex-start', background:'#fff', padding:'12px 18px', borderRadius:'4px 18px 18px 18px', border:`1px solid ${T.greyLight}`, display:'flex', gap:5 }}>
+            <div style={{ alignSelf:'flex-start', background:isDark?'#1a2e42':'#fff', padding:'12px 18px', borderRadius:'4px 18px 18px 18px', border:`1px solid ${isDark?'rgba(255,255,255,0.1)':T.greyLight}`, display:'flex', gap:5 }}>
               <span className="dot-bounce" style={{ width:5, height:5, borderRadius:'50%', background:T.green }}/>
               <span className="dot-bounce" style={{ width:5, height:5, borderRadius:'50%', background:T.green, animationDelay:'.2s' }}/>
               <span className="dot-bounce" style={{ width:5, height:5, borderRadius:'50%', background:T.green, animationDelay:'.4s' }}/>
             </div>
           )}
           {escalated && (
-            <div style={{ padding:16, background:'#F0FAF4', borderRadius:14, border:`1px solid ${T.green}33`, marginTop:10, textAlign:'center' }}>
-              <div style={{ fontSize:11, fontWeight:800, color:T.greenDeep, letterSpacing:'.1em', marginBottom:8 }}>ESCALATED TO HUMAN</div>
+            <div style={{ padding:16, background:isDark?'rgba(29,191,115,0.1)':'#F0FAF4', borderRadius:14, border:`1px solid ${T.green}33`, marginTop:10, textAlign:'center' }}>
+              <div style={{ fontSize:11, fontWeight:800, color:isDark?T.green:T.greenDeep, letterSpacing:'.1em', marginBottom:8 }}>ESCALATED TO HUMAN</div>
               <Btn size="sm" kind="primary" icon="whatsapp" full onClick={() => window.open('https://wa.me/919999999999')}>Chat with Priyank</Btn>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div style={{ padding:16, borderTop:`1px solid ${T.greyLight}`, background:'#fff' }}>
+        <div style={{ padding:16, borderTop:`1px solid ${isDark?'rgba(255,255,255,0.1)':T.greyLight}`, background:isDark?'#0a0a0a':'#fff' }}>
           {!loading && !escalated && messages.length < 5 && (
             <div style={{ display:'flex', gap:8, marginBottom:12, overflowX:'auto', paddingBottom:4 }} className="scroll-x">
               {presets.map(p => (
                 <button key={p} onClick={() => handleSend(p)} style={{ 
-                  flexShrink:0, padding:'6px 14px', borderRadius:999, background:'#F4F6FA', border:`1px solid ${T.greyLight}`, 
-                  fontSize:12, fontWeight:600, color:T.inkSoft, cursor:'pointer', whiteSpace:'nowrap' 
+                  flexShrink:0, padding:'6px 14px', borderRadius:999, background:isDark?'#1a2e42':'#F4F6FA', border:`1px solid ${isDark?'rgba(255,255,255,0.1)':T.greyLight}`, 
+                  fontSize:12, fontWeight:600, color:isDark?'rgba(255,255,255,0.8)':T.inkSoft, cursor:'pointer', whiteSpace:'nowrap', fontFamily:'inherit'
                 }}>{p}</button>
               ))}
             </div>
@@ -592,7 +593,7 @@ function AssistantChat({ isMobile, onClose }) {
               onKeyDown={e=>e.key==='Enter' && handleSend()} 
               disabled={escalated}
               placeholder={escalated ? "Handing over to Priyank..." : "Type your question..."} 
-              style={{ flex:1, height:48, border:`1.5px solid ${T.greyLight}`, borderRadius:14, padding:'0 16px', fontSize:14.5, fontFamily:'inherit', outline:'none', background:escalated?'#F8F9FB':'#fff' }}
+              style={{ flex:1, height:48, border:`1.5px solid ${isDark?'rgba(255,255,255,0.2)':T.greyLight}`, borderRadius:14, padding:'0 16px', fontSize:14.5, fontFamily:'inherit', outline:'none', background:isDark?'#1a2e42':(escalated?'#F8F9FB':'#fff'), color:isDark?'#fff':T.ink }}
             />
             <button 
               onClick={() => handleSend()} 

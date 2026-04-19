@@ -125,28 +125,97 @@ const POLICIES = [
     <p><b>Name:</b> Sudarshan | <b>Email:</b> grievance@trav.guide | <b>Phone:</b> +91-XXXXX-XXXXX</p>
   `},
   { id: 'pricing-taxes', title: 'Pricing & Tax', effective: 'May 1, 2026', content: `
-    <h3>1. GST Disclosure</h3>
-    <p>Tour operator services are subject to 5% GST. Convenience fees are subject to 18% GST. All prices at checkout are inclusive of these taxes.</p>
+    <h3>1. Pricing Transparency</h3>
+    <p>All prices displayed on the Platform are in Indian Rupees (INR). Each price is the total amount payable inclusive of all applicable taxes and convenience fees.</p>
+    
+    <h3>2. GST Rates</h3>
+    <ul>
+      <li><b>Tour Services:</b> 5% GST under SAC 9985.</li>
+      <li><b>Convenience Fees:</b> 18% GST.</li>
+    </ul>
+
+    <h3>3. Dynamic Pricing</h3>
+    <p>Prices may vary based on seasons, group size, and inventory. The price displayed at the time of Booking is binding for that specific transaction.</p>
   `},
   { id: 'coins', title: 'trav Coins Terms', effective: 'May 1, 2026', content: `
-    <h3>1. Redemption</h3>
-    <p>1 trav Coin = INR 1. Coins have no cash value and are non-transferable. Minimum 500 coins required for redemption.</p>
+    <h3>1. Earning Mechanics</h3>
+    <p>Users earn trav Coins (1 Coin = INR 1) through bookings (0.5%), referrals (50-100 coins), and travelogue submissions (25 coins).</p>
+    
+    <h3>2. Earning Limits</h3>
+    <ul>
+      <li><b>Quarterly Cap:</b> 500 coins per user.</li>
+      <li><b>Lifetime Wallet Cap:</b> 1,500 coins.</li>
+      <li><b>Expiry:</b> 6 months from the date of earning.</li>
+    </ul>
+
+    <h3>3. Redemption</h3>
+    <p>Minimum 500 coins required to redeem. Maximum redeemable per booking is 5% of the total amount or 500 coins, whichever is lower.</p>
   `},
   { id: 'community', title: 'Community Guidelines', effective: 'May 1, 2026', content: `
     <h3>1. Values</h3>
-    <p>Our community is built on respect, honesty, and helpfulness. Harassment or hate speech results in immediate moderation action.</p>
+    <p>trav is built on respect, honesty, and helpfulness. We maintain a zero-tolerance policy for harassment, hate speech, or discrimination.</p>
+
+    <h3>2. Prohibited Conduct</h3>
+    <p>Threats, intimidation, incitement to violence, and the sharing of sexually explicit content are strictly prohibited and result in a permanent ban.</p>
+    
+    <h3>3. trav.her Safety</h3>
+    <p>Misrepresentation of identity to gain access to the women-only trav.her community results in immediate and permanent exclusion.</p>
   `},
   { id: 'cookie', title: 'Cookie Policy', effective: 'May 1, 2026', content: `
-    <h3>1. Use of Cookies</h3>
-    <p>We use cookies to maintain login sessions, process payments, and analyze platform usage. You can manage your preferences at any time.</p>
+    <h3>1. Categories of Cookies</h3>
+    <ul>
+      <li><b>Necessary:</b> For login, security, and payments.</li>
+      <li><b>Functional:</b> For language and accessibility settings.</li>
+      <li><b>Analytics:</b> Google Analytics 4, Mixpanel, and Hotjar for platform optimization.</li>
+      <li><b>Marketing:</b> Meta Pixel and Google Ads for ad performance tracking.</li>
+    </ul>
+
+    <h3>2. Consent Management</h3>
+    <p>Users can manage preferences via the "Cookie Preferences" link in the footer or through browser settings.</p>
   `},
   { id: 'referral', title: 'Referral Terms', effective: 'May 1, 2026', content: `
-    <h3>1. Mechanism</h3>
-    <p>Earn 150 trav Coins for every successful referral who signs up and completes their first booking.</p>
+    <h3>1. Eligibility</h3>
+    <p>Referrers must have an active account. Referees must be new users who have never previously registered on the Platform.</p>
+    
+    <h3>2. Rewards</h3>
+    <p>Referees get 50 coins on signup. Referrers get 100 coins once the referee completes their first booking within 90 days.</p>
+    
+    <h3>3. Annual Cap</h3>
+    <p>Users are rewarded for a maximum of 5 (five) successful referrals per calendar year.</p>
   `},
   { id: 'ugc', title: 'Content & UGC', effective: 'May 1, 2026', content: `
-    <h3>1. Ownership</h3>
-    <p>You retain ownership of content you submit. By submitting, you grant us a license to use it for marketing and platform operation.</p>
+    <h3>1. License Grant</h3>
+    <p>Users retain ownership but grant the Company a royalty-free, worldwide license to use, reproduce, and display content for platform promotion.</p>
+    
+    <h3>2. Quality Standards</h3>
+    <p>Content must be original, based on first-hand experience, and free of plagiarised material or watermarks from other platforms.</p>
+    
+    <h3>3. Removal</h3>
+    <p>Users may request content removal at any time via support@trav.guide; processing is handled within 7 days.</p>
+  `},
+  { id: 'grievance-officer', title: 'Grievance Officer', effective: 'May 1, 2026', content: `
+    <h3>1. Official Appointment</h3>
+    <p>In compliance with the IT Rules, 2021, the following officer is appointed to resolve user grievances:</p>
+    <ul>
+      <li><b>Name:</b> Sudarshan [Last Name]</li>
+      <li><b>Designation:</b> Grievance Officer</li>
+      <li><b>Email:</b> grievance@trav.guide</li>
+      <li><b>Office Hours:</b> Mon-Fri, 10 AM - 6 PM IST</li>
+    </ul>
+  `},
+  { id: 'promo-terms', title: 'Promo Code Terms', effective: 'May 1, 2026', content: `
+    <h3>1. Usage Restrictions</h3>
+    <p>Promo codes are valid for a single booking per user unless stated otherwise. Codes cannot be combined with trav Coins or other offers.</p>
+    
+    <h3>2. No Cash Value</h3>
+    <p>Codes are non-transferable and cannot be exchanged for cash. If a booking is cancelled, the discount is forfeited and not refunded.</p>
+  `},
+  { id: 'marketing-consent', title: 'Marketing Consent', effective: 'May 1, 2026', content: `
+    <h3>1. Channel-Specific Opt-in</h3>
+    <p>During signup, you provide separate consent for Email, SMS, and WhatsApp marketing. Default is always opt-out.</p>
+    
+    <h3>2. Withdrawal</h3>
+    <p>You may withdraw consent at any time by clicking "unsubscribe", replying STOP, or blocking our number on WhatsApp.</p>
   `}
 ];
 
@@ -159,7 +228,8 @@ const LegalBlock = ({ title, effective, children }) => (
   </div>
 );
 
-function PoliciesPage({ onBack }) {
+function PoliciesPage({ onBack, theme='light' }) {
+  const isDark = theme === 'dark';
   const [activeTab, setActiveTab] = React.useState(() => {
     return POLICIES[0].id; // We can handle hashes later if needed
   });
@@ -178,18 +248,18 @@ function PoliciesPage({ onBack }) {
   const activePolicy = POLICIES.find(p => p.id === activeTab) || POLICIES[0];
 
   return (
-    <div style={{ background: '#fff', minHeight: '100vh' }}>
-      <nav style={{ height: 72, borderBottom: '1px solid #e0e4eb', display: 'flex', alignItems: 'center', padding: '0 24px', background: '#fff' }}>
+    <div className="keep-colors" style={{ background: isDark ? '#0a0a0a' : '#fff', minHeight: '100vh', color: isDark ? '#fff' : T.ink }}>
+      <nav style={{ height: 72, borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : '#e0e4eb'}`, display: 'flex', alignItems:'center', padding: '0 24px', background: isDark ? '#0a0a0a' : '#fff' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <button onClick={onBack} style={{ background:'transparent', border:'none', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', width:32, height:32, borderRadius:'50%', hover:{background:'#f4f6fa'} }}>
-            <Ico name="arrow-left" size={18} color={T.ink}/>
+          <button onClick={onBack} style={{ background:'transparent', border:'none', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', width:32, height:32, borderRadius:'50%' }}>
+            <Ico name="arrow-left" size={18} color={isDark ? '#fff' : T.ink}/>
           </button>
-          <div style={{ width: 1, height: 24, background: T.greyLight }}/>
+          <div style={{ width: 1, height: 24, background: isDark ? 'rgba(255,255,255,0.1)' : T.greyLight }}/>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 32, height: 32, background: T.green, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ color: '#fff', fontWeight: 800, fontSize: 18 }}>t</span>
             </div>
-            <span style={{ fontSize: 20, fontWeight: 800, color: T.ink, letterSpacing: '-.02em' }}>trav <span style={{ color: T.grey, fontWeight: 500 }}>· Legal Center</span></span>
+            <span style={{ fontSize: 20, fontWeight: 800, color: isDark ? '#fff' : T.ink, letterSpacing: '-.02em' }}>trav <span style={{ color: T.grey, fontWeight: 500 }}>· Legal Center</span></span>
           </div>
         </div>
       </nav>
@@ -251,3 +321,5 @@ function PoliciesPage({ onBack }) {
     </div>
   );
 }
+
+Object.assign(window, { PoliciesPage });

@@ -69,20 +69,28 @@ function Nav({ onLogo, onDrop, active='destinations', loggedIn, onLogin, onProfi
             <Ico name="chevron-down" size={12} color={textSec}/>
           </div>
         ) : (
-          <button onClick={onLogin} style={{ height:isMobile?36:40, padding:isMobile?'0 14px':'0 22px', borderRadius:999, background:'transparent', color:isDark?T.green:T.greenDeep, border:`1.5px solid ${isDark?T.green:T.greenDeep}`, fontSize:isMobile?12.5:14, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }}>Login</button>
+          <button onClick={onLogin} style={{ 
+            height:isMobile?36:40, padding:isMobile?'0 14px':'0 22px', borderRadius:999, 
+            background:isDark?T.green:'transparent', 
+            color:isDark?'#fff':T.greenDeep, 
+            border:isDark?'none':`1.5px solid ${T.greenDeep}`, 
+            fontSize:isMobile?12.5:14, fontWeight:700, cursor:'pointer', fontFamily:'inherit',
+            boxShadow:isDark?`0 4px 12px ${T.green}44`:'none'
+          }}>Login</button>
         )}
       </div>
     </div>
   );
 }
 
-function Footer({ onTravelogue, onInvestor, onSupport, onAbout, onTravCoins, onPolicies }) {
+function Footer({ onTravelogue, onInvestor, onSupport, onAbout, onTravCoins, onPolicies, theme='light' }) {
+  const isDark = theme === 'dark';
   const cols = [
     { h:'Explore', items:[{label:'Destinations'},{label:'Weekend Trips'},{label:'Travelogue', onClick:onTravelogue},{label:'Trav Coins · Rewards', onClick:onTravCoins, gold:true}] },
     { h:'Company', items:[{label:'About us', onClick:onAbout},{label:'trav.her', highlight:true},{label:'For Creators'},{label:'Policies', onClick:onPolicies},{label:'Investors', onClick:onInvestor},{label:'Support', onClick:onSupport},{label:'FAQ', onClick:()=>window.openFaq&&window.openFaq()}] },
   ];
   return (
-    <div style={{ background:'#fff', borderTop:`1px solid ${T.greyLight}`, padding:'56px 36px 24px', marginTop:60 }}>
+    <div style={{ background:isDark?'#0a0a0a':'#fff', borderTop:`1px solid ${isDark?'rgba(255,255,255,.08)':T.greyLight}`, padding:'56px 36px 24px', marginTop:60 }}>
       <div style={{ maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:'1.3fr 1fr 1fr 1.3fr', gap:40 }}>
         <div>
           <div style={{ display:'flex', alignItems:'center', gap:4, marginBottom:16 }}>
@@ -96,8 +104,8 @@ function Footer({ onTravelogue, onInvestor, onSupport, onAbout, onTravCoins, onP
           </div>
         </div>
         {cols.map(col => (
-          <div key={col.h}>
-            <div style={{ fontSize:14, fontWeight:700, color:T.ink, marginBottom:14 }}>{col.h}</div>
+          <div key={col.h} style={{ flex:1 }}>
+            <div style={{ fontSize:14, fontWeight:700, color:isDark?'#fff':T.ink, marginBottom:14 }}>{col.h}</div>
             {col.items.map(i => (
               <div key={i.label} onClick={i.onClick} style={{ fontSize:13.5, color:i.highlight?T.rose:(i.gold?T.goldDeep:T.ink), fontWeight:(i.highlight||i.gold)?700:500, marginBottom:10, cursor:'pointer' }}>{i.label}</div>
             ))}
@@ -131,132 +139,58 @@ function GoogleGlyph({ size=18 }) {
 }
 
 function LoginModal({ onClose, onLogin }) {
-  const [stage, setStage] = React.useState('entry'); // entry | onboard
   const [mode, setMode] = React.useState('google');   // google | phone
   const [phone, setPhone] = React.useState('');
-  const [otp, setOtp] = React.useState('');
-  // Onboarding fields — Name & Email required, Phone required, DOB/Nationality optional
-  const [profile, setProfile] = React.useState({
-    name:'Aditi Rao', email:'aditi.r@gmail.com', phone:'', dob:'', nationality:''
-  });
-  const setF = (k,v) => setProfile(p=>({...p,[k]:v}));
-
-  const save = (finalProfile, skipped=false) => {
-    try { localStorage.setItem('trav.profile', JSON.stringify({ ...finalProfile, skipped, updatedAt:Date.now() })); } catch {}
+  
+  const handleSuccess = () => {
     onLogin && onLogin();
   };
-  const skip = () => save(profile, true);
-  const confirm = () => {
-    if (!profile.name.trim() || !profile.email.trim()) return;
-    save(profile, false);
-  };
-
-  const input = (placeholder, value, onChange, extra={}) => (
-    <input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}
-      style={{ width:'100%', height:44, borderRadius:10, border:`1px solid ${T.greyLight}`, padding:'0 14px', fontSize:14, fontFamily:'inherit', outline:'none', background:'#fff', ...extra }}
-      onFocus={e=>e.target.style.borderColor=T.greenDeep}
-      onBlur={e=>e.target.style.borderColor=T.greyLight}/>
-  );
-
-  const fieldLabel = (txt, optional=false) => (
-    <div style={{ fontSize:11, fontWeight:700, color:T.grey, letterSpacing:'.1em', marginBottom:6 }}>
-      {txt.toUpperCase()} {optional && <span style={{ color:T.grey, fontWeight:500, letterSpacing:'.04em' }}>· optional</span>}
-    </div>
-  );
 
   return (
     <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(10,15,22,.5)', backdropFilter:'blur(4px)', zIndex:100, display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
-      <div onClick={e=>e.stopPropagation()} style={{ background:'#fff', borderRadius:18, width:'100%', maxWidth:stage==='onboard'?460:420, padding:28, boxShadow:'0 24px 60px rgba(0,0,0,.25)', maxHeight:'90vh', overflowY:'auto' }}>
+      <div onClick={e=>e.stopPropagation()} style={{ background:'#fff', borderRadius:18, width:'100%', maxWidth:420, padding:28, boxShadow:'0 24px 60px rgba(0,0,0,.25)', maxHeight:'90vh', overflowY:'auto' }}>
         <div style={{ display:'flex', alignItems:'center', gap:4, justifyContent:'center', marginBottom:8 }}>
           <span style={{ fontSize:28, fontWeight:800, color:T.greenDark, letterSpacing:'-.03em', fontFamily:'Fraunces, serif' }}>trav</span>
           <span style={{ width:7, height:7, background:T.green, borderRadius:2, marginBottom:6 }}/>
         </div>
 
-        {stage==='entry' && (
+        <h2 style={{ fontSize:22, fontWeight:700, color:T.ink, textAlign:'center', margin:'0 0 6px', fontFamily:'Fraunces, serif', letterSpacing:'-.02em' }}>Welcome to trav</h2>
+        <div style={{ fontSize:13, color:T.grey, textAlign:'center', marginBottom:22 }}>Plan your weekend in under a minute.</div>
+
+        <button onClick={handleSuccess} style={{
+          width:'100%', height:48, borderRadius:10, background:'#fff', color:T.ink,
+          border:`1.5px solid ${T.greyLight}`, fontSize:14.5, fontWeight:600, cursor:'pointer', fontFamily:'inherit',
+          display:'inline-flex', alignItems:'center', justifyContent:'center', gap:10,
+          boxShadow:'0 1px 2px rgba(15,30,46,.04)', transition:'all .15s'
+        }}
+        onMouseEnter={e=>{e.currentTarget.style.borderColor=T.ink;e.currentTarget.style.boxShadow='0 4px 12px rgba(15,30,46,.1)';}}
+        onMouseLeave={e=>{e.currentTarget.style.borderColor=T.greyLight;e.currentTarget.style.boxShadow='0 1px 2px rgba(15,30,46,.04)';}}>
+          <GoogleGlyph size={18}/> Continue with Google
+        </button>
+
+        <div style={{ display:'flex', alignItems:'center', gap:10, margin:'18px 0 14px', color:T.grey, fontSize:11, letterSpacing:'.08em', fontWeight:600 }}>
+          <div style={{ flex:1, height:1, background:T.greyLight }}/>OR<div style={{ flex:1, height:1, background:T.greyLight }}/>
+        </div>
+
+        {mode==='google' ? (
+          <button onClick={()=>setMode('phone')} style={{
+            width:'100%', height:44, borderRadius:10, background:'#F4F6FA', color:T.ink,
+            border:'none', fontSize:13.5, fontWeight:600, cursor:'pointer', fontFamily:'inherit',
+            display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8
+          }}>
+            <Ico name="phone" size={14} color={T.ink}/> Continue with phone number
+          </button>
+        ) : (
           <>
-            <h2 style={{ fontSize:22, fontWeight:700, color:T.ink, textAlign:'center', margin:'0 0 6px', fontFamily:'Fraunces, serif', letterSpacing:'-.02em' }}>Welcome to trav</h2>
-            <div style={{ fontSize:13, color:T.grey, textAlign:'center', marginBottom:22 }}>Plan your weekend in under a minute.</div>
-
-            <button onClick={()=>setStage('onboard')} style={{
-              width:'100%', height:48, borderRadius:10, background:'#fff', color:T.ink,
-              border:`1.5px solid ${T.greyLight}`, fontSize:14.5, fontWeight:600, cursor:'pointer', fontFamily:'inherit',
-              display:'inline-flex', alignItems:'center', justifyContent:'center', gap:10,
-              boxShadow:'0 1px 2px rgba(15,30,46,.04)', transition:'all .15s'
-            }}
-            onMouseEnter={e=>{e.currentTarget.style.borderColor=T.ink;e.currentTarget.style.boxShadow='0 4px 12px rgba(15,30,46,.1)';}}
-            onMouseLeave={e=>{e.currentTarget.style.borderColor=T.greyLight;e.currentTarget.style.boxShadow='0 1px 2px rgba(15,30,46,.04)';}}>
-              <GoogleGlyph size={18}/> Continue with Google
-            </button>
-
-            <div style={{ display:'flex', alignItems:'center', gap:10, margin:'18px 0 14px', color:T.grey, fontSize:11, letterSpacing:'.08em', fontWeight:600 }}>
-              <div style={{ flex:1, height:1, background:T.greyLight }}/>OR<div style={{ flex:1, height:1, background:T.greyLight }}/>
+            <div style={{ display:'flex', gap:8, marginBottom:10 }}>
+              <div style={{ height:44, padding:'0 12px', background:'#F4F6FA', borderRadius:10, display:'flex', alignItems:'center', fontSize:13.5, fontWeight:600, color:T.ink }}>+91</div>
+              <input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="98xxx xxxxx" style={{ flex:1, height:44, borderRadius:10, border:`1px solid ${T.greyLight}`, padding:'0 14px', fontSize:14, fontFamily:'inherit', outline:'none' }}/>
             </div>
-
-            {mode==='google' ? (
-              <button onClick={()=>setMode('phone')} style={{
-                width:'100%', height:44, borderRadius:10, background:'#F4F6FA', color:T.ink,
-                border:'none', fontSize:13.5, fontWeight:600, cursor:'pointer', fontFamily:'inherit',
-                display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8
-              }}>
-                <Ico name="phone" size={14} color={T.ink}/> Continue with phone number
-              </button>
-            ) : (
-              <>
-                <div style={{ display:'flex', gap:8, marginBottom:10 }}>
-                  <div style={{ height:44, padding:'0 12px', background:'#F4F6FA', borderRadius:10, display:'flex', alignItems:'center', fontSize:13.5, fontWeight:600, color:T.ink }}>+91</div>
-                  <input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="98xxx xxxxx" style={{ flex:1, height:44, borderRadius:10, border:`1px solid ${T.greyLight}`, padding:'0 14px', fontSize:14, fontFamily:'inherit', outline:'none' }}/>
-                </div>
-                <Btn kind="primary" size="md" full trailing="arrow-right" onClick={()=>setStage('onboard')}>Send OTP</Btn>
-              </>
-            )}
-
-            <div style={{ fontSize:11, color:T.grey, textAlign:'center', marginTop:18, lineHeight:1.5 }}>By continuing you agree to our Terms &amp; Privacy.</div>
+            <Btn kind="primary" size="md" full trailing="arrow-right" onClick={handleSuccess}>Send OTP</Btn>
           </>
         )}
 
-        {stage==='onboard' && (
-          <>
-            <h2 style={{ fontSize:22, fontWeight:700, color:T.ink, textAlign:'center', margin:'0 0 4px', fontFamily:'Fraunces, serif', letterSpacing:'-.02em' }}>One last step</h2>
-            <div style={{ fontSize:13, color:T.grey, textAlign:'center', marginBottom:20 }}>We'll use this to book trips for you. Skip anything you'd rather add later.</div>
-
-            <div style={{ display:'grid', gap:14 }}>
-              <div>
-                {fieldLabel('Full name')}
-                {input('Aditi Rao', profile.name, v=>setF('name',v))}
-              </div>
-              <div>
-                {fieldLabel('Email')}
-                {input('you@gmail.com', profile.email, v=>setF('email',v), { type:'email' })}
-              </div>
-              <div>
-                {fieldLabel('Mobile')}
-                <div style={{ display:'flex', gap:8 }}>
-                  <div style={{ height:44, padding:'0 12px', background:'#F4F6FA', borderRadius:10, display:'flex', alignItems:'center', fontSize:13.5, fontWeight:600, color:T.ink, flexShrink:0 }}>+91</div>
-                  {input('98xxx xxxxx', profile.phone, v=>setF('phone',v))}
-                </div>
-              </div>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
-                <div>
-                  {fieldLabel('DOB', true)}
-                  {input('DD / MM / YYYY', profile.dob, v=>setF('dob',v))}
-                </div>
-                <div>
-                  {fieldLabel('Nationality', true)}
-                  {input('Indian', profile.nationality, v=>setF('nationality',v))}
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display:'flex', gap:10, marginTop:22 }}>
-              <button onClick={skip} style={{
-                height:46, padding:'0 18px', borderRadius:10, background:'transparent', color:T.grey,
-                border:'none', fontSize:13.5, fontWeight:600, cursor:'pointer', fontFamily:'inherit', flexShrink:0
-              }}>Skip for now</button>
-              <Btn kind="primary" size="md" full trailing="arrow-right" onClick={confirm}>Finish setup</Btn>
-            </div>
-            <div style={{ fontSize:11, color:T.grey, textAlign:'center', marginTop:14, lineHeight:1.5 }}>You can edit all of this in <b style={{ color:T.ink, fontWeight:700 }}>Profile → Settings</b>.</div>
-          </>
-        )}
+        <div style={{ fontSize:11, color:T.grey, textAlign:'center', marginTop:18, lineHeight:1.5 }}>By continuing you agree to our Terms &amp; Privacy.</div>
       </div>
     </div>
   );

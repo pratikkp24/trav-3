@@ -7,31 +7,110 @@ const TRAV = {
 const UNSPLASH = (id, w=1200) => `https://images.unsplash.com/photo-${id}?w=${w}&q=80&auto=format&fit=crop`;
 const LF = (w, h, tags, lock) => `https://loremflickr.com/${w}/${h}/${tags}?lock=${lock}`;
 
+const CREATORS = [
+  {
+    id: 'tanya_travels',
+    name: 'Tanya Khanijow',
+    handle: '@tanya_travels',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop',
+    isVerified: true,
+    bio: '"I find the trips nobody writes about — and make them bookable."',
+    stats: { trips: 8, bookings: 142, rating: 4.8, travFollowers: '12.4k' },
+    followers: '12.4k',
+    following: '420',
+    curatedTripIds: ['trip-rishikesh', 'trip-jaipur', 'trip-manali', 'trip-bali', 'trip-goa'],
+    stories: [
+      { id: 's1', title: 'Finding Silence in the Spiti Valley', img: UNSPLASH('1584622650111-993a426fbf0a', 600) },
+      { id: 's2', title: "Jodhpur's Hidden Haveli", img: UNSPLASH('1524492412937-b28074a5d7da', 600) },
+      { id: 's3', title: "Munnar's Morning Mist", img: UNSPLASH('1593693411515-c20261bcad6e', 600) },
+      { id: 's4', title: 'Postcards from Pondicherry', img: LF(600, 400, 'pondicherry,beach,street', 88) }
+    ],
+    social: {
+      instagram: { handle: "@tanya_travels", followers: "840k", link: "https://instagram.com/tanyakhanijow" },
+      youtube: { handle: "Tanya Khanijow", subs: "1.2M", link: "https://youtube.com/@TanyaKhanijow" }
+    },
+    reels: [
+      { id: "vD0S-q5x6G0", platform: "youtube", title: "Travel Vibe" },
+      { id: "eBGS6P9v1kM", platform: "youtube", title: "Desert Life" },
+      { id: "dQw4w9WgXcQ", platform: "youtube", title: "Global Explore" }
+    ],
+    reviews: [
+      { id: 'r1', name: 'Ananya Singh', text: "Tanya's itinerary for Rishikesh was unlike anything I've seen. She took us to a village that isn't even on Google Maps!", trip: 'Booked Rishikesh 2023', initials: 'AS' },
+      { id: 'r2', name: 'Rohan Kapoor', text: "Kasol can be crowded, but Tanya found us the quietest pine grove for camping. A truly curated experience.", trip: 'Booked Kasol 2024', initials: 'RK' },
+      { id: 'r3', name: 'Meera Varma', text: "As a solo female traveler, I felt so safe and supported on her Goa trip. Every detail was planned perfectly.", trip: 'Booked Goa 2023', initials: 'MV' }
+    ]
+  },
+  {
+    id: 'meher.wanders',
+    name: 'Meher Wanders',
+    handle: '@meher.wanders',
+    avatar: 'https://images.unsplash.com/photo-1531123897727-8f129e16fd3c?w=400&h=400&fit=crop',
+    isVerified: true,
+    bio: 'Mountains, slow cafes, and women-only adventures.',
+    stats: { trips: 12, bookings: 210, rating: 4.9, travFollowers: '8.2k' },
+    followers: '8.2k',
+    following: '310',
+    curatedTripIds: ['trip-nainital', 'trip-triund', 'trip-kashmir'],
+    social: {
+      instagram: { handle: "@meher.wanders", followers: "125k", link: "https://instagram.com" },
+      youtube: { handle: "Meher Wanders", subs: "42k", link: "https://youtube.com" }
+    },
+    reels: [
+      { id: "Aof71wA0Bsc", platform: "youtube", title: "Himalayan Morning" },
+      { id: "sYwD6vJ3cFE", platform: "youtube", title: "Cafe Hopping" }
+    ],
+    stories: [],
+    reviews: []
+  },
+  {
+    id: 'rajasthan_ravi',
+    name: 'Ravi Singh',
+    handle: '@rajasthan_ravi',
+    avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop',
+    isVerified: true,
+    bio: 'History in every step. Exploring the unseen Rajasthan.',
+    stats: { trips: 5, bookings: 88, rating: 4.7, travFollowers: '5.1k' },
+    followers: '5.1k',
+    following: '180',
+    curatedTripIds: ['trip-jaipur', 'trip-jodhpur', 'trip-udaipur'],
+    social: {
+      instagram: { handle: "@rajasthan_ravi", followers: "52k", link: "https://instagram.com" },
+      youtube: { handle: "Ravi Rajput", subs: "18k", link: "https://youtube.com" }
+    },
+    reels: [
+      { id: "M7lc1UVf-VE", platform: "youtube", title: "Udaipur Sunsets" },
+      { id: "vD0S-q5x6G0", platform: "youtube", title: "Pink City Vibes" }
+    ],
+    stories: [],
+    reviews: []
+  }
+];
+
 const WEEKEND_TRIPS = [
-  { id:'trip-rishikesh', dest:'Rishikesh', dates:'2N/3D · May 1–3 · Fri 9 PM → Sun 7 PM', price:8499, tags:['Adventure','Wellness'], creator:'@tanya_travels', spotsLeft:6, spotsTotal:15, heat:'filling', holiday:'Buddha Purnima', img:{src:UNSPLASH('1571536802807-30451e3955d8'), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'Rishikesh · Ganga + hills'} },
-  { id:'trip-jaipur', dest:'Jaipur', dates:'2N/3D · Sat 6 AM → Sun 9 PM', price:9999, tags:['Heritage','Food'], creator:'@rajasthan_ravi', spotsLeft:11, spotsTotal:15, heat:null, img:{src:UNSPLASH('1477587458883-47145ed94245'), tone:'#c66a3d', ink:'#4a2414', accent:'#f2d9b3', label:'Jaipur · pink city'} },
-  { id:'trip-nainital', dest:'Nainital', dates:'2N/3D · Aug 14–16 · Fri 10 PM → Sun 8 PM', price:7999, tags:['Nature','Mountains'], creator:'@meher.wanders', spotsLeft:3, spotsTotal:15, heat:'almost-full', holiday:'Independence Day', travHer:true, img:{src:UNSPLASH('1626621341517-bbf3d9990a23'), tone:'#355e4a', ink:'#0b2418', accent:'#a6c8b1', label:'Nainital · lake + pines'} },
+  { id:'trip-rishikesh', dest:'Rishikesh', dates:'2N/3D · May 1–3 · Fri 9 PM → Sun 7 PM', price:8499, tags:['Adventure','Wellness'], creatorId:'tanya_travels', spotsLeft:6, spotsTotal:15, heat:'filling', holiday:'Buddha Purnima', img:{src:UNSPLASH('1571536802807-30451e3955d8'), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'Rishikesh · Ganga + hills'} },
+  { id:'trip-jaipur', dest:'Jaipur', dates:'2N/3D · Sat 6 AM → Sun 9 PM', price:9999, tags:['Heritage','Food'], creatorId:'rajasthan_ravi', spotsLeft:11, spotsTotal:15, heat:null, img:{src:UNSPLASH('1477587458883-47145ed94245'), tone:'#c66a3d', ink:'#4a2414', accent:'#f2d9b3', label:'Jaipur · pink city'} },
+  { id:'trip-nainital', dest:'Nainital', dates:'2N/3D · Aug 14–16 · Fri 10 PM → Sun 8 PM', price:7999, tags:['Nature','Mountains'], creatorId:'meher.wanders', spotsLeft:3, spotsTotal:15, heat:'almost-full', holiday:'Independence Day', travHer:true, img:{src:UNSPLASH('1626621341517-bbf3d9990a23'), tone:'#355e4a', ink:'#0b2418', accent:'#a6c8b1', label:'Nainital · lake + pines'} },
 ];
 
 // Expanded catalog for the "View all" filter index
 const ALL_TRIPS = [
   // Weekend
-  { id:'trip-rishikesh', dest:'Rishikesh', region:'UTTARAKHAND', title:'Rafting & Riverside Yoga', duration:'weekend', nights:'2N/3D', price:8499, tags:['Adventure','Wellness'], vibes:['adventure','wellness','nature'], travelingAs:['friends','solo-female','couple'], fillingFast:true, holiday:'Buddha Purnima', travHerExclusive:false, category:'domestic', img:{src:UNSPLASH('1571536802807-30451e3955d8'), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'Rishikesh'} },
-  { id:'trip-jaipur', dest:'Jaipur', region:'RAJASTHAN', title:'Pink City Heritage Walk', duration:'weekend', nights:'2N/3D', price:9999, tags:['Heritage','Food'], vibes:['heritage','culture'], travelingAs:['friends','couple','family'], fillingFast:false, travHerExclusive:false, category:'domestic', img:{src:UNSPLASH('1477587458883-47145ed94245'), tone:'#c66a3d', ink:'#4a2414', accent:'#f2d9b3', label:'Jaipur'} },
-  { id:'trip-nainital', dest:'Nainital', region:'UTTARAKHAND', title:'Lake & Pine Mornings', duration:'weekend', nights:'2N/3D', price:7999, tags:['Nature','Mountains'], vibes:['nature','mountains'], travelingAs:['friends','couple','family'], fillingFast:true, holiday:'Independence Day', travHerExclusive:false, category:'domestic', img:{src:UNSPLASH('1626621341517-bbf3d9990a23'), tone:'#355e4a', ink:'#0b2418', accent:'#a6c8b1', label:'Nainital'} },
+  { id:'trip-rishikesh', dest:'Rishikesh', region:'UTTARAKHAND', title:'Rafting & Riverside Yoga', duration:'weekend', nights:'2N/3D', price:8499, tags:['Adventure','Wellness'], vibes:['adventure','wellness','nature'], travelingAs:['friends','solo-female','couple'], fillingFast:true, holiday:'Buddha Purnima', travHerExclusive:false, category:'domestic', creatorId:'tanya_travels', img:{src:UNSPLASH('1571536802807-30451e3955d8'), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'Rishikesh'} },
+  { id:'trip-jaipur', dest:'Jaipur', region:'RAJASTHAN', title:'Pink City Heritage Walk', duration:'weekend', nights:'2N/3D', price:9999, tags:['Heritage','Food'], vibes:['heritage','culture'], travelingAs:['friends','couple','family'], fillingFast:false, travHerExclusive:false, category:'domestic', creatorId:'rajasthan_ravi', img:{src:UNSPLASH('1477587458883-47145ed94245'), tone:'#c66a3d', ink:'#4a2414', accent:'#f2d9b3', label:'Jaipur'} },
+  { id:'trip-nainital', dest:'Nainital', region:'UTTARAKHAND', title:'Lake & Pine Mornings', duration:'weekend', nights:'2N/3D', price:7999, tags:['Nature','Mountains'], vibes:['nature','mountains'], travelingAs:['friends','couple','family'], fillingFast:true, holiday:'Independence Day', travHerExclusive:false, category:'domestic', creatorId:'meher.wanders', img:{src:UNSPLASH('1626621341517-bbf3d9990a23'), tone:'#355e4a', ink:'#0b2418', accent:'#a6c8b1', label:'Nainital'} },
   // 2–3 Days
-  { id:'trip-manali', dest:'Old Manali', region:'HIMACHAL, HP', title:'Riverside Glamping & Yoga', duration:'2-3', nights:'3 Days · All Inclusive', price:8499, tags:['Adventure'], vibes:['adventure','nature','wellness'], travelingAs:['solo-female','couple','friends'], fillingFast:true, travHerExclusive:false, category:'domestic', img:{src:LF(1200, 800, 'manali,himalaya,pine,valley', 501), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'Old Manali'} },
-  { id:'trip-agra', dest:'Agra', region:'UTTAR PRADESH', title:'Mughal Heritage & High Tea', duration:'2-3', nights:'2 Days · Solo Friendly', price:6200, tags:['Heritage'], vibes:['heritage','culture'], travelingAs:['solo-female','couple'], fillingFast:false, travHerExclusive:true, category:'domestic', img:{src:UNSPLASH('1524492412937-b28074a5d7da'), tone:'#c6a45a', ink:'#2a1f0a', accent:'#f7e2b5', label:'Agra'} },
-  { id:'trip-jodhpur', dest:'Jodhpur', region:'RAJASTHAN', title:'The Blue City Photo Walk', duration:'Blue City · 2D/1N', price:4500, tags:['Cultural'], vibes:['heritage','culture'], travelingAs:['friends','couple','solo-female'], fillingFast:false, travHerExclusive:false, category:'domestic', img:{src:LF(1200, 800, 'jodhpur,bluecity,fort', 502), tone:'#4a6788', ink:'#0c1524', accent:'#e8d8b8', label:'Jodhpur'} },
+  { id:'trip-manali', dest:'Old Manali', region:'HIMACHAL, HP', title:'Riverside Glamping & Yoga', duration:'2-3', nights:'3 Days · All Inclusive', price:8499, tags:['Adventure'], vibes:['adventure','nature','wellness'], travelingAs:['solo-female','couple','friends'], fillingFast:true, travHerExclusive:false, category:'domestic', creatorId:'tanya_travels', img:{src:LF(1200, 800, 'manali,himalaya,pine,valley', 501), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'Old Manali'} },
+  { id:'trip-agra', dest:'Agra', region:'UTTAR PRADESH', title:'Mughal Heritage & High Tea', duration:'2-3', nights:'2 Days · Solo Friendly', price:6200, tags:['Heritage'], vibes:['heritage','culture'], travelingAs:['solo-female','couple'], fillingFast:false, travHerExclusive:true, category:'domestic', creatorId:'rajasthan_ravi', img:{src:UNSPLASH('1524492412937-b28074a5d7da'), tone:'#c6a45a', ink:'#2a1f0a', accent:'#f7e2b5', label:'Agra'} },
+  { id:'trip-jodhpur', dest:'Jodhpur', region:'RAJASTHAN', title:'The Blue City Photo Walk', duration:'Blue City · 2D/1N', price:4500, tags:['Cultural'], vibes:['heritage','culture'], travelingAs:['friends','couple','solo-female'], fillingFast:false, travHerExclusive:false, category:'domestic', creatorId:'rajasthan_ravi', img:{src:LF(1200, 800, 'jodhpur,bluecity,fort', 502), tone:'#4a6788', ink:'#0c1524', accent:'#e8d8b8', label:'Jodhpur'} },
   // 4–6 Days
-  { id:'trip-goa', dest:'South Goa', region:'GOA', title:'Secret Cove & Kayaking', duration:'4-6', nights:'4 Days · Chill Vibes', price:12800, tags:['Beach'], vibes:['beach','nature'], travelingAs:['friends','couple','solo-female'], fillingFast:true, travHerExclusive:false, category:'domestic', img:{src:LF(1200, 800, 'goa,palolem,palm,beach', 503), tone:'#2d7a9e', ink:'#071d2b', accent:'#f2d8a6', label:'South Goa'} },
-  { id:'trip-triund', dest:'Triund', region:'HIMACHAL, HP', title:'Starry Night Ridge Hike', duration:'2-3', nights:'2 Days · High Altitude', price:5500, tags:['Trekking'], vibes:['adventure','mountains','nature'], travelingAs:['friends','solo-female'], fillingFast:false, travHerExclusive:false, category:'domestic', img:{src:LF(1200, 800, 'triund,mountains,trek,snow', 504), tone:'#4a6788', ink:'#0c1524', accent:'#dfe7f0', label:'Triund'} },
-  { id:'trip-udaipur', dest:'Udaipur', region:'RAJASTHAN', title:'Lake View Suite Retreat', duration:'2-3', nights:'3 Days · Luxury Escape', price:18500, tags:['Romantic'], vibes:['romantic','heritage'], travelingAs:['couple','family'], fillingFast:false, travHerExclusive:false, category:'domestic', img:{src:LF(1200, 800, 'udaipur,palace,lake,night', 505), tone:'#c6a45a', ink:'#2a1408', accent:'#f4c896', label:'Udaipur'} },
+  { id:'trip-goa', dest:'South Goa', region:'GOA', title:'Secret Cove & Kayaking', duration:'4-6', nights:'4 Days · Chill Vibes', price:12800, tags:['Beach'], vibes:['beach','nature'], travelingAs:['friends','couple','solo-female'], fillingFast:true, travHerExclusive:false, category:'domestic', creatorId:'tanya_travels', img:{src:LF(1200, 800, 'goa,palolem,palm,beach', 503), tone:'#2d7a9e', ink:'#071d2b', accent:'#f2d8a6', label:'South Goa'} },
+  { id:'trip-triund', dest:'Triund', region:'HIMACHAL, HP', title:'Starry Night Ridge Hike', duration:'2-3', nights:'2 Days · High Altitude', price:5500, tags:['Trekking'], vibes:['adventure','mountains','nature'], travelingAs:['friends','solo-female'], fillingFast:false, travHerExclusive:false, category:'domestic', creatorId:'meher.wanders', img:{src:LF(1200, 800, 'triund,mountains,trek,snow', 504), tone:'#4a6788', ink:'#0c1524', accent:'#dfe7f0', label:'Triund'} },
+  { id:'trip-udaipur', dest:'Udaipur', region:'RAJASTHAN', title:'Lake View Suite Retreat', duration:'2-3', nights:'3 Days · Luxury Escape', price:18500, tags:['Romantic'], vibes:['romantic','heritage'], travelingAs:['couple','family'], fillingFast:false, travHerExclusive:false, category:'domestic', creatorId:'rajasthan_ravi', img:{src:LF(1200, 800, 'udaipur,palace,lake,night', 505), tone:'#c6a45a', ink:'#2a1408', accent:'#f4c896', label:'Udaipur'} },
   // Long Haul
-  { id:'trip-thailand', dest:'Phuket & Krabi', region:'THAILAND', title:'Island Hopping & Scuba', duration:'5-7', nights:'6N/7D', price:48000, tags:['Beach','Adventure'], vibes:['beach','adventure'], travelingAs:['friends','couple'], fillingFast:true, travHerExclusive:false, category:'long-haul', img:{src:UNSPLASH('1504214208698-ea1916a2195a', 800), tone:'#2d78a8', ink:'#0a1f2b', accent:'#f4d28a', label:'Thailand'} },
-  { id:'trip-kerala', dest:'Munnar & Alleppey', region:'KERALA', title:'Tea Estates & Backwaters', duration:'5-7', nights:'5N/6D', price:24000, tags:['Nature'], vibes:['nature','romantic'], travelingAs:['couple','family'], fillingFast:false, travHerExclusive:false, category:'long-haul', img:{src:UNSPLASH('1593693411515-c20261bcad6e', 800), tone:'#2f6a44', ink:'#0e2417', accent:'#d9c07a', label:'Kerala'} },
-  { id:'trip-kashmir', dest:'Srinagar & Gulmarg', region:'KASHMIR', title:'Snow Peaks & Shikara Rides', duration:'5-7', nights:'6N/7D', price:35000, tags:['Mountains'], vibes:['mountains','romantic'], travelingAs:['couple','friends'], fillingFast:true, travHerExclusive:false, category:'long-haul', img:{src:LF(800, 1100, 'kashmir,dal,shikara', 43), tone:'#4a6788', ink:'#0c1524', accent:'#dfe7f0', label:'Kashmir'} },
-  { id:'trip-bali', dest:'Ubud & Seminyak', region:'BALI', title:'Villa Retreat & Surf', duration:'8-10', nights:'7N/8D', price:65000, tags:['Wellness'], vibes:['wellness','beach'], travelingAs:['friends','solo-female'], fillingFast:false, travHerExclusive:true, category:'long-haul', img:{src:UNSPLASH('1537996194471-e657df975ab4', 800), tone:'#3a6a3a', ink:'#122112', accent:'#e8d49a', label:'Bali'} },
+  { id:'trip-thailand', dest:'Phuket & Krabi', region:'THAILAND', title:'Island Hopping & Scuba', duration:'5-7', nights:'6N/7D', price:48000, tags:['Beach','Adventure'], vibes:['beach','adventure'], travelingAs:['friends','couple'], fillingFast:true, travHerExclusive:false, category:'long-haul', creatorId:'tanya_travels', img:{src:UNSPLASH('1504214208698-ea1916a2195a', 800), tone:'#2d78a8', ink:'#0a1f2b', accent:'#f4d28a', label:'Thailand'} },
+  { id:'trip-kerala', dest:'Munnar & Alleppey', region:'KERALA', title:'Tea Estates & Backwaters', duration:'5-7', nights:'5N/6D', price:24000, tags:['Nature'], vibes:['nature','romantic'], travelingAs:['couple','family'], fillingFast:false, travHerExclusive:false, category:'long-haul', creatorId:'meher.wanders', img:{src:UNSPLASH('1593693411515-c20261bcad6e', 800), tone:'#2f6a44', ink:'#0e2417', accent:'#d9c07a', label:'Kerala'} },
+  { id:'trip-kashmir', dest:'Srinagar & Gulmarg', region:'KASHMIR', title:'Snow Peaks & Shikara Rides', duration:'5-7', nights:'6N/7D', price:35000, tags:['Mountains'], vibes:['mountains','romantic'], travelingAs:['couple','friends'], fillingFast:true, travHerExclusive:false, category:'long-haul', creatorId:'meher.wanders', img:{src:LF(800, 1100, 'kashmir,dal,shikara', 43), tone:'#4a6788', ink:'#0c1524', accent:'#dfe7f0', label:'Kashmir'} },
+  { id:'trip-bali', dest:'Ubud & Seminyak', region:'BALI', title:'Villa Retreat & Surf', duration:'8-10', nights:'7N/8D', price:65000, tags:['Wellness'], vibes:['wellness','beach'], travelingAs:['friends','solo-female'], fillingFast:false, travHerExclusive:true, category:'long-haul', creatorId:'tanya_travels', img:{src:UNSPLASH('1537996194471-e657df975ab4', 800), tone:'#3a6a3a', ink:'#122112', accent:'#e8d49a', label:'Bali'} },
 ];
 
 const HOW_IT_WORKS = [
@@ -594,4 +673,50 @@ const CANCELLATION_TIERS = [
   { window:'<72 hours',        refund:0.0,  fee:1.0,  note:'No refund · trip is in motion' },
 ];
 
-Object.assign(window, { TRAV, WEEKEND_TRIPS, ALL_TRIPS, HOW_IT_WORKS, GOING_LONGER, RISHIKESH_TRIP, NAINITAL_TRIP, THAILAND_TRIP, USER_BOOKINGS, CUSTOM_REQUESTS, PERSONAS, CANCELLATION_TIERS });
+const ONBOARDING_CITIES = [
+  { id: 'delhi', name: 'Delhi', sub: 'The Capital Soul', icon: 'map' },
+  { id: 'mumbai', name: 'Mumbai', sub: 'Maximum City', icon: 'pin' },
+  { id: 'bangalore', name: 'Bangalore', sub: 'The Garden City', icon: 'sun' },
+  { id: 'kolkata', name: 'Kolkata', sub: 'City of Joy', icon: 'spark' },
+  { id: 'chennai', name: 'Chennai', sub: 'The Gateway of South', icon: 'map' },
+  { id: 'pune', name: 'Pune', sub: 'Cultural Capital', icon: 'pin' },
+  { id: 'hyderabad', name: 'Hyderabad', sub: 'The Pearl City', icon: 'spark' },
+];
+
+const ONBOARDING_INTERESTS = [
+  { id: 'mountains', label: 'Mountains', icon: 'sun' },
+  { id: 'beaches', label: 'Beaches', icon: 'spark' },
+  { id: 'heritage', label: 'Heritage', icon: 'pin' },
+  { id: 'food', label: 'Food Trails', icon: 'spark' },
+  { id: 'wellness', label: 'Wellness', icon: 'spark' },
+  { id: 'wildlife', label: 'Wildlife', icon: 'sun' },
+  { id: 'spiritual', label: 'Spiritual', icon: 'spark' },
+  { id: 'adventure', label: 'Adventure', icon: 'spark' },
+  { id: 'photography', label: 'Photography', icon: 'spark' },
+  { id: 'festivals', label: 'Festivals', icon: 'spark' },
+  { id: 'nightlife', label: 'Nightlife', icon: 'spark' },
+  { id: 'solo', label: 'Solo Travel', icon: 'rose' },
+  { id: 'luxury', label: 'Luxury', icon: 'coin' },
+  { id: 'roadtrips', label: 'Road Trips', icon: 'map' },
+  { id: 'art', label: 'Art & Craft', icon: 'spark' },
+  { id: 'desert', label: 'Desert', icon: 'sun' },
+];
+
+const SAVE_USER_PREFS = (prefs) => {
+  try {
+    const existing = JSON.parse(localStorage.getItem('trav.userPreferences') || '{}');
+    localStorage.setItem('trav.userPreferences', JSON.stringify({ ...existing, ...prefs, updatedAt: Date.now() }));
+  } catch (e) {
+    console.error('Failed to save preferences', e);
+  }
+};
+
+const GET_USER_PREFS = () => {
+  try {
+    return JSON.parse(localStorage.getItem('trav.userPreferences') || '{}');
+  } catch (e) {
+    return {};
+  }
+};
+
+Object.assign(window, { TRAV, WEEKEND_TRIPS, ALL_TRIPS, CREATORS, HOW_IT_WORKS, GOING_LONGER, RISHIKESH_TRIP, NAINITAL_TRIP, THAILAND_TRIP, USER_BOOKINGS, CUSTOM_REQUESTS, PERSONAS, CANCELLATION_TIERS, ONBOARDING_CITIES, ONBOARDING_INTERESTS, SAVE_USER_PREFS, GET_USER_PREFS });

@@ -70,7 +70,10 @@
   html[data-theme="dark"] .theme-flip canvas{filter:invert(1) hue-rotate(180deg)}
   /* Buttons and brand-colored chrome: self-cancel so #1DBF73 renders as #1DBF73. */
   html[data-theme="dark"] .theme-flip button,
-  html[data-theme="dark"] .theme-flip .keep-colors{filter:invert(1) hue-rotate(180deg)}
+  html[data-theme="dark"] .theme-flip .keep-colors:not(button):not(img):not(video) { filter:invert(1) hue-rotate(180deg); }
+  /* Prevent triple-inversion when a button is inside a .keep-colors container */
+  html[data-theme="dark"] .theme-flip .keep-colors button,
+  html[data-theme="dark"] .theme-flip .keep-colors .keep-colors { filter:none; }
   /* The Razorpay modal is rendered in a portal outside .theme-flip, so it already
      displays with its own (light) chrome — nothing to do for it here. */
   /* Scrollbar polish in dark */
@@ -107,6 +110,8 @@
   <script type="text/babel" src="src/faq.jsx"></script>
   <script type="text/babel" src="src/policies.jsx"></script>
   <script type="text/babel" src="src/drop.jsx"></script>
+  <script type="text/babel" src="src/creator.jsx"></script>
+  <script type="text/babel" src="src/onboarding.jsx"></script>
   <script type="text/babel" src="src/app.jsx"></script>
 </body>
 </html>

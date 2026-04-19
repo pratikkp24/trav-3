@@ -1,5 +1,11 @@
 function Profile({ onLogout, onOpenBooking, onOpenInvoice, onOpenTrip, onTravHer, onOpenTravCoins, onBrowseTrips, onOpenDrop }) {
   const isMobile = useIsMobile();
+  const prefs = GET_USER_PREFS();
+  const userName = prefs.name || 'Aditi Rao';
+  const userCity = ONBOARDING_CITIES.find(c => c.id === prefs.city)?.name || 'Delhi';
+  const userPersona = prefs.persona ? prefs.persona.charAt(0).toUpperCase() + prefs.persona.slice(1) : 'Solo';
+  const userInterests = prefs.interests || ['mountains', 'beaches', 'heritage'];
+  
   const [tab, setTab] = React.useState('upcoming');
   const [nav, setNav] = React.useState('bookings');
 
@@ -28,8 +34,8 @@ function Profile({ onLogout, onOpenBooking, onOpenInvoice, onOpenTrip, onTravHer
             <div style={{ width:isMobile?60:72, height:isMobile?60:72, borderRadius:'50%', background:`linear-gradient(135deg, ${T.green}, ${T.greenDeep})`, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:isMobile?22:26, fontWeight:700, border:'3px solid rgba(255,255,255,.15)' }}>AR</div>
             <div style={{ minWidth:0, flex:isMobile?1:'initial' }}>
               <div style={{ fontSize:11, color:'rgba(255,255,255,.6)', letterSpacing:'.1em', fontWeight:700 }}>WELCOME BACK</div>
-              <h1 style={{ fontSize:isMobile?22:32, fontWeight:700, letterSpacing:'-.02em', margin:'2px 0 0', fontFamily:'Fraunces, serif' }}>Aditi Rao</h1>
-              <div style={{ fontSize:isMobile?11:13, color:'rgba(255,255,255,.7)', marginTop:4, overflow:'hidden', textOverflow:'ellipsis' }}>aditi.r@mail.com · +91 98•••••12</div>
+              <h1 style={{ fontSize:isMobile?22:32, fontWeight:700, letterSpacing:'-.02em', margin:'2px 0 0', fontFamily:'Fraunces, serif' }}>{userName}</h1>
+              <div style={{ fontSize:isMobile?11:13, color:'rgba(255,255,255,.7)', marginTop:4, overflow:'hidden', textOverflow:'ellipsis' }}>{prefs.email || 'aditi.r@mail.com'} · {prefs.phone || '+91 98•••••12'}</div>
             </div>
             {!isMobile && <div style={{ flex:1 }}/>}
             <div style={{ display:'flex', gap:isMobile?16:28, marginTop:isMobile?14:0, width:isMobile?'100%':'auto', justifyContent:isMobile?'space-between':'flex-start' }}>
@@ -100,6 +106,9 @@ function Profile({ onLogout, onOpenBooking, onOpenInvoice, onOpenTrip, onTravHer
                 </div>
               </div>
             </div>
+
+            {/* Traveler Identity Card */}
+            <TravelerIdentityCard city={userCity} persona={userPersona} interests={userInterests} isMobile={isMobile} />
 
             {/* trav.her promo card — sits below the logout */}
             <TravHerPromoCard onOpen={onTravHer}/>
@@ -687,14 +696,16 @@ function RequestDetailsModal({ r, s, th, onClose }) {
 /* ============ Settings panel ============ */
 function SettingsPanel({ isMobile }) {
   const loadProfile = () => {
-    try { const s=localStorage.getItem('trav.profile'); if(s) return JSON.parse(s); } catch {}
+    try {
+      if (typeof GET_USER_PREFS !== 'undefined') return GET_USER_PREFS();
+    } catch {}
     return { name:'Aditi Rao', email:'aditi.r@gmail.com', phone:'+91 98••••••12', dob:'', nationality:'Indian' };
   };
   const [p, setP] = React.useState(loadProfile);
   const [editing, setEditing] = React.useState(false);
   const [draft, setDraft] = React.useState(p);
   const save = () => {
-    try { localStorage.setItem('trav.profile', JSON.stringify({ ...draft, updatedAt:Date.now() })); } catch {}
+    if (typeof SAVE_USER_PREFS !== 'undefined') SAVE_USER_PREFS(draft);
     setP(draft); setEditing(false);
   };
   const cancel = () => { setDraft(p); setEditing(false); };
@@ -792,6 +803,54 @@ function ReviewReminderInline({ count }) {
       <div style={{ flex:1, minWidth:180 }}>
         <div style={{ fontSize:13.5, fontWeight:700, color:T.ink, fontFamily:'Fraunces, serif' }}>{count} trip{count>1?'s are':' is'} waiting on your review</div>
         <div style={{ fontSize:12, color:T.grey, marginTop:2, lineHeight:1.4 }}>30 seconds of honesty earns you <b style={{ color:T.ink }}>₹200 trav credits</b> per review.</div>
+      </div>
+    </div>
+  );
+}
+
+/* ============ Traveler Identity Card ============ */
+function TravelerIdentityCard({ city, persona, interests, isMobile }) {
+  const prefs = typeof GET_USER_PREFS !== 'undefined' ? GET_USER_PREFS() : {};
+  return (
+    <div style={{ background: '#fff', borderRadius: 16, padding: '18px 16px', border: `1px solid ${T.greyLight}`, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#F0FAF4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Ico name="pin" size={18} color={T.green} />
+        </div>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 800, color: T.grey, letterSpacing: '.12em' }}>BASE LOCATION</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: T.ink }}>Based in {city}</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#F0FAF4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Ico name="user" size={18} color={T.green} />
+        </div>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 800, color: T.grey, letterSpacing: '.12em' }}>TRAVEL STYLE</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: T.ink }}>{persona} Traveler</div>
+        </div>
+      </div>
+
+      <div style={{ borderTop: `1px solid ${T.greyLight}`, paddingTop: 12 }}>
+        <div style={{ fontSize: 10, fontWeight: 800, color: T.grey, letterSpacing: '.12em', marginBottom: 10 }}>IDENTITY & VIBES</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {prefs.nationality && (
+            <span style={{ background: '#F0FAF4', color: T.greenDeep, padding: '4px 10px', borderRadius: 999, fontSize: 11, fontWeight: 700, border: `1px solid ${T.green}` }}>
+              {prefs.nationality}
+            </span>
+          )}
+          {interests.map(id => {
+            const interest = ONBOARDING_INTERESTS.find(i => i.id === id);
+            if (!interest) return null;
+            return (
+              <span key={id} style={{ background: '#F8FAFC', color: T.inkSoft, padding: '4px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, border: `1px solid ${T.greyLight}` }}>
+                {interest.label}
+              </span>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
