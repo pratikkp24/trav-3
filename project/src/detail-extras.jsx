@@ -53,41 +53,115 @@ function AvailableDepartures({ departures, isMobile }) {
 }
 
 function SignatureStay({ stay, isMobile }) {
+  const [expanded, setExpanded] = React.useState(false);
+  const alts = stay.alternatives || [];
+
   return (
-    <div style={{ background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`, overflow:'hidden', display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1.2fr' }}>
-      <div style={{ position:'relative', minHeight:isMobile?180:260 }}>
-        <ImgPlaceholder {...stay.thumbs[0]} radius={0}/>
-      </div>
-      <div style={{ padding:isMobile?'18px 16px 14px':'22px 22px 18px' }}>
-        <div style={{ fontSize:11, fontWeight:800, color:T.greenDeep, letterSpacing:'.18em', marginBottom:6 }}>SIGNATURE STAY</div>
-        <h3 style={{ fontSize:22, fontWeight:700, color:T.ink, margin:'0 0 6px', fontFamily:'Fraunces, serif', letterSpacing:'-.015em' }}>{stay.name}</h3>
-        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
-          <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:12.5, color:T.ink, fontWeight:600 }}>
-            <Ico name="star" size={12} color={T.amber}/> {stay.rating}
-          </span>
-          <span style={{ fontSize:12, color:T.grey }}>· {stay.reviewsCount.toLocaleString()} reviews</span>
+    <div style={{ background:'#fff', borderRadius:16, border:`1px solid ${T.greyLight}`, overflow:'hidden', display:'flex', flexDirection:'column' }}>
+      <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1.2fr' }}>
+        <div style={{ position:'relative', minHeight:isMobile?180:260 }}>
+          <ImgPlaceholder {...stay.thumbs[0]} radius={0}/>
         </div>
-        <div style={{ fontSize:12.5, color:T.grey, marginBottom:14 }}>{stay.type}</div>
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:14 }}>
-          {stay.amenities.map((a,i) => (
-            <div key={i} style={{ display:'flex', alignItems:'center', gap:8, fontSize:12.5, color:T.inkSoft, fontWeight:500 }}>
-              <div style={{ width:22, height:22, borderRadius:6, background:'#F4F6FA', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <Ico name={a.icon} size={12} color={T.greenDeep}/>
+        <div style={{ padding:isMobile?'18px 16px 14px':'22px 22px 18px', display:'flex', flexDirection:'column' }}>
+          <div style={{ fontSize:11, fontWeight:800, color:T.greenDeep, letterSpacing:'.18em', marginBottom:6 }}>SIGNATURE STAY</div>
+          <h3 style={{ fontSize:22, fontWeight:700, color:T.ink, margin:'0 0 6px', fontFamily:'Fraunces, serif', letterSpacing:'-.015em' }}>{stay.name}</h3>
+          <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
+            <span style={{ display:'inline-flex', alignItems:'center', gap:4, fontSize:12.5, color:T.ink, fontWeight:600 }}>
+              <Ico name="star" size={12} color={T.amber}/> {stay.rating}
+            </span>
+            <span style={{ fontSize:12, color:T.grey }}>· {stay.reviewsCount.toLocaleString()} reviews</span>
+          </div>
+          <div style={{ fontSize:12.5, color:T.grey, marginBottom:14 }}>{stay.type}</div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:14 }}>
+            {stay.amenities.map((a,i) => (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:8, fontSize:12.5, color:T.inkSoft, fontWeight:500 }}>
+                <div style={{ width:22, height:22, borderRadius:6, background:'#F4F6FA', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <Ico name={a.icon} size={12} color={T.greenDeep}/>
+                </div>
+                {a.label}
               </div>
-              {a.label}
+            ))}
+          </div>
+          <div style={{ fontSize:12.5, color:T.grey, lineHeight:1.55, marginBottom:14, flex:1 }}>{stay.blurb}</div>
+          <div style={{ display:'flex', gap:8, alignItems:'center', justifyContent:'space-between' }}>
+            <div style={{ display:'flex', gap:8 }}>
+              {stay.thumbs.map((th,i) => (
+                <div key={i} style={{ width:52, height:40, borderRadius:8, overflow:'hidden' }}>
+                  <ImgPlaceholder {...th} radius={0}/>
+                </div>
+              ))}
+              <div style={{ width:52, height:40, borderRadius:8, background:'#F4F6FA', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:T.grey }}>+5</div>
             </div>
-          ))}
-        </div>
-        <div style={{ fontSize:12.5, color:T.grey, lineHeight:1.55, marginBottom:14 }}>{stay.blurb}</div>
-        <div style={{ display:'flex', gap:8 }}>
-          {stay.thumbs.map((th,i) => (
-            <div key={i} style={{ width:52, height:40, borderRadius:8, overflow:'hidden' }}>
-              <ImgPlaceholder {...th} radius={0}/>
-            </div>
-          ))}
-          <div style={{ width:52, height:40, borderRadius:8, background:'#F4F6FA', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:T.grey }}>+5</div>
+            {!isMobile && alts.length > 0 && (
+              <button onClick={()=>setExpanded(!expanded)} style={{ background:'transparent', border:'none', color:T.greenDeep, fontSize:13, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', gap:4, padding:4 }}>
+                {expanded ? 'Hide alternatives' : 'See alternatives'} <Ico name={expanded?'x':'chevron-down'} size={14} color={T.greenDeep}/>
+              </button>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Desktop In-situ Expansion */}
+      {!isMobile && expanded && alts.length > 0 && (
+        <div style={{ borderTop:`1px solid ${T.greyLight}`, background:'#FAFAFA', padding:'20px 22px' }}>
+          <div style={{ fontSize:10, fontWeight:800, color:T.grey, letterSpacing:'.14em', marginBottom:12 }}>SIMILAR VERIFIED STAYS</div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:16 }}>
+            {alts.map((alt,i) => (
+              <div key={i} style={{ display:'flex', gap:12, background:'#fff', padding:12, borderRadius:12, border:`1px solid ${T.greyLight}` }}>
+                <div style={{ width:80, height:60, borderRadius:8, overflow:'hidden', flexShrink:0 }}>
+                  <ImgPlaceholder {...alt.thumb} radius={0}/>
+                </div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:14, fontWeight:700, color:T.ink }}>{alt.name}</div>
+                  <div style={{ fontSize:12, color:T.grey, marginBottom:4 }}>{alt.rating} ★ · {alt.type}</div>
+                  <div style={{ fontSize:11.5, color:T.grey, lineHeight:1.4, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>{alt.blurb}</div>
+                </div>
+                <div style={{ alignSelf:'center' }}>
+                  <Btn kind="outline" size="sm">Preview</Btn>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Drawer Trigger (Down Arrow at bottom) */}
+      {isMobile && alts.length > 0 && (
+        <div onClick={()=>setExpanded(true)} style={{ borderTop:`1px solid ${T.greyLight}`, padding:'12px', textAlign:'center', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6, color:T.greenDeep, fontSize:13, fontWeight:700 }}>
+          Explore other hotel options <Ico name="chevron-down" size={14} color={T.greenDeep}/>
+        </div>
+      )}
+
+      {/* Mobile Modal/Drawer */}
+      {isMobile && expanded && (
+        <div onClick={()=>setExpanded(false)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,.5)', zIndex:1000, display:'flex', alignItems:'flex-end' }}>
+          <div onClick={e=>e.stopPropagation()} style={{ background:'#fff', width:'100%', borderRadius:'20px 20px 0 0', padding:'24px 20px 40px', maxHeight:'80vh', overflowY:'auto' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:20 }}>
+              <div style={{ fontSize:11, fontWeight:800, color:T.greenDeep, letterSpacing:'.14em' }}>VERIFIED ALTERNATIVES</div>
+              <button onClick={()=>setExpanded(false)} style={{ background:'#f4f4f4', border:'none', borderRadius:'50%', width:30, height:30, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <Ico name="x" size={14} color={T.ink}/>
+              </button>
+            </div>
+            <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+              {alts.map((alt,i) => (
+                <div key={i} style={{ display:'flex', flexDirection:'column', gap:12, border:`1px solid ${T.greyLight}`, borderRadius:14, padding:14 }}>
+                  <div style={{ display:'flex', gap:12 }}>
+                    <div style={{ width:70, height:70, borderRadius:10, overflow:'hidden', flexShrink:0 }}>
+                      <ImgPlaceholder {...alt.thumb} radius={0}/>
+                    </div>
+                    <div>
+                      <div style={{ fontSize:15, fontWeight:700, color:T.ink }}>{alt.name}</div>
+                      <div style={{ fontSize:12.5, color:T.grey }}>{alt.rating} ★ · {alt.type}</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize:13, color:T.inkSoft, lineHeight:1.5 }}>{alt.blurb}</div>
+                  <Btn kind="primary" full size="md">Preview this stay</Btn>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -427,7 +427,15 @@ function PriceCard({ trip, guests, basePerPerson, base, tax, fee, addOns, th, tr
               <span style={{ fontSize:12, color:T.greenDeep, fontWeight:700 }}>Pay now (token)</span>
               <span style={{ fontSize:16, fontWeight:800, color:T.greenDeep }}>{inr(token)}</span>
             </div>
-            <Btn kind="primary" size="lg" full trailing="arrow-right" onClick={onPay}>Confirm & Pay {inr(token)}</Btn>
+            <div style={{ marginBottom:14 }}>
+              <label style={{ display:'flex', alignItems:'flex-start', gap:10, cursor:'pointer' }}>
+                <input type="checkbox" checked={termsAgreed} onChange={e=>setTermsAgreed(e.target.checked)} style={{ marginTop:3, accentColor:T.greenDeep }}/>
+                <div style={{ fontSize:11.5, color:T.grey, lineHeight:1.4 }}>
+                  I agree to the <span style={{ textDecoration:'underline', color:T.ink }}>Terms of Service</span> and <span style={{ textDecoration:'underline', color:T.ink }}>Refund Policy</span>.
+                </div>
+              </label>
+            </div>
+            <Btn kind="primary" size="lg" full trailing="arrow-right" disabled={!termsAgreed} onClick={startPayment}>Confirm & Pay {inr(token)}</Btn>
             <div style={{ marginTop:10, fontSize:11, color:T.grey, textAlign:'center', lineHeight:1.4 }}>
               Balance {inr(balance)} auto-collected 7 days before. Free cancellation up to 7 days.
             </div>
@@ -565,6 +573,9 @@ function QuickBook({ onBack, onBookAnother, onViewBookings }) {
   const isTH = !!t.travHer;
   const brandColor = isTH ? '#C14A36' : '#1DBF73';
   const [guests, setGuests] = React.useState(2);
+  const [stayType, setStayType] = React.useState('double');
+  const [foodPref, setFoodPref] = React.useState('veg');
+  const [termsAgreed, setTermsAgreed] = React.useState(false);
   const [pay, setPay] = React.useState('upi');
   const [gstOn, setGstOn] = React.useState(false);
   const [couponInput, setCouponInput] = React.useState('');
@@ -579,8 +590,16 @@ function QuickBook({ onBack, onBookAnother, onViewBookings }) {
     if (codes[stored]) setCoupon({ code: stored, ...codes[stored] });
   }, []);
 
+  const STAY_OPTIONS = [
+    { id:'triple', label:'Triple Sharing', offset:-500, icon:'users' },
+    { id:'double', label:'Double Sharing', offset:0, icon:'users' },
+    { id:'single', label:'Single Room', offset:2500, icon:'bed' },
+  ];
+
+  const selectedStay = STAY_OPTIONS.find(s => s.id === stayType);
   const p = t.pricing;
-  const base = p.base * guests;
+  const stayOffsetTotal = selectedStay.offset * guests;
+  const base = p.base * guests + stayOffsetTotal;
   const tax = p.tax * guests;
   const fee = p.convenience * guests;
   const subtotal = base + tax + fee;
@@ -719,6 +738,28 @@ function QuickBook({ onBack, onBookAnother, onViewBookings }) {
               <SpotsFilledBar trip={t}/>
             </CardSection>
 
+            <CardSection title="Stay preference" eyebrow="Step 01.5">
+              <div style={{ display:'flex', gap:8 }}>
+                {STAY_OPTIONS.map(opt => {
+                  const active = stayType === opt.id;
+                  return (
+                    <div key={opt.id} onClick={()=>setStayType(opt.id)} style={{
+                      flex:1, padding:'14px 10px', background:active?'#F0FAF4':'#fff',
+                      border:`1.5px solid ${active?T.green:T.greyLight}`, borderRadius:12,
+                      cursor:'pointer', textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center', gap:8,
+                      transition:'all .15s'
+                    }}>
+                      <div style={{ width:32, height:32, borderRadius:'50%', background:active?T.green:'#F4F6FA', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                        <Ico name={opt.icon} size={14} color={active?'#fff':T.grey}/>
+                      </div>
+                      <div style={{ fontSize:12, fontWeight:700, color:T.ink }}>{opt.label.split(' ')[0]}</div>
+                      <div style={{ fontSize:13, fontWeight:800, color:active?T.greenDeep:T.ink }}>{inr(p.base + opt.offset)}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardSection>
+
             <CardSection title="Lead traveler" eyebrow="Step 02">
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
                 <div><span style={lbl}>Full name</span><input style={inp} placeholder="As on your ID"/></div>
@@ -739,6 +780,28 @@ function QuickBook({ onBack, onBookAnother, onViewBookings }) {
                     <div style={{ gridColumn:'1/-1' }}><span style={lbl}>Company name</span><input style={inp} placeholder="Acme Pvt Ltd"/></div>
                   </div>
                 )}
+              </div>
+            </CardSection>
+
+            <CardSection title="Dietary & Group preferance" eyebrow="Step 02.5">
+              <div style={{ display:'flex', gap:10 }}>
+                {['veg', 'non-veg', 'jain'].map(pref => {
+                  const active = foodPref === pref;
+                  return (
+                    <div key={pref} onClick={()=>setFoodPref(pref)} style={{
+                      flex:1, padding:'10px', borderRadius:10, cursor:'pointer', textAlign:'center',
+                      background:active?T.greenDeep:'#F7F9FB', color:active?'#fff':T.ink,
+                      border:`1px solid ${active?T.greenDeep:T.greyLight}`,
+                      fontSize:12, fontWeight:700, textTransform:'uppercase'
+                    }}>
+                      {pref}
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{ marginTop:12 }}>
+                <span style={lbl}>Special requests (optional)</span>
+                <input style={inp} placeholder="Allergies, birthday surprise, etc."/>
               </div>
             </CardSection>
 
@@ -783,7 +846,10 @@ function QuickBook({ onBack, onBookAnother, onViewBookings }) {
               <div style={{ padding:18 }}>
                 <div style={{ fontSize:11, fontWeight:800, color:T.grey, letterSpacing:'.14em', marginBottom:12 }}>ORDER SUMMARY</div>
                 <div style={{ display:'flex', flexDirection:'column', gap:7, fontSize:13 }}>
-                  <Row2 icon="users" l={`Base (${inr(p.base)} × ${guests})`} r={inr(base)}/>
+                  <Row2 icon="users" l={`Base (${inr(p.base)} × ${guests})`} r={inr(p.base * guests)}/>
+                  {selectedStay.offset !== 0 && (
+                    <Row2 icon={selectedStay.icon} l={`${selectedStay.label} (${inr(selectedStay.offset)} × ${guests})`} r={`${selectedStay.offset > 0 ? '+':''}${inr(stayOffsetTotal)}`}/>
+                  )}
                   <Row2 l="Taxes" r={inr(tax)}/>
                   <Row2 l="Convenience fee" r={inr(fee)}/>
                   {coupon && <Row2 icon="gift" l={`Coupon · ${coupon.code}`} r={`-${inr(discount)}`}/>}
@@ -830,11 +896,36 @@ function QuickBook({ onBack, onBookAnother, onViewBookings }) {
                     {discount>0 && <div style={{ fontSize:10.5, color:T.greenDeep, fontWeight:700, marginTop:2 }}>You saved {inr(discount)}</div>}
                   </div>
                 </div>
-                <div style={{ marginTop:10, background:'#F0FAF4', borderRadius:10, padding:'10px 12px', display:'flex', justifyContent:'space-between', alignItems:'baseline', border:`1px solid ${T.green}33`, marginBottom:12 }}>
+                <div style={{ marginTop:10, background:'#F0FAF4', borderRadius:10, padding:'10px 12px', display:'flex', justifyContent:'space-between', alignItems:'baseline', border:`1px solid ${T.green}33`, marginBottom:14 }}>
                   <span style={{ fontSize:12, color:T.greenDeep, fontWeight:700 }}>Pay now (token)</span>
                   <span style={{ fontSize:18, fontWeight:800, color:T.greenDeep }}>{inr(token)}</span>
                 </div>
-                <Btn kind="primary" size="lg" full trailing="arrow-right" onClick={startPayment}>{paying?'Opening payment…':`Pay ${inr(token)} · Lock spot`}</Btn>
+
+                {/* Policy Checkbox */}
+                <div style={{ marginBottom:14 }}>
+                  <label style={{ display:'flex', alignItems:'flex-start', gap:10, cursor:'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={termsAgreed} 
+                      onChange={e=>setTermsAgreed(e.target.checked)} 
+                      style={{ marginTop:3, accentColor:T.greenDeep, width:16, height:16 }}
+                    />
+                    <div style={{ fontSize:11.5, color:T.grey, lineHeight:1.4 }}>
+                      I agree to the <span style={{ textDecoration:'underline', color:T.ink, fontWeight:600 }}>Terms of Service</span> and <span style={{ textDecoration:'underline', color:T.ink, fontWeight:600 }}>Refund Policy</span>.
+                    </div>
+                  </label>
+                </div>
+
+                <Btn 
+                  kind="primary" 
+                  size="lg" 
+                  full 
+                  trailing="arrow-right" 
+                  disabled={!termsAgreed || paying}
+                  onClick={startPayment}
+                >
+                  {paying ? 'Opening payment...' : `Confirm & Pay ${inr(token)}`}
+                </Btn>
                 <div style={{ marginTop:10, fontSize:11, color:T.grey, textAlign:'center', lineHeight:1.4 }}>
                   Balance {inr(balance)} auto-collected 7 days before. Free cancellation up to 7 days.
                 </div>

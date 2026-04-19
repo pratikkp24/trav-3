@@ -540,6 +540,29 @@ function TripOverview({ trip, isMobile, theme }) {
           </div>
         ))}
       </div>
+
+      {trip.transport && (
+        <div style={{ marginTop:20, paddingTop:20, borderTop:`1px dashed ${T.greyLight}`, display:'flex', flexDirection:isMobile?'column':'row', gap:20 }}>
+          {[trip.transport.interCity, trip.transport.intraCity].map((item, idx) => (
+            <div key={idx} style={{ flex:1, display:'flex', alignItems:'center', gap:16, background:'#FBFBFC', padding:'14px 18px', borderRadius:14, border:`1px solid ${T.greyLight}44` }}>
+              <div style={{ width:70, height:45, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                {item.img ? (
+                  <img src={item.img} style={{ width:'100%', height:'100%', objectFit:'contain' }} alt={item.type}/>
+                ) : (
+                  <div style={{ width:40, height:40, borderRadius:10, background:T.greenLight, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <Ico name={item.icon || 'car'} size={20} color={T.greenDeep}/>
+                  </div>
+                )}
+              </div>
+              <div>
+                <div style={{ fontSize:10.5, fontWeight:800, color:T.grey, letterSpacing:'.1em', marginBottom:4 }}>{item.label}</div>
+                <div style={{ fontSize:13.5, fontWeight:700, color:T.ink }}>{item.type}</div>
+                <div style={{ fontSize:11, color:T.grey, marginTop:2 }}>{item.note}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       
       {/* Long Haul Logistics Extensions */}
       {trip.isLongHaul && trip.logistics && (
@@ -717,9 +740,20 @@ function BookingCard({ trip, onBook, onCustomise, persona='standard', theme }) {
   const [guests, setGuests] = React.useState(2);
   const [dateId, setDateId] = React.useState(trip.departures.find(d=>d.selected)?.id || trip.departures[0].id);
   const [dateOpen, setDateOpen] = React.useState(false);
+  const [showBudget, setShowBudget] = React.useState(false);
+  const [stayType, setStayType] = React.useState('double');
+
   const selectedDate = trip.departures.find(d=>d.id===dateId) || trip.departures[0];
+  
+  const STAY_OPTIONS = [
+    { id:'triple', label:'Triple Sharing', sub:'Budget friendly', offset:-500, icon:'users' },
+    { id:'double', label:'Double Sharing', sub:'Standard comfort', offset:0, icon:'users' },
+    { id:'single', label:'Single Room', sub:'Maximum privacy', offset:2500, icon:'bed' },
+  ];
+
+  const selectedStay = STAY_OPTIONS.find(s => s.id === stayType);
   const p = trip.pricing;
-  const perPerson = selectedDate.price + p.tax + p.convenience;
+  const perPerson = (selectedDate.price + selectedStay.offset) + p.tax + p.convenience;
   const total = perPerson * guests;
   const token = p.token * guests;
   const booked = trip.spotsTotal - trip.spotsLeft;
@@ -732,8 +766,8 @@ function BookingCard({ trip, onBook, onCustomise, persona='standard', theme }) {
       </div>}
       <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:14 }}>
         <div>
-          <div style={{ fontSize:28, fontWeight:800, color:tint?th.deep:T.ink, letterSpacing:'-.02em' }}>{inr(selectedDate.price)}</div>
-          <div style={{ fontSize:12, color:T.grey }}>per person · taxes extra</div>
+          <div style={{ fontSize:28, fontWeight:800, color:tint?th.deep:T.greenDeep, letterSpacing:'-.02em' }}>{inr(perPerson)}</div>
+          <div style={{ fontSize:12, color:T.grey }}>per person · + {inr(p.tax + p.convenience)} taxes</div>
         </div>
       </div>
       <div style={{ marginBottom:14 }}>
@@ -793,7 +827,7 @@ function BookingCard({ trip, onBook, onCustomise, persona='standard', theme }) {
           </div>
         )}
       </div>
-      <div style={{ border:`1px solid ${T.greyLight}`, borderRadius:10, padding:12, marginBottom:14, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+      <div style={{ border:`1px solid ${T.greyLight}`, borderRadius:10, padding:12, marginBottom:10, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
         <div>
           <div style={{ fontSize:9.5, color:T.grey, letterSpacing:'.14em', fontWeight:800 }}>TRAVELERS</div>
           <span style={{ fontSize:14, fontWeight:700, color:T.ink, marginTop:1, display:'inline-block' }}>{guests} Adults</span>
@@ -801,6 +835,41 @@ function BookingCard({ trip, onBook, onCustomise, persona='standard', theme }) {
         <div style={{ display:'flex', gap:6 }}>
           <button onClick={()=>setGuests(Math.max(1,guests-1))} style={stepBtn}>−</button>
           <button onClick={()=>setGuests(Math.min(6,guests+1))} style={stepBtn}>+</button>
+        </div>
+      </div>
+
+      {/* Stay Type selector */}
+      <div style={{ marginBottom:14 }}>
+        <div style={{ fontSize:9.5, color:T.grey, letterSpacing:'.14em', fontWeight:800, marginBottom:8 }}>STAY TYPE</div>
+        <div style={{ display:'flex', gap:6 }}>
+          {STAY_OPTIONS.map(opt => {
+            const active = stayType === opt.id;
+            return (
+              <button key={opt.id} onClick={()=>setStayType(opt.id)} style={{
+                flex:1, padding:'12px 4px', background:active?'#F0FAF4':'#fff',
+                border:`1px solid ${active?T.greenDeep:T.greyLight}`, borderRadius:12,
+                cursor:'pointer', fontFamily:'inherit', textAlign:'center',
+                display:'flex', flexDirection:'column', alignItems:'center', gap:6,
+                transition:'all .2s', position:'relative'
+              }}>
+                <div style={{ width:28, height:28, borderRadius:'50%', background:active?T.greenDeep:'#F4F6FA', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:2 }}>
+                  <Ico name={opt.icon} size={13} color={active?'#fff':T.grey}/>
+                </div>
+                <div>
+                  <div style={{ fontSize:10.5, fontWeight:800, color:T.ink, lineHeight:1.1 }}>{opt.label.split(' ')[0]}</div>
+                  <div style={{ fontSize:10, color:T.grey, marginTop:2 }}>{opt.id==='single'?'Room':'Shared'}</div>
+                </div>
+                <div style={{ fontSize:11.5, fontWeight:800, color:active?T.greenDeep:T.inkSoft, marginTop:'auto' }}>
+                  {inr((selectedDate.price + opt.offset)/1000)}k
+                </div>
+                {active && (
+                  <div style={{ position:'absolute', top:-6, right:-6, width:16, height:16, borderRadius:'50%', background:T.greenDeep, display:'flex', alignItems:'center', justifyContent:'center', border:'2px solid #fff' }}>
+                    <Ico name="check" size={8} color="#fff" stroke={3}/>
+                  </div>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
       
@@ -822,9 +891,68 @@ function BookingCard({ trip, onBook, onCustomise, persona='standard', theme }) {
         </div>
       )}
 
-      <div style={{ borderTop:`1px dashed ${T.greyLight}`, paddingTop:12, marginBottom:16, display:'flex', justifyContent:'space-between', alignItems:'baseline' }}>
+      <div style={{ borderTop:`1px dashed ${T.greyLight}`, paddingTop:12, marginBottom:4, display:'flex', justifyContent:'space-between', alignItems:'baseline' }}>
         <span style={{ fontSize:11, color:T.grey, letterSpacing:'.1em', fontWeight:700 }}>TOTAL</span>
         <span style={{ fontSize:22, fontWeight:800, color:tint?th.deep:T.greenDeep, letterSpacing:'-.02em' }}>{inr(total)}</span>
+      </div>
+
+      <div style={{ marginBottom:16 }}>
+        <div onClick={()=>setShowBudget(!showBudget)} style={{ fontSize:11, color:tint?th.deep:T.greenDeep, fontWeight:700, cursor:'pointer', display:'inline-flex', alignItems:'center', gap:4 }}>
+          Where does my money go? <Ico name={showBudget?'chevron-up':'chevron-down'} size={12} color={tint?th.deep:T.greenDeep}/>
+        </div>
+        {showBudget && (
+          <div style={{ marginTop:12, padding:'18px 16px', background:'#fff', border:`1px solid ${T.greyLight}`, borderRadius:16, boxShadow:'0 4px 20px rgba(0,0,0,.04)' }}>
+            <div style={{ height:10, borderRadius:999, background:'#F4F6FA', display:'flex', overflow:'hidden', marginBottom:20, boxShadow:'inset 0 1px 2px rgba(0,0,0,.05)', gap:2 }}>
+              {[
+                { pct:0.50, color:T.greenDeep },
+                { pct:0.25, color:T.inkSoft },
+                { pct:0.15, color:T.green },
+                { pct:0.10, color:T.greyLight },
+              ].map((b,i) => (
+                <div key={i} style={{ 
+                  flex: b.pct * 100, 
+                  height:'100%', 
+                  background: b.color,
+                  opacity: 0.9,
+                  transition:'all .5s ease' 
+                }} />
+              ))}
+            </div>
+            <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
+              {[
+                { label:'Signature Stays', pct:50, desc:'Luxury villas & boutique retreats', color:T.greenDeep, icon:'bed' },
+                { label:'Private Transport', pct:25, desc:'Speedboats, ferries & private transfers', color:T.inkSoft, icon:'car' },
+                { label:'Guided Activities', pct:15, desc:'Island hopping, gear & local entries', color:T.green, icon:'spark' },
+                { label:'Concierge & Ops', pct:10, desc:'24/7 lead, logistics & field support', color:T.greyLight, icon:'headphones' }
+              ].map((cat, i) => (
+                <div key={i} style={{ 
+                  display:'flex', gap:12, alignItems:'center', 
+                  padding:'10px 0', 
+                  borderTop: i > 0 ? `1px solid #f2f2f2` : 'none'
+                }}>
+                  <div style={{ 
+                    width:32, height:32, borderRadius:8, 
+                    background:`${cat.color}15`, 
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    flexShrink:0
+                  }}>
+                    <Ico name={cat.icon} size={14} color={cat.color}/>
+                  </div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:2 }}>
+                      <div style={{ fontSize:12.5, fontWeight:700, color:T.ink }}>{cat.label}</div>
+                      <div style={{ fontSize:13, fontWeight:800, color:T.ink }}>{inr(total * cat.pct)}</div>
+                    </div>
+                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                      <div style={{ fontSize:10.5, color:T.grey }}>{cat.desc}</div>
+                      <div style={{ fontSize:10, fontWeight:800, color:T.grey, letterSpacing:'.04em' }}>{cat.pct*100}%</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
       {tint ? (
         <button onClick={onBook} style={{ width:'100%', height:52, borderRadius:999, background:th.primary, color:'#fff', border:`1.5px solid ${th.primary}`, fontFamily:'inherit', fontSize:15, fontWeight:700, cursor:'pointer', display:'inline-flex', alignItems:'center', justifyContent:'center', gap:10 }}>

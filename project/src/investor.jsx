@@ -22,6 +22,7 @@ function InvestorPage({ onBack }) {
       `}</style>
 
       <InvHero onBack={onBack} onDownload={download} isMobile={isMobile}/>
+      <InvForces isMobile={isMobile}/>
       <InvWhyNow isMobile={isMobile}/>
       <InvAsk onDownload={download} isMobile={isMobile}/>
       <InvFooter isMobile={isMobile}/>
@@ -81,10 +82,10 @@ function InvHero({ onBack, onDownload, isMobile }) {
           fontSize: isMobile ? 38 : 68, lineHeight:1.05, letterSpacing:'-.025em',
           margin:0,
         }}>
-          Indians take fifty-two weekends a year.
+          Annual vacations are <span style={{ color:T.greySoft, textDecoration:'line-through' }}>dead.</span>
           <br/>
-          None of them have a{' '}
-          <span style={{ color:T.green, fontStyle:'italic' }}>platform</span>{'.'}
+          The weekend is the new{' '}
+          <span style={{ color:T.green, fontStyle:'italic' }}>vacation.</span>{'.'}
         </h1>
 
         <div style={{ height:32 }}/>
@@ -99,6 +100,11 @@ function InvHero({ onBack, onDownload, isMobile }) {
         </div>
 
         <div style={{ height:40 }}/>
+        
+        {/* Market Momentum Graphic */}
+        <div style={{ width:'100%', maxWidth:720, padding:`0 ${isMobile?0:40}px`, marginBottom:40 }}>
+          <MarketMomentum isMobile={isMobile}/>
+        </div>
 
         {/* CTA cluster */}
         <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:14 }}>
@@ -124,20 +130,151 @@ function InvHero({ onBack, onDownload, isMobile }) {
           </a>
         </div>
 
-        {/* bottom scroll cue */}
-        <div style={{
-          position: isMobile ? 'static' : 'absolute',
-          bottom: isMobile ? 'auto' : 24,
-          marginTop: isMobile ? 36 : 0,
-          display:'flex', flexDirection:'column', alignItems:'center', gap:4,
-          color:T.grey, fontSize:11, letterSpacing:'.14em', fontWeight:600,
-          animation:'invBounceY 2.4s ease-in-out infinite',
-        }}>
-          <Ico name="chevron-down" size={14} color={T.grey}/>
-          <span>WHY NOW</span>
-        </div>
       </div>
     </section>
+  );
+}
+
+function MarketMomentum({ isMobile }) {
+  return (
+    <div style={{ padding:'32px 28px', background:'#fff', borderRadius:24, border:`1px solid ${T.greyLight}`, textAlign:'left', boxShadow:'0 12px 30px rgba(0,0,0,.03)' }}>
+      <style>{`
+        @keyframes drawLine { from { stroke-dashoffset: 800; } to { stroke-dashoffset: 0; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+      `}</style>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:32 }}>
+        <div>
+          <div style={{ fontSize:10.5, fontWeight:800, color:T.greenDeep, letterSpacing:'.12em', textTransform:'uppercase' }}>Market Sentiment</div>
+          <div style={{ fontSize:20, fontWeight:700, color:T.ink, marginTop:4, fontFamily:'Fraunces, serif' }}>The Frequency Shift</div>
+        </div>
+        <div style={{ display:'flex', gap:16 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <span style={{ width:10, height:2, background:T.greyLight, borderRadius:1 }}/>
+            <span style={{ fontSize:10, color:T.grey, fontWeight:700 }}>ANNUAL VACATION</span>
+          </div>
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <span style={{ width:10, height:2, background:T.green, borderRadius:1 }}/>
+            <span style={{ fontSize:10, color:T.greenDeep, fontWeight:800 }}>WEEKEND HABITS</span>
+          </div>
+        </div>
+      </div>
+      <div style={{ height:140, position:'relative', display:'flex', alignItems:'flex-end' }}>
+        {/* Y Axis Labels */}
+        <div style={{ position:'absolute', left:-10, top:0, height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between', fontSize:9, color:T.grey, fontWeight:700 }}>
+          <span>12.0x</span>
+          <span>6.0x</span>
+          <span>1.0x</span>
+        </div>
+        
+        <div style={{ flex:1, height:'100%', position:'relative', marginLeft:24 }}>
+          {/* Grid lines */}
+          <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
+            <div style={{ borderBottom:`1px solid ${T.offWhite}`, width:'100%' }}/>
+            <div style={{ borderBottom:`1px solid ${T.offWhite}`, width:'100%' }}/>
+            <div style={{ borderBottom:`1px solid ${T.ink}11`, width:'100%' }}/>
+          </div>
+
+          <svg viewBox="0 0 700 120" width="100%" height="100%" preserveAspectRatio="none" style={{ position:'absolute', bottom:0, left:0, overflow:'visible' }}>
+            <defs>
+              <linearGradient id="chartGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor={T.green} stopOpacity="0.4"/>
+                <stop offset="100%" stopColor={T.green} stopOpacity="1"/>
+              </linearGradient>
+            </defs>
+            {/* Annual Line (Base) */}
+            <path d="M0,80 L700,80" fill="none" stroke={T.greyLight} strokeWidth="1.5" strokeDasharray="6 4" />
+            
+            {/* Growth Curve */}
+            <path d="M0,110 Q120,110 280,95 T700,5" 
+              fill="none" stroke="url(#chartGrad)" strokeWidth="4" strokeLinecap="round"
+              style={{ strokeDasharray: 800, strokeDashoffset: 800, animation: 'drawLine 2s ease-out forwards' }} />
+            
+            <circle cx="700" cy="5" r="5" fill={T.greenDeep} style={{ animation: 'fadeIn .5s 1.8s both' }}/>
+          </svg>
+
+          {/* Callout Label */}
+          <div style={{ 
+            position:'absolute', top:-15, right:-10, 
+            background:T.greenDeep, color:'#fff', padding:'5px 10px', borderRadius:8,
+            fontSize:12, fontWeight:800, boxShadow:`0 4px 12px ${T.green}44`,
+            animation: 'fadeIn .5s 2s both'
+          }}>
+            5.2x Frequency
+          </div>
+        </div>
+      </div>
+      <div style={{ marginTop:24, display:'flex', justifyContent:'space-between', paddingLeft:24, fontSize:10, color:T.grey, fontWeight:700, letterSpacing:'.05em' }}>
+        <span>2018</span>
+        <span>2020</span>
+        <span>2022</span>
+        <span>2024</span>
+        <span style={{ color:T.ink }}>2026 PROJ.</span>
+      </div>
+    </div>
+  );
+}
+
+/* =============== New Section — Converging Forces Diagram =============== */
+
+function InvForces({ isMobile }) {
+  const pad = isMobile ? 16 : 36;
+  return (
+    <section style={{ background:T.offWhite, padding:`${isMobile?40:80}px ${pad}px`, borderBottom:`1px solid ${T.greyLight}` }}>
+      <div style={{ maxWidth:1100, margin:'0 auto', display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?40:80, alignItems:'center' }}>
+        <div>
+          <div style={{ fontSize:11, fontWeight:800, color:T.green, letterSpacing:'.18em', marginBottom:14 }}>CONVERGING FORCES</div>
+          <h2 style={{ fontFamily:'Fraunces, serif', fontWeight:700, color:T.ink, fontSize:isMobile?32:46, lineHeight:1.05, margin:0 }}>
+            Market dynamics<br/>favors the platform.
+          </h2>
+          <p style={{ fontSize:16, color:T.inkSoft, lineHeight:1.55, marginTop:20 }}>
+            We're not just building an agency; we're capturing a structural shift in how Indians spend their time and money.
+          </p>
+        </div>
+        <ForcesDiagram/>
+      </div>
+    </section>
+  );
+}
+
+function ForcesDiagram() {
+  return (
+    <div style={{ position:'relative', height:320, background:'#fff', borderRadius:24, border:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden' }}>
+      <style>{`
+        @keyframes forcePulse { 0% { transform:scale(1); opacity:.2; } 50% { transform:scale(1.2); opacity:.1; } 100% { transform:scale(1); opacity:.2; } }
+        @keyframes forceRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
+      
+      {/* Central Nucleus */}
+      <div style={{ position:'relative', zIndex:2, width:80, height:80, background:T.greenDeep, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:`0 0 40px ${T.green}44` }}>
+        <span style={{ position:'absolute', inset:-15, borderRadius:'50%', border:`2px solid ${T.green}33`, animation:'forcePulse 3s ease-in-out infinite' }}/>
+        <span style={{ fontFamily:'Fraunces, serif', fontSize:22, fontWeight:700, color:'#fff', letterSpacing:'-.01em' }}>trav</span>
+      </div>
+
+      {/* Orbiting Nodes */}
+      {[
+        { id:1, label:'Recurring Behavior', icon:'calendar', angle:0 },
+        { id:2, label:'Creator Economy', icon:'spark', angle:120 },
+        { id:3, label:'The Trust Deficit', icon:'shield', angle:240 },
+      ].map(node => (
+        <div key={node.id} style={{
+          position:'absolute',
+          transform: `rotate(${node.angle}deg) translateY(-110px) rotate(-${node.angle}deg)`,
+          display:'flex', flexDirection:'column', alignItems:'center', gap:8
+        }}>
+          <div style={{ width:48, height:48, background:'#fff', borderRadius:'50%', border:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 12px rgba(0,0,0,.04)' }}>
+            <Ico name={node.icon} size={20} color={T.green}/>
+          </div>
+          <div style={{ fontSize:11, fontWeight:700, color:T.ink, whiteSpace:'nowrap', background:'#fff', padding:'2px 8px', borderRadius:99, border:`1px solid ${T.greyLight}` }}>{node.label}</div>
+        </div>
+      ))}
+
+      {/* Connection Lines */}
+      <svg style={{ position:'absolute', inset:0, pointerEvents:'none' }} viewBox="0 0 400 320">
+        {[0, 120, 240].map(angle => (
+           <line key={angle} x1="200" y1="160" x2={200 + Math.cos((angle-90)*Math.PI/180)*110} y2={160 + Math.sin((angle-90)*Math.PI/180)*110} stroke={T.green} strokeWidth="1.5" strokeDasharray="4 4" opacity=".4" />
+        ))}
+      </svg>
+    </div>
   );
 }
 
@@ -261,6 +398,14 @@ function InvAsk({ onDownload, isMobile }) {
           The model {'\u2014'} TAM and SAM, unit economics, cohort retention, creator LTV, supply-side margin profile, and the 24-month operating plan {'\u2014'} is in the deck.
         </div>
 
+        <div style={{ height:48 }}/>
+        
+        {/* Market Funnel Visualization */}
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 32, alignItems: 'center', marginBottom: 48 }}>
+           <MarketFunnel isMobile={isMobile}/>
+           <EcosystemGrid isMobile={isMobile}/>
+        </div>
+
         <div style={{ height:32 }}/>
 
         <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:12 }}>
@@ -334,6 +479,54 @@ function InvFooter({ isMobile }) {
         </div>
       </div>
     </footer>
+  );
+}
+
+function MarketFunnel({ isMobile }) {
+  return (
+    <div style={{ textAlign:'left', padding:24, background:'rgba(255,255,255,.03)', borderRadius:20, border:'1px solid rgba(255,255,255,.08)' }}>
+      <div style={{ fontSize:10, fontWeight:800, color:T.green, letterSpacing:'.1em', marginBottom:20 }}>MARKET OPPORTUNITY (INDIA)</div>
+      {[
+        { label:'TOTAL TRAVEL MARKET', val:'$52BN', sub:'Domestic leisure travel', fill:'rgba(255,255,255,.05)' },
+        { label:'SERVICEABLE MARKET', val:'$24BN', sub:'Short-haul & Weekend category', fill:'rgba(255,255,255,.08)' },
+        { label:'OUR TARGET SHARE', val:'$2.8BN', sub:'12% segment penetration', fill:T.green, color:INV_NAVY },
+      ].map((lvl,i) => (
+        <div key={lvl.label} style={{ marginBottom:14, position:'relative' }}>
+          <div style={{ background:lvl.fill, padding:'14px 20px', borderRadius:12, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+            <div>
+               <div style={{ fontSize:10, fontWeight:700, opacity:.7, color:lvl.color||'#fff' }}>{lvl.label}</div>
+               <div style={{ fontSize:13, color:lvl.color||'#fff', opacity:.6, marginTop:2 }}>{lvl.sub}</div>
+            </div>
+            <div style={{ fontSize:22, fontWeight:800, color:lvl.color||'#fff', fontFamily:'Fraunces, serif' }}>{lvl.val}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function EcosystemGrid({ isMobile }) {
+  return (
+    <div style={{ textAlign:'left' }}>
+      <div style={{ fontSize:10, fontWeight:800, color:'rgba(255,255,255,.4)', letterSpacing:'.1em', marginBottom:20 }}>THE PRODUCT ECOSYSTEM</div>
+      <div style={{ display:'grid', gap:10 }}>
+        {[
+          { icon:'users', label:'Travelers', sub:'Native mobile app focused on checkout & discovery.' },
+          { icon:'camera', label:'Creators', sub:'Dashboard for trip orchestration & revenue tracking.' },
+          { icon:'tent', label:'Operators', sub:'LMS for real-time inventory & guest verification.' },
+        ].map(it => (
+          <div key={it.label} style={{ display:'flex', gap:16, alignItems:'center', padding:14, background:'rgba(255,255,255,.02)', borderRadius:12 }}>
+            <div style={{ width:40, height:40, borderRadius:8, background:'rgba(255,255,255,.06)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <Ico name={it.icon} size={20} color={T.green}/>
+            </div>
+            <div>
+              <div style={{ fontSize:14, fontWeight:700, color:'#fff' }}>{it.label}</div>
+              <div style={{ fontSize:12, color:'rgba(255,255,255,.5)', marginTop:2 }}>{it.sub}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 

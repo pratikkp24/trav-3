@@ -98,6 +98,20 @@ const RISHIKESH_TRIP = {
   ratingCount: 342,
   bookingsCount: '1.2k',
   viewingNow: 12,
+  transport: {
+    interCity: { 
+      type: 'Premium AC Volvo', 
+      label: 'Route Transport', 
+      note: 'Delhi ↔ Rishikesh · Recliner seats',
+      img: '/Users/pratikkumar/.gemini/antigravity/brain/77c01ec9-e2cd-4d49-b3dd-cc1196f08096/luxury_volvo_vector_1776586474434.png'
+    },
+    intraCity: { 
+      type: 'Bolero Neo / SUV', 
+      label: 'City Transfers', 
+      note: 'Private transfers for all local points',
+      img: '/Users/pratikkumar/.gemini/antigravity/brain/77c01ec9-e2cd-4d49-b3dd-cc1196f08096/premium_suv_vector_1776586493269.png'
+    }
+  },
   departures: [
     { id:'d1', dateRange:'May 16–18', label:'MOST POPULAR', price:8499, status:'filling', note:'Lowest price · filling fast', selected:true },
     { id:'d2', dateRange:'May 23–25', label:null, price:8799, status:'available', note:'Available' },
@@ -400,10 +414,44 @@ const THAILAND_TRIP = {
       { time:'9:00 AM', title:'Phi Phi Viewpoint', body:'Short hike for the iconic twin-bay view.', included:true },
       { time:'7:00 PM', title:'Fire Show Dinner', body:'Dinner by the shore with spectacular fire twirlers.', included:true },
     ]},
+    { day:'Day 4', date:'Thu, 15 May', title:'Phi Phi → Krabi', desc:'Morning ferry to Krabi. Check-in at your Railay beachfront stay.', img:{ src:LF(1200, 800, 'krabi,coast,boat,blue', 92), tone:'#2d7a9e', ink:'#071d2b', accent:'#f2d8a6', label:'Krabi arrival' }, blocks:[
+      { time:'10:30 AM', title:'Ferry to Krabi', body:'Cruising the Andaman Sea. Keep an eye out for flying fish.', included:true },
+      { time:'2:30 PM', title:'Check-in @ Railay', body:'Railay has no roads — only boats and cliffs.', included:true },
+      { time:'6:00 PM', title:'Sunset Kayaking', body:'Paddle through limestone caves as the sky turns purple.' },
+    ]},
+    { day:'Day 5', date:'Fri, 16 May', title:'4-Island Tour', desc:'The classic Krabi experience. Snorkel, swim, and sand-walk.', img:{ src:LF(1200, 800, 'island,beach,sand,tropics', 93), tone:'#3a6a3a', accent:'#e8d49a', ink:'#0a1e0f', label:'4-Island tour' }, blocks:[
+      { time:'8:30 AM', title:'Longtail Boat Hop', body:'Poda Island, Tup Island, Chicken Island, and Phra Nang Cave.', included:true },
+      { time:'1:00 PM', title:'Sandbar Picnic', body:'Lunch on the "Talay Waek" natural sand bridge.', included:true },
+    ]},
+    { day:'Day 6', date:'Sat, 17 May', title:'Free Spirit Day', desc:'Your call. Rock climbing on Railay or a spa day.', img:{ src:LF(1200, 800, 'cliff,climbing,sport,adventure', 94), tone:'#2d6a84', ink:'#091824', accent:'#f3d49a', label:'Railay cliffs' }, blocks:[
+      { time:'9:30 AM', title:'Rock Climbing (Optional)', body:'Beginner-friendly sessions with certified guides.' },
+      { time:'4:00 PM', title:'Farewell Dinner', body:'Final group dinner with traditional Thai dancers.', included:true },
+    ]},
+    { day:'Day 7', date:'Sun, 18 May', title:'Krabi → Home', desc:'Early transfer to Phuket Airport for your return flight.', img:{ src:LF(1200, 800, 'airport,plane,travel,sky', 95), tone:'#4a6788', ink:'#0c1524', accent:'#dfe7f0', label:'Departure' }, blocks:[
+      { time:'8:00 AM', title:'Private Transfer', body:'Van ride back to HKT Airport.', included:true },
+      { time:'11:00 AM', title:'Depart Phuket', body:'Board your flight home with a camera full of memories.', included:true },
+    ]},
   ],
   videos:[
     { handle:'@island_hopper', title:'Krabi cliffs', src:LF(400, 700, 'cliff,sea,boat', 91), tone:'#2a5a4a', accent:'#b9e8c9', ink:'#061a12' },
+    { handle:'@wanderlust_th', title:'Maya Bay early morning', src:LF(400, 700, 'maya,bay,beach,sand', 92), tone:'#3a7a8a', accent:'#c8e8ee', ink:'#041a22' },
+    { handle:'@phuket_vibes', title:'Phi Phi sunset hike', src:LF(400, 700, 'shrine,sunset,temple', 93), tone:'#b95a3a', accent:'#f0c89a', ink:'#2a0f06' },
+    { handle:'@krabi_clicks', title:'Island hopping day tour', src:LF(400, 700, 'boat,sea,island,snorkling', 94), tone:'#3a6a3a', accent:'#e8d49a', ink:'#0a1e0f' },
   ],
+  transport: {
+    interCity: { 
+      type: 'Private SUV / Mini-Van', 
+      label: 'Daily Commute', 
+      note: 'Private chauffeur for all city legs',
+      img: '/Users/pratikkumar/.gemini/antigravity/brain/77c01ec9-e2cd-4d49-b3dd-cc1196f08096/premium_suv_vector_1776586493269.png'
+    },
+    intraCity: { 
+      type: 'Luxury Speedboat', 
+      label: 'Island Transfers', 
+      note: 'High-speed archipelago transfers',
+      img: '/Users/pratikkumar/.gemini/antigravity/brain/77c01ec9-e2cd-4d49-b3dd-cc1196f08096/luxury_volvo_vector_1776586474434.png' // Using Volvo as a high-end placeholder, or I can generate a boat later if needed.
+    }
+  },
   whatToPack:[
     { name:'Swimwear (x4)', note:'Crucial. You will live in these.' },
     { name:'0-Markup Forex Card', note:'Niyo or Fi works perfectly.' },
@@ -438,6 +486,24 @@ const THAILAND_TRIP = {
       { src:UNSPLASH('1550989461-9c86422d7ba4', 600), tone:'#2d6a84', ink:'#091824', accent:'#f3d49a', label:'Villa' },
       { src:UNSPLASH('1584622650111-993a426fbf0a', 600), tone:'#3b6a4e', ink:'#0f2e1f', accent:'#e8d9a9', label:'View' },
     ],
+    alternatives: [
+      { 
+        name:'Rayavadee Krabi', 
+        type:'Luxurious Pavilion Stay', 
+        rating:4.8, 
+        reviewsCount:1240, 
+        blurb:'Tucked into the edge of Krabi Marine National Park, accessible only by boat. A favorite for its limestone cliff views and unique cave dining.',
+        thumb: { src:UNSPLASH('1589394811605-05d736635882', 400), tone:'#2d6a84', label:'Cave pool' }
+      },
+      { 
+        name:'Amanpuri Phuket', 
+        type:'Ultra-Luxury Ocean Pavilion', 
+        rating:5.0, 
+        reviewsCount:890, 
+        blurb:'The icon of luxury in Phuket. Private pavilions on a secluded coconut grove, offering unparalleled privacy and beach access.',
+        thumb: { src:UNSPLASH('1561501900-3701fa6a0864', 400), tone:'#3b6a4e', label:'Ocean view' }
+      }
+    ]
   },
   packList:[
     { cat:'Tropical Ready', icon:'sun', items:['Quick-dry swimwear','Linen shirts','Safety beach-flipflops'] },

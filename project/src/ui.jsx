@@ -43,6 +43,7 @@ function Ico({ name, size=16, color='currentColor', stroke=1.8, fill='none' }) {
     case 'arrow-right': return <svg {...p}><path d="M5 12h14M13 6l6 6-6 6"/></svg>;
     case 'arrow-left': return <svg {...p}><path d="M19 12H5M11 6l-6 6 6 6"/></svg>;
     case 'chevron-down': return <svg {...p}><path d="M6 9l6 6 6-6"/></svg>;
+    case 'chevron-up': return <svg {...p}><path d="M18 15l-6-6-6 6"/></svg>;
     case 'chevron-right': return <svg {...p}><path d="M9 6l6 6-6 6"/></svg>;
     case 'check': return <svg {...p}><path d="M5 12l5 5L20 6"/></svg>;
     case 'x': return <svg {...p}><path d="M6 6l12 12M18 6L6 18"/></svg>;
