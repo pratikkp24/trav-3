@@ -42,10 +42,12 @@ function App() {
   const openBookingDetail = (bookingId) => set({ screen:'booking-detail', tripId:null, bookingId });
    const openInvoice = (bookingId) => set({ screen:'invoice', tripId:null, bookingId });
   const openDrop = () => set({ screen:'thursday-drop', tripId:null, bookingId:null });
+  const openPolicies = () => set({ screen:'policies', tripId:null, bookingId:null });
 
   React.useEffect(() => {
     window.openFaq = openFaq;
     window.openSupport = openSupport;
+    window.openPolicies = openPolicies;
     window.openAiAssist = () => setAiOpen(true);
   }, []);
 
@@ -84,7 +86,8 @@ function App() {
          {view.screen==='travelogue' && <TravelogueIndex onOpenArticle={openArticle}/>}
         {view.screen==='travelogue-article' && <TravelogueArticle onBack={openTravelogue} onOpenTrip={openTrip}/>}
         {view.screen==='thursday-drop' && <ThursdayDropPage onOpenTrip={openTrip} onBack={goHome}/>}
-        {!['booking','profile','booking-detail','invoice'].includes(view.screen) && <Footer onTravelogue={openTravelogue} onInvestor={openInvestor} onSupport={openSupport} onAbout={openAbout} onTravCoins={openTravCoins}/>}
+        {view.screen==='policies' && <PoliciesPage onBack={goHome}/>}
+        {!['booking','profile','booking-detail','invoice','policies'].includes(view.screen) && <Footer onTravelogue={openTravelogue} onInvestor={openInvestor} onSupport={openSupport} onAbout={openAbout} onTravCoins={openTravCoins} onPolicies={openPolicies}/>}
       </div>
       <MobileBottomNavWrapper view={view} loggedIn={loggedIn} onHome={goHome} onTrips={openAllTrips} onTravelogue={openTravelogue} onProfile={openProfile} onLogin={handleLoginClick} onSearch={openAllTrips} theme={theme}/>
       <SupportFabWrapper view={view} onOpen={openSupport}/>

@@ -76,10 +76,10 @@ function Nav({ onLogo, onDrop, active='destinations', loggedIn, onLogin, onProfi
   );
 }
 
-function Footer({ onTravelogue, onInvestor, onSupport, onAbout, onTravCoins }) {
+function Footer({ onTravelogue, onInvestor, onSupport, onAbout, onTravCoins, onPolicies }) {
   const cols = [
     { h:'Explore', items:[{label:'Destinations'},{label:'Weekend Trips'},{label:'Travelogue', onClick:onTravelogue},{label:'Trav Coins · Rewards', onClick:onTravCoins, gold:true}] },
-    { h:'Company', items:[{label:'About us', onClick:onAbout},{label:'trav.her', highlight:true},{label:'For Creators'},{label:'Investors', onClick:onInvestor},{label:'Support', onClick:onSupport},{label:'FAQ', onClick:()=>window.openFaq&&window.openFaq()}] },
+    { h:'Company', items:[{label:'About us', onClick:onAbout},{label:'trav.her', highlight:true},{label:'For Creators'},{label:'Policies', onClick:onPolicies},{label:'Investors', onClick:onInvestor},{label:'Support', onClick:onSupport},{label:'FAQ', onClick:()=>window.openFaq&&window.openFaq()}] },
   ];
   return (
     <div style={{ background:'#fff', borderTop:`1px solid ${T.greyLight}`, padding:'56px 36px 24px', marginTop:60 }}>

@@ -103,13 +103,13 @@ const RISHIKESH_TRIP = {
       type: 'Premium AC Volvo', 
       label: 'Route Transport', 
       note: 'Delhi ↔ Rishikesh · Recliner seats',
-      img: '/Users/pratikkumar/.gemini/antigravity/brain/77c01ec9-e2cd-4d49-b3dd-cc1196f08096/luxury_volvo_vector_1776586474434.png'
+      img: '/img/volvo_bus.png'
     },
     intraCity: { 
       type: 'Bolero Neo / SUV', 
       label: 'City Transfers', 
       note: 'Private transfers for all local points',
-      img: '/Users/pratikkumar/.gemini/antigravity/brain/77c01ec9-e2cd-4d49-b3dd-cc1196f08096/premium_suv_vector_1776586493269.png'
+      img: '/img/transfer_suv.png'
     }
   },
   departures: [
@@ -443,13 +443,13 @@ const THAILAND_TRIP = {
       type: 'Private SUV / Mini-Van', 
       label: 'Daily Commute', 
       note: 'Private chauffeur for all city legs',
-      img: '/Users/pratikkumar/.gemini/antigravity/brain/77c01ec9-e2cd-4d49-b3dd-cc1196f08096/premium_suv_vector_1776586493269.png'
+      img: '/img/transfer_suv.png'
     },
     intraCity: { 
       type: 'Luxury Speedboat', 
       label: 'Island Transfers', 
       note: 'High-speed archipelago transfers',
-      img: '/Users/pratikkumar/.gemini/antigravity/brain/77c01ec9-e2cd-4d49-b3dd-cc1196f08096/luxury_volvo_vector_1776586474434.png' // Using Volvo as a high-end placeholder, or I can generate a boat later if needed.
+      img: '/img/volvo_bus.png' // Using Volvo as an island placeholder for now.
     }
   },
   whatToPack:[

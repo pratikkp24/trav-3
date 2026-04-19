@@ -1,4 +1,30 @@
 
+function VehicleTransport({ trip, isMobile }) {
+  if (!trip.transport) return null;
+  return (
+    <div style={{ background:'#fff', borderRadius:16, padding:isMobile?16:20, border:`1px solid ${T.greyLight}`, display:'flex', flexDirection:isMobile?'column':'row', gap:20 }}>
+      {[trip.transport.interCity, trip.transport.intraCity].map((item, idx) => (
+        <div key={idx} style={{ flex:1, display:'flex', alignItems:'center', gap:16, background:'#FBFBFC', padding:'14px 18px', borderRadius:14, border:`1px solid ${T.greyLight}44` }}>
+          <div style={{ width:70, height:45, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            {item.img ? (
+              <img src={item.img} style={{ width:'100%', height:'100%', objectFit:'contain' }} alt={item.type}/>
+            ) : (
+              <div style={{ width:40, height:40, borderRadius:10, background:T.greenLight, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <Ico name={item.icon || 'car'} size={20} color={T.greenDeep}/>
+              </div>
+            )}
+          </div>
+          <div>
+            <div style={{ fontSize:10.5, fontWeight:800, color:T.grey, letterSpacing:'.1em', marginBottom:4 }}>{item.label}</div>
+            <div style={{ fontSize:13.5, fontWeight:700, color:T.ink }}>{item.type}</div>
+            <div style={{ fontSize:11, color:T.grey, marginTop:2 }}>{item.note}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function TripDetail({ tripId, onBack, onBook, onCustomise, onOpenArticle }) {
 
   // We now receive tripId via props, keeping it instantly synced with view state!
@@ -156,6 +182,7 @@ function TripDetail({ tripId, onBack, onBook, onCustomise, onOpenArticle }) {
               <ItineraryVideos videos={t.videos} isMobile={isMobile}/>
             </Section>
             <SignatureStay stay={t.signatureStay} isMobile={isMobile}/>
+            <VehicleTransport trip={t} isMobile={isMobile}/>
             <PackList items={t.packList} isMobile={isMobile}/>
             <Section title="What's included" isMobile={isMobile}>
               <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?0:28 }}>
@@ -540,29 +567,6 @@ function TripOverview({ trip, isMobile, theme }) {
           </div>
         ))}
       </div>
-
-      {trip.transport && (
-        <div style={{ marginTop:20, paddingTop:20, borderTop:`1px dashed ${T.greyLight}`, display:'flex', flexDirection:isMobile?'column':'row', gap:20 }}>
-          {[trip.transport.interCity, trip.transport.intraCity].map((item, idx) => (
-            <div key={idx} style={{ flex:1, display:'flex', alignItems:'center', gap:16, background:'#FBFBFC', padding:'14px 18px', borderRadius:14, border:`1px solid ${T.greyLight}44` }}>
-              <div style={{ width:70, height:45, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                {item.img ? (
-                  <img src={item.img} style={{ width:'100%', height:'100%', objectFit:'contain' }} alt={item.type}/>
-                ) : (
-                  <div style={{ width:40, height:40, borderRadius:10, background:T.greenLight, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                    <Ico name={item.icon || 'car'} size={20} color={T.greenDeep}/>
-                  </div>
-                )}
-              </div>
-              <div>
-                <div style={{ fontSize:10.5, fontWeight:800, color:T.grey, letterSpacing:'.1em', marginBottom:4 }}>{item.label}</div>
-                <div style={{ fontSize:13.5, fontWeight:700, color:T.ink }}>{item.type}</div>
-                <div style={{ fontSize:11, color:T.grey, marginTop:2 }}>{item.note}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
       
       {/* Long Haul Logistics Extensions */}
       {trip.isLongHaul && trip.logistics && (
