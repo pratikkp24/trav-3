@@ -8,6 +8,19 @@ function CreatorProfile({ creatorId, onBack, onOpenTrip, isMobile, theme }) {
     try { return localStorage.getItem(`trav.following.${creator.id}`) === 'true'; } catch { return false; }
   });
 
+  React.useEffect(() => {
+    // Inject Instagram Script
+    if (!document.getElementById('instagram-embed-script')) {
+      const script = document.createElement('script');
+      script.id = 'instagram-embed-script';
+      script.src = 'https://www.instagram.com/embed.js';
+      script.async = true;
+      document.body.appendChild(script);
+    } else if (window.instgrm) {
+      window.instgrm.Embeds.process();
+    }
+  }, [creatorId]);
+
   const toggleFollow = () => {
     const newState = !following;
     setFollowing(newState);
@@ -103,24 +116,59 @@ function CreatorProfile({ creatorId, onBack, onOpenTrip, isMobile, theme }) {
           </div>
         </div>
 
-        {/* Latest from the Feed (Scrollable Reels/Shorts) */}
-        {creator.reels && creator.reels.length > 0 && (
+        {/* Instagram Feed (Specific Live Embeds) */}
+        {creator.reels && creator.reels.some(r => r.platform === 'instagram') && (
           <div style={{ marginTop: 64 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 24 }}>
               <div>
-                <h2 style={{ fontSize: isMobile ? 24 : 32, fontWeight: 800, color: isDark ? '#fff' : T.ink, fontFamily: 'Fraunces, serif', margin: 0 }}>Latest from the Feed</h2>
-                <div style={{ color: T.grey, fontSize: 14, marginTop: 4 }}>High-impact highlights from the road.</div>
+                <h2 style={{ fontSize: isMobile ? 24 : 32, fontWeight: 800, color: isDark ? '#fff' : T.ink, fontFamily: 'Fraunces, serif', margin: 0 }}>From the Gram</h2>
+                <div style={{ color: T.grey, fontSize: 14, marginTop: 4 }}>Live travel logs and social proof.</div>
+              </div>
+              <button 
+                onClick={() => window.open(creator.social.instagram.link, '_blank')}
+                style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', border: 'none', color: '#fff', fontWeight: 700, fontSize: 13, padding: '8px 16px', borderRadius: 999, cursor: 'pointer', boxShadow: '0 4px 12px rgba(220, 39, 67, 0.2)' }}
+              >
+                Follow on Instagram
+              </button>
+            </div>
+            <div className="scroll-x" style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 24, margin: '0 -4px' }}>
+              {creator.reels.filter(r => r.platform === 'instagram').map(reel => (
+                <div key={reel.id} style={{ flex: '0 0 340px', position: 'relative' }}>
+                  <div style={{ width: '100%', height: 480, borderRadius: 24, overflow: 'hidden', background: isDark ? '#1a2e42' : '#fff', boxShadow: '0 8px 32px rgba(0,0,0,.08)', border: `1px solid ${isDark ? '#2a3e52' : '#e2e8f0'}` }}>
+                    <iframe 
+                      src={`https://www.instagram.com/p/${reel.id}/embed/`}
+                      width="100%" 
+                      height="100%" 
+                      frameBorder="0" 
+                      scrolling="no" 
+                      allowTransparency="true"
+                      style={{ border: 'none', width: '100%', height: '100%' }}
+                    ></iframe>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* YouTube Feed (Travel Shorts) */}
+        {creator.reels && creator.reels.some(r => r.platform === 'youtube') && (
+          <div style={{ marginTop: 64 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 24 }}>
+              <div>
+                <h2 style={{ fontSize: isMobile ? 24 : 32, fontWeight: 800, color: isDark ? '#fff' : T.ink, fontFamily: 'Fraunces, serif', margin: 0 }}>Travel Vlogs</h2>
+                <div style={{ color: T.grey, fontSize: 14, marginTop: 4 }}>High-production highlights from the road.</div>
               </div>
               <button 
                 onClick={() => window.open(creator.social.youtube.link, '_blank')}
-                style={{ background: 'transparent', border: 'none', color: T.green, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
+                style={{ background: '#FF0000', border: 'none', color: '#fff', fontWeight: 700, fontSize: 13, padding: '8px 16px', borderRadius: 999, cursor: 'pointer', boxShadow: '0 4px 12px rgba(255, 0, 0, 0.2)' }}
               >
-                Follow on YouTube →
+                Subscribe
               </button>
             </div>
-            <div className="scroll-x" style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 20, margin: '0 -4px' }}>
-              {creator.reels.map(reel => (
-                <div key={reel.id} style={{ flex: '0 0 280px', position: 'relative' }}>
+            <div className="scroll-x" style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 24, margin: '0 -4px' }}>
+              {creator.reels.filter(r => r.platform === 'youtube').map(reel => (
+                <div key={reel.id} style={{ flex: '0 0 340px', position: 'relative' }}>
                   <div style={{ width: '100%', height: 480, borderRadius: 24, overflow: 'hidden', background: '#000', boxShadow: '0 8px 32px rgba(0,0,0,.15)', position: 'relative' }}>
                     <iframe 
                       width="100%" 

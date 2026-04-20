@@ -30,15 +30,41 @@ const CREATORS = [
       youtube: { handle: "Tanya Khanijow", subs: "1.2M", link: "https://youtube.com/@TanyaKhanijow" }
     },
     reels: [
-      { id: "vD0S-q5x6G0", platform: "youtube", title: "Travel Vibe" },
-      { id: "eBGS6P9v1kM", platform: "youtube", title: "Desert Life" },
-      { id: "dQw4w9WgXcQ", platform: "youtube", title: "Global Explore" }
+      { id: "DXOhCzpDDlQ", platform: "instagram", title: "Rishikesh Vibes" },
+      { id: "DXTEqCLDLVI", platform: "instagram", title: "Bali Sunsets" },
+      { id: "DXPNLgxiFpr", platform: "instagram", title: "Mountain High" },
+      { id: "vD0S-q5x6G0", platform: "youtube", title: "Himalayan Morning" },
+      { id: "eBGS6P9v1kM", platform: "youtube", title: "Desert Drone" },
+      { id: "dQw4w9WgXcQ", platform: "youtube", title: "Solo Escape" }
     ],
     reviews: [
       { id: 'r1', name: 'Ananya Singh', text: "Tanya's itinerary for Rishikesh was unlike anything I've seen. She took us to a village that isn't even on Google Maps!", trip: 'Booked Rishikesh 2023', initials: 'AS' },
       { id: 'r2', name: 'Rohan Kapoor', text: "Kasol can be crowded, but Tanya found us the quietest pine grove for camping. A truly curated experience.", trip: 'Booked Kasol 2024', initials: 'RK' },
       { id: 'r3', name: 'Meera Varma', text: "As a solo female traveler, I felt so safe and supported on her Goa trip. Every detail was planned perfectly.", trip: 'Booked Goa 2023', initials: 'MV' }
     ]
+  },
+  {
+    id: 'larissa_travels',
+    name: 'Larissa D\'Sa',
+    handle: '@larissa_wlc',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',
+    isVerified: true,
+    bio: 'Travel. Lifestyle. Good vibes only. ✨ Exploring the soul of the planet.',
+    stats: { trips: 15, bookings: 320, rating: 4.9, travFollowers: '45k' },
+    followers: '45k',
+    following: '800',
+    curatedTripIds: ['trip-thailand', 'trip-bali', 'trip-kerala'],
+    social: {
+      instagram: { handle: "@larissa_wlc", followers: "800k", link: "https://instagram.com/larissa_wlc" },
+      youtube: { handle: "Larissa DSa", subs: "500k", link: "https://youtube.com/@LarissaDSa" }
+    },
+    reels: [
+      { id: "C1a2b3c4d5e", platform: "instagram", title: "Goa Mornings" },
+      { id: "C-pX--8S5S_", platform: "instagram", title: "Thailand Escape" },
+      { id: "C3v_fSp_D12", platform: "instagram", title: "Himalayan Soul" }
+    ],
+    stories: [],
+    reviews: []
   },
   {
     id: 'meher.wanders',
