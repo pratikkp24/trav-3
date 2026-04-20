@@ -23,7 +23,7 @@ function Nav({ onLogo, onDrop, active='destinations', loggedIn, onLogin, onProfi
       top:0, 
       zIndex:20 
     }}>
-      <div onClick={onDrop || onLogo} style={{ display:'flex', alignItems:'center', gap:4, cursor:'pointer' }}>
+      <div onClick={onLogo} style={{ display:'flex', alignItems:'center', gap:4, cursor:'pointer' }}>
         <span style={{ fontSize:isMobile?20:21, fontWeight:800, color:isDark?'#fff':T.ink, letterSpacing:'-.02em', fontFamily:'Fraunces, serif' }}>
           {isDrop ? 'Thursday Drop' : 'trav'}
         </span>
