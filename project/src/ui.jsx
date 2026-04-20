@@ -535,6 +535,17 @@ function toggleWishlist(tripId) {
   } catch { return false; }
 }
 
+function Avatar({ name, size=32 }) {
+  const initials = String(name||'').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  const hues = ['#1DBF73','#4A6788','#C14A36','#E6A33A','#2d7a9e','#8a5a9e'];
+  const bg = hues[Math.abs([...String(name)].reduce((a,c)=>a+c.charCodeAt(0),0)) % hues.length];
+  return (
+    <div style={{ width:size, height:size, borderRadius:'50%', background:`linear-gradient(135deg, ${bg}, ${T.ink})`, color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:size*0.35, fontWeight:700, flexShrink:0 }}>
+      {initials}
+    </div>
+  );
+}
+
 Object.assign(window, {
   T, Ico, Btn, ImgPlaceholder, inr, useIsMobile, openRazorpay, loadTravProfile, RAZORPAY_KEY_ID,
   getBookings, saveBooking, updateBooking,
@@ -546,6 +557,6 @@ Object.assign(window, {
   haptic, share, personaTheme,
   getWishlist, toggleWishlist,
   useExitIntent, RetentionModal,
-  WhatsAppMockup, WhatsAppBubble
+  WhatsAppMockup, WhatsAppBubble, Avatar
 });
 

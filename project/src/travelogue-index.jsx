@@ -1,5 +1,5 @@
-// Travelogue Index — replaces the old "Stories" section.
-// Editorial grid with a featured hero tile + filter chips + card grid.
+// Travelogue Index — Overhauled as a Travel Journal.
+// Features a high-density, 2-column layout with premium "Jewel" accents.
 
 function TravelogueIndex({ onOpenArticle }) {
   const [cat, setCat] = React.useState('All');
@@ -10,95 +10,99 @@ function TravelogueIndex({ onOpenArticle }) {
   );
   const featured = list.find(a => a.featured) || list[0];
   const rest = list.filter(a => a.id !== (featured && featured.id));
+  const isMobile = useIsMobile();
 
-  return (
-    <div style={{ background:'#fff' }}>
-      {/* Header band */}
-      <div style={{ background:T.offWhite, padding:'56px 36px 42px', borderBottom:`1px solid ${T.greyLight}` }}>
-        <div style={{ maxWidth:1200, margin:'0 auto' }}>
-          <div style={{ fontSize:12, fontWeight:700, letterSpacing:'.22em', color:T.greenDeep, marginBottom:14 }}>THE TRAVELOGUE</div>
-          <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', gap:32, flexWrap:'wrap' }}>
-            <div style={{ maxWidth:680 }}>
-              <h1 style={{ fontFamily:'Fraunces, serif', fontSize:56, fontWeight:700, letterSpacing:'-.03em', color:T.ink, margin:'0 0 14px', lineHeight:1.02 }}>
-                Stories from the road, <span style={{ fontStyle:'italic', color:T.greenDeep }}>written by the people who took it.</span>
-              </h1>
-              <div style={{ fontSize:15, color:T.grey, lineHeight:1.6, maxWidth:560 }}>
-                Long-form guides, weekend notes, and the small discoveries that don't fit on an itinerary. Curated by trav creators and community.
-              </div>
-            </div>
-            <button style={{ height:48, padding:'0 22px', borderRadius:999, background:'#fff', border:`1.5px solid ${T.greenDeep}`, color:T.greenDeep, fontSize:14, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:10 }}>
-              <Ico name="send" size={15} color={T.greenDeep}/> Share your story
-            </button>
-          </div>
-
-          {/* Search + filter chips */}
-          <div style={{ marginTop:28, display:'flex', gap:10, flexWrap:'wrap', alignItems:'center' }}>
-            <div style={{ flex:'1 1 320px', minWidth:260, maxWidth:440, height:46, background:'#fff', border:`1px solid ${T.greyLight}`, borderRadius:999, display:'flex', alignItems:'center', padding:'0 6px 0 18px' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.grey} strokeWidth="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-              <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search by city, vibe, theme…" style={{ flex:1, height:'100%', border:'none', outline:'none', padding:'0 12px', fontSize:14, fontFamily:'inherit', color:T.ink, background:'transparent' }}/>
-            </div>
-            <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-              {TRAVELOGUE_CATEGORIES.map(c => {
-                const active = c===cat;
-                return (
-                  <span key={c} onClick={()=>setCat(c)} style={{ padding:'0 14px', height:34, display:'inline-flex', alignItems:'center', borderRadius:999, fontSize:13, fontWeight:active?700:500, color:active?'#fff':T.ink, background:active?T.ink:'#fff', border:`1px solid ${active?T.ink:T.greyLight}`, cursor:'pointer' }}>{c}</span>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Featured + grid */}
-      <div style={{ maxWidth:1200, margin:'0 auto', padding:'48px 36px 80px' }}>
-        {featured && (
-          <FeaturedTravelogue article={featured} onOpen={()=>onOpenArticle(featured.id)}/>
-        )}
-        <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', margin:'56px 0 22px' }}>
-          <div style={{ fontFamily:'Fraunces, serif', fontSize:26, fontWeight:700, color:T.ink, letterSpacing:'-.02em' }}>More travelogues</div>
-          <div style={{ fontSize:13, color:T.grey }}>{rest.length} stor{rest.length===1?'y':'ies'}</div>
-        </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:24 }}>
-          {rest.map(a => <TravelogueCard key={a.id} article={a} onOpen={()=>onOpenArticle(a.id)}/>)}
-        </div>
-      </div>
-    </div>
+  const Tape = ({ style }) => (
+    <div style={{ 
+      position:'absolute', width:60, height:24, 
+      background:'rgba(255,255,255,0.4)', backdropFilter:'blur(2px)', 
+      zIndex:10, transform:'rotate(-4deg)', boxShadow:'0 2px 4px rgba(0,0,0,0.05)',
+      border:'1px solid rgba(0,0,0,0.02)', ...style 
+    }}/>
   );
-}
 
-function FeaturedTravelogue({ article, onOpen }) {
-  const [hover, setHover] = React.useState(false);
   return (
-    <div onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)} onClick={onOpen}
-      style={{ position:'relative', borderRadius:22, overflow:'hidden', cursor:'pointer', border:`1px solid ${T.greyLight}`, boxShadow: hover ? '0 20px 50px rgba(14,30,50,.12)' : '0 8px 24px rgba(14,30,50,.06)', transition:'box-shadow .2s, transform .2s', transform: hover ? 'translateY(-2px)' : 'none' }}>
-      <div style={{ display:'grid', gridTemplateColumns:'1.4fr 1fr', minHeight:360 }}>
-        <div style={{ position:'relative', height:'100%', minHeight:360 }}>
-          <ImgPlaceholder {...article.hero} radius={0}/>
-          <div style={{ position:'absolute', top:18, left:18, display:'flex', gap:8 }}>
-            <span style={{ background:'rgba(14,30,50,.55)', backdropFilter:'blur(6px)', color:'#fff', padding:'6px 12px', borderRadius:999, fontSize:11, fontWeight:700, letterSpacing:'.12em' }}>FEATURED</span>
-            <span style={{ background:'rgba(255,255,255,.9)', color:T.greenDeep, padding:'6px 12px', borderRadius:999, fontSize:11.5, fontWeight:700 }}>{article.category}</span>
+    <div style={{ 
+      background:'#ffffff', 
+      minHeight:'100vh',
+      backgroundImage: 'radial-gradient(#e5e4e0 1px, transparent 1px)',
+      backgroundSize: '32px 32px',
+      position:'relative'
+    }}>
+      {/* Header section — Side-by-Side Typography */}
+      <div style={{ padding:isMobile?'32px 18px':'42px 36px 32px', position:'relative' }}>
+         <div style={{ position:'absolute', top:0, left:isMobile?10:40, bottom:0, width:1, background:'rgba(193,74,54,0.08)', zIndex:1 }}/>
+         
+         <div style={{ maxWidth:1160, margin:'0 auto', position:'relative', zIndex:2, display:'flex', flexDirection:isMobile?'column':'row', alignItems:'center', justifyContent:'space-between', gap:20 }}>
+            <div style={{ textAlign:'left' }}>
+               <div style={{ fontFamily:'Caveat, cursive', fontSize:20, color:T.greenDeep, marginBottom:4 }}>Stories, notes, and fragments...</div>
+               <h1 style={{ fontFamily:'Fraunces, serif', fontSize:isMobile?32:44, fontWeight:800, letterSpacing:'-.03em', color:T.ink, margin:0, lineHeight:1.1 }}>
+                 The collection of <span style={{ fontFamily:'Caveat, cursive', color:T.rose, fontSize:isMobile?36:52 }}>memories</span> we brought back.
+               </h1>
+            </div>
+
+            {/* Compact Filter + Search */}
+            <div style={{ display:'flex', gap:10, flexWrap:'wrap', alignItems:'center', justifyContent:'flex-end' }}>
+               <div style={{ position:'relative', minWidth:200, maxWidth:260 }}>
+                  <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search the journal…" style={{ width:'100%', border:'none', background:'transparent', borderBottom:`1px solid ${T.ink}44`, padding:'4px 0 4px 28px', fontSize:15, fontFamily:'Caveat, cursive', outline:'none' }}/>
+                  <div style={{ position:'absolute', left:0, top:6 }}><Ico name="search" size={16} color={T.ink}/></div>
+               </div>
+               
+               <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                 {TRAVELOGUE_CATEGORIES.map((c, i) => {
+                   const active = c===cat;
+                   // Premium Jewel Palette
+                   const jewelColors = [
+                     { bg:'#0F1E2E', fg:'#fff' }, // All
+                     { bg:'#065F46', fg:'#fff' }, // Adventure
+                     { bg:'#1E3A8A', fg:'#fff' }, // Food
+                     { bg:'#92400E', fg:'#fff' }, // Culture
+                     { bg:'#581C87', fg:'#fff' }, // Wellness
+                     { bg:'#991B1B', fg:'#fff' }, // Slow Travel
+                   ];
+                   const style = jewelColors[i % jewelColors.length];
+                   
+                   return (
+                     <span key={c} onClick={()=>setCat(c)} style={{ 
+                       padding:'5px 12px', borderRadius:20, fontSize:12, fontWeight:700, 
+                       color:active?style.fg:T.ink, background:active?style.bg:'#f5f5f5', 
+                       boxShadow:active?`0 4px 10px ${style.bg}44` : 'none',
+                       cursor:'pointer', transform:active?'scale(1.05)':'none',
+                       transition:'all .2s ease',
+                       border:active?`1px solid ${style.bg}` : '1px solid rgba(0,0,0,0.05)',
+                       fontFamily:'Poppins, sans-serif',
+                       letterSpacing:'.02em'
+                     }}>
+                       {c}
+                     </span>
+                   );
+                 })}
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <div style={{ maxWidth:1160, margin:'0 auto', padding:isMobile?'24px 18px 80px':'24px 36px 120px' }}>
+        <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 2fr', gap:isMobile?48:80, alignItems:'start' }}>
+          
+          {/* Left Column: Featured Story (Image Top, Text Bottom) */}
+          <div style={{ position:'sticky', top:100 }}>
+            {featured && (
+              <FeaturedJournalEntry article={featured} onOpen={()=>onOpenArticle(featured.id)} isMobile={isMobile}/>
+            )}
           </div>
-        </div>
-        <div style={{ padding:'36px 36px 32px', display:'flex', flexDirection:'column', justifyContent:'space-between', background:'#fff' }}>
+
+          {/* Right Column: Latest Entries (Starts from top) */}
           <div>
-            <div style={{ fontSize:11, fontWeight:700, letterSpacing:'.2em', color:T.greenDeep, marginBottom:14 }}>INSIDER GUIDE</div>
-            <h2 style={{ fontFamily:'Fraunces, serif', fontSize:30, fontWeight:700, letterSpacing:'-.02em', color:T.ink, margin:'0 0 14px', lineHeight:1.12, textWrap:'pretty' }}>{article.title}</h2>
-            <div style={{ fontSize:14.5, color:T.grey, lineHeight:1.55 }}>{article.dek}</div>
-          </div>
-          <div style={{ marginTop:28, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-              <Avatar name={article.author.name} size={36}/>
-              <div>
-                <div style={{ fontSize:13, fontWeight:600, color:T.ink, display:'flex', alignItems:'center', gap:6 }}>
-                  {article.author.name}
-                  {article.author.verified && <span style={{ width:14, height:14, borderRadius:'50%', background:T.green, color:'#fff', fontSize:9, display:'inline-flex', alignItems:'center', justifyContent:'center', fontWeight:800 }}>✓</span>}
-                </div>
-                <div style={{ fontSize:11.5, color:T.grey }}>{article.date} · {article.readMin} min read</div>
-              </div>
+            <div style={{ display:'flex', alignItems:'center', gap:15, marginBottom:28 }}>
+               <div style={{ fontFamily:'Fraunces, serif', fontSize:24, fontWeight:800, color:T.ink }}>Latest Entries</div>
+               <div style={{ height:1, flex:1, background:'rgba(0,0,0,0.05)' }}/>
+               <div style={{ fontSize:12, color:T.grey, fontWeight:700 }}>{rest.length} STORIES FOUND</div>
             </div>
-            <button style={{ height:40, padding:'0 18px', borderRadius:999, background:T.ink, color:'#fff', border:'none', fontSize:13, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'inline-flex', alignItems:'center', gap:8 }}>
-              Read the story <Ico name="arrow-right" size={14} color="#fff"/>
-            </button>
+            
+            <div style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?48:40 }}>
+              {rest.map((a, i) => <JournalCard key={a.id} article={a} index={i} onOpen={()=>onOpenArticle(a.id)} isMobile={isMobile}/>)}
+            </div>
           </div>
         </div>
       </div>
@@ -106,42 +110,74 @@ function FeaturedTravelogue({ article, onOpen }) {
   );
 }
 
-function TravelogueCard({ article, onOpen }) {
+function FeaturedJournalEntry({ article, onOpen, isMobile }) {
   const [hover, setHover] = React.useState(false);
   return (
     <div onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)} onClick={onOpen}
-      style={{ background:'#fff', borderRadius:16, overflow:'hidden', border:`1px solid ${T.greyLight}`, cursor:'pointer', transition:'transform .2s, box-shadow .2s', transform:hover?'translateY(-3px)':'none', boxShadow:hover?'0 14px 30px rgba(14,30,50,.10)':'0 2px 8px rgba(14,30,50,.04)' }}>
-      <div style={{ height:190, position:'relative' }}>
-        <ImgPlaceholder {...article.hero} radius={0}/>
-        <div style={{ position:'absolute', top:12, left:12 }}>
-          <span style={{ background:'rgba(255,255,255,.92)', color:T.ink, padding:'4px 10px', borderRadius:999, fontSize:11, fontWeight:700 }}>{article.category}</span>
+      style={{ 
+        position:'relative', background:'#fff', 
+        padding:isMobile?'12px 12px 24px':'16px 16px 42px',
+        boxShadow: hover ? '0 30px 70px rgba(0,0,0,0.15)' : '0 10px 30px rgba(0,0,0,0.05)',
+        cursor:'pointer', transition:'all .3s ease',
+        transform: hover ? 'translateY(-5px)' : 'none',
+        borderRadius:4,
+        border:'1px solid rgba(0,0,0,0.05)'
+      }}>
+      <div style={{ position:'absolute', top:12, left:12, zIndex:10, background:T.ink, color:'#fff', padding:'4px 10px', fontSize:10, fontWeight:800, letterSpacing:'.12em', borderRadius:2 }}>FEATURED STORY</div>
+      
+      <div style={{ display:'flex', flexDirection:'column', gap:24 }}>
+        <div style={{ position:'relative', aspectRatio:'3/4', overflow:'hidden', borderRadius:2, background:'#f8f8f8' }}>
+          <ImgPlaceholder {...article.hero} radius={0}/>
         </div>
-      </div>
-      <div style={{ padding:'20px 20px 18px' }}>
-        <h3 style={{ fontFamily:'Fraunces, serif', fontSize:19.5, fontWeight:700, letterSpacing:'-.01em', color:T.ink, margin:'0 0 10px', lineHeight:1.22, textWrap:'pretty' }}>{article.title}</h3>
-        <div style={{ fontSize:13.5, color:T.grey, lineHeight:1.55, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden', marginBottom:16 }}>{article.dek}</div>
-        <div style={{ display:'flex', alignItems:'center', gap:10, paddingTop:14, borderTop:`1px dashed ${T.greyLight}` }}>
-          <Avatar name={article.author.name} size={28}/>
-          <div style={{ flex:1 }}>
-            <div style={{ fontSize:12.5, fontWeight:600, color:T.ink }}>{article.author.name}</div>
-            <div style={{ fontSize:11, color:T.grey }}>{article.date} · {article.readMin} min</div>
+        <div>
+          <div style={{ color:T.greenDeep, fontSize:13, fontWeight:800, letterSpacing:'.1em', marginBottom:10, textTransform:'uppercase' }}>{article.category}</div>
+          <h2 style={{ fontFamily:'Fraunces, serif', fontSize:isMobile?24:32, fontWeight:800, color:T.ink, margin:'0 0 14px', lineHeight:1.15 }}>{article.title}</h2>
+          <p style={{ fontFamily:'Caveat, cursive', fontSize:isMobile?18:20, color:T.grey, lineHeight:1.4, margin:0 }}>"{article.dek}"</p>
+          
+          <div style={{ marginTop:28, display:'flex', alignItems:'center', gap:10 }}>
+            <Avatar name={article.author.name} size={36}/>
+            <div>
+              <div style={{ fontSize:14, fontWeight:700, color:T.ink }}>{article.author.name} {article.author.verified && '✓'}</div>
+              <div style={{ fontSize:12, color:T.grey }}>{article.date} · {article.readMin} min read</div>
+            </div>
           </div>
-          <Ico name="arrow-right" size={14} color={T.grey}/>
         </div>
       </div>
     </div>
   );
 }
 
-function Avatar({ name, size=32 }) {
-  const initials = String(name||'').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-  const hues = ['#1DBF73','#4A6788','#C14A36','#E6A33A','#2d7a9e','#8a5a9e'];
-  const bg = hues[Math.abs([...String(name)].reduce((a,c)=>a+c.charCodeAt(0),0)) % hues.length];
+function JournalCard({ article, index, onOpen, isMobile }) {
+  const [hover, setHover] = React.useState(false);
+  const rotation = (index % 3 === 0) ? -1.5 : (index % 3 === 1) ? 1 : 2;
+  
   return (
-    <div style={{ width:size, height:size, borderRadius:'50%', background:`linear-gradient(135deg, ${bg}, ${T.ink})`, color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', fontSize:size*0.35, fontWeight:700, flexShrink:0 }}>
-      {initials}
+    <div onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)} onClick={onOpen}
+      style={{ 
+        cursor:'pointer', 
+        transform: isMobile ? 'none' : hover ? `scale(1.05) rotate(0deg)` : `rotate(${rotation}deg)`,
+        transition:'all .3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        zIndex: hover ? 10 : 1
+      }}>
+      <div style={{ background:'#fff', padding:'10px 10px 48px', boxShadow:'0 10px 30px rgba(0,0,0,0.08)', borderRadius:2, position:'relative' }}>
+         <div style={{ position:'absolute', top:-8, right:20, width:50, height:20, background:'rgba(255,255,255,0.4)', backdropFilter:'blur(2px)', transform:'rotate(5deg)', border:'1px solid rgba(0,0,0,0.02)' }}/>
+         <div style={{ height:isMobile?220:200, overflow:'hidden', background:'#eee' }}>
+            <ImgPlaceholder {...article.hero} radius={0}/>
+         </div>
+         <div style={{ position:'absolute', bottom:10, left:0, right:0, textAlign:'center', fontFamily:'Caveat, cursive', fontSize:18, color:T.ink, opacity:0.7 }}>
+            {article.category} · {article.date}
+         </div>
+      </div>
+      <div style={{ marginTop:20, padding:'0 5px' }}>
+         <h3 style={{ fontFamily:'Fraunces, serif', fontSize:22, fontWeight:700, color:T.ink, margin:'0 0 8px', lineHeight:1.2 }}>{article.title}</h3>
+         <p style={{ fontFamily:'Caveat, cursive', fontSize:17, color:T.grey, lineHeight:1.4, margin:0, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>"{article.dek}"</p>
+         <div style={{ marginTop:16, display:'flex', alignItems:'center', gap:8 }}>
+            <Avatar name={article.author.name} size={24}/>
+            <div style={{ fontSize:13, fontWeight:700, color:T.ink }}>{article.author.name}</div>
+         </div>
+      </div>
     </div>
   );
 }
 
-Object.assign(window, { TravelogueIndex, Avatar });
+Object.assign(window, { TravelogueIndex });

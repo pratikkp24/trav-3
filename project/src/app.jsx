@@ -81,7 +81,7 @@ function App() {
         onToggleTheme={toggleTheme}
       />
       <div className="theme-flip">
-        {view.screen==='landing' && <Landing onOpenTrip={openTrip} onViewAllTrips={openAllTrips} onOpenDrop={openDrop} onOpenProfile={openCreatorProfile} theme={theme}/>}
+        {view.screen==='landing' && <Landing onOpenTrip={openTrip} onViewAllTrips={openAllTrips} onOpenDrop={openDrop} onOpenProfile={openCreatorProfile} onTravHer={openTravHer} onOpenArticle={openArticle} onAllTravelogues={openTravelogue} theme={theme}/>}
         {view.screen==='all-trips' && <AllTripsIndex onOpenTrip={openTrip} filterDest={view.filterDest}/>}
         {view.screen==='investor' && <InvestorPage onBack={goHome}/>}
         {view.screen==='support' && <SupportPage onBack={goHome}/>}

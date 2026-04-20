@@ -12,7 +12,7 @@ const TRAVELOGUES = [
     date:'Nov 21, 2025',
     readMin:9,
     category:'Adventure',
-    hero:{ src:'https://loremflickr.com/1200/800/goa,palolem,palm?lock=301', tone:'#2d7a9e', ink:'#071d2b', accent:'#f2d8a6', label:'Goa · palms + boats' },
+    hero:{ src:'https://images.unsplash.com/photo-1512757776214-26d36777b513?w=1200&q=80', tone:'#2d7a9e', ink:'#071d2b', accent:'#f2d8a6', label:'Goa · palms + boats' },
     featured:true,
   },
   {
@@ -21,7 +21,7 @@ const TRAVELOGUES = [
     dek:'A five-day, slow-moving trip from Delhi that trades hurried sightseeing for long walks, apple orchards, and real silence.',
     author:{ name:'Riddhiman Jain', handle:'@riddh' },
     date:'Oct 09, 2025', readMin:7, category:'Slow Travel',
-    hero:{ src:'https://loremflickr.com/1200/800/dalhousie,pine,meadow?lock=302', tone:'#3b6a4e', ink:'#0f2e1f', accent:'#dfe9c6', label:'Dalhousie · meadow' },
+    hero:{ src:'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?w=1200&q=80', tone:'#3b6a4e', ink:'#0f2e1f', accent:'#dfe9c6', label:'Dalhousie · meadow' },
   },
   {
     id:'khwahhish-stays',
@@ -29,7 +29,7 @@ const TRAVELOGUES = [
     dek:"A bamboo A-frame in the pines, solar-heated showers, and a kitchen that runs on what the valley grows that week.",
     author:{ name:'Dharna', handle:'@dharna' },
     date:'Sep 30, 2025', readMin:6, category:'Culture',
-    hero:{ src:'https://loremflickr.com/1200/800/cabin,manali,pine?lock=303', tone:'#5a4230', ink:'#1a0f08', accent:'#e8c998', label:'Manali · A-frame' },
+    hero:{ src:'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=1200&q=80', tone:'#5a4230', ink:'#1a0f08', accent:'#e8c998', label:'Manali · A-frame' },
   },
   {
     id:'kashmir-april',
@@ -37,7 +37,7 @@ const TRAVELOGUES = [
     dek:'Srinagar wakes slow in April. Empty shikaras, fresh almond blossom, and the last of the valley\'s crisp winter light.',
     author:{ name:'Ayesha M.', handle:'@ayesha' },
     date:'Sep 12, 2025', readMin:8, category:'Culture',
-    hero:{ src:'https://loremflickr.com/1200/800/srinagar,dal,shikara?lock=304', tone:'#4a6788', ink:'#0c1524', accent:'#f1d7d0', label:'Kashmir · lake' },
+    hero:{ src:'https://images.unsplash.com/photo-1548013146-72479768bbaa?w=1200&q=80', tone:'#4a6788', ink:'#0c1524', accent:'#f1d7d0', label:'Kashmir · lake' },
   },
   {
     id:'pondy-plates',
@@ -45,7 +45,7 @@ const TRAVELOGUES = [
     dek:"French press mornings in the White Town, a biryani nobody told you about, and the best filter kaapi on the east coast.",
     author:{ name:'Arnav K.', handle:'@arnav' },
     date:'Aug 28, 2025', readMin:6, category:'Food',
-    hero:{ src:'https://loremflickr.com/1200/800/pondicherry,french,colonial?lock=305', tone:'#c66a3d', ink:'#3a180a', accent:'#f5d9a4', label:'Pondy · colonial lane' },
+    hero:{ src:'https://images.unsplash.com/photo-1589769105893-3946a7894107?w=1200&q=80', tone:'#c66a3d', ink:'#3a180a', accent:'#f5d9a4', label:'Pondy · colonial lane' },
   },
   {
     id:'rishikesh-yoga',
@@ -53,9 +53,10 @@ const TRAVELOGUES = [
     dek:'Not a retreat, not a vacation. Just seven days of sunrise yoga, Ganga walks, and learning that you don\'t need the WiFi password.',
     author:{ name:'Meera T.', handle:'@meera' },
     date:'Aug 14, 2025', readMin:5, category:'Wellness',
-    hero:{ src:'https://images.unsplash.com/photo-1571536802807-30451e3955d8?w=1200&q=80&auto=format&fit=crop', tone:'#3e5d3e', ink:'#0d1f14', accent:'#f0d7a6', label:'Rishikesh · Ganga' },
+    hero:{ src:'https://images.unsplash.com/photo-1571536802807-30451e3955d8?w=1200&q=80', tone:'#3e5d3e', ink:'#0d1f14', accent:'#f0d7a6', label:'Rishikesh · Ganga' },
   },
 ];
+
 
 // The full Goa article used for the detail view.
 const GOA_ARTICLE = {

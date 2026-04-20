@@ -8,7 +8,7 @@ const LANDING_TICKER = [
   { id:'t4', kind:'offer',    tripId:null,             icon:'gift',     text:'Code',                                     highlight:'WKND20 · 20% off this weekend', cta:'Apply & browse' },
 ];
 
-function Landing({ onOpenTrip, onViewAllTrips, onOpenDrop, onOpenProfile, theme='light' }) {
+function Landing({ onOpenTrip, onViewAllTrips, onOpenDrop, onOpenProfile, onTravHer, onOpenArticle, onAllTravelogues, theme='light' }) {
   const isDark = theme === 'dark';
   const [fromCity, setFromCity] = React.useState('Delhi');
   const [mode, setMode] = React.useState('weekend'); // weekend | long
@@ -36,7 +36,8 @@ function Landing({ onOpenTrip, onViewAllTrips, onOpenDrop, onOpenProfile, theme=
       <BrowseCreators onOpen={onOpenProfile} isMobile={isMobile}/>
       <HowTraveling isMobile={isMobile}/>
       <HowItWorks isMobile={isMobile}/>
-      <TravHer isMobile={isMobile}/>
+      <TravHer isMobile={isMobile} onOpen={onTravHer}/>
+      <LatestTravelogues isMobile={isMobile} onOpen={onOpenArticle} onViewAll={onAllTravelogues}/>
       <GoingLonger isMobile={isMobile} onClickDest={onViewAllTrips}/>
     </>
   );
@@ -621,37 +622,189 @@ function HowItWorks({ isMobile }) {
   );
 }
 
-function TravHer({ isMobile }) {
+function TravHer({ isMobile, onOpen }) {
   return (
-    <div style={{ background:T.roseCream, padding:isMobile?'36px 16px':'72px 36px', borderLeft:isMobile?'none':`6px solid ${T.rose}`, borderTop:isMobile?`4px solid ${T.rose}`:'none' }}>
-      <div style={{ maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?20:48, alignItems:'center' }}>
+    <div style={{ background:T.roseCream, padding:isMobile?'48px 16px':'92px 36px', borderLeft:isMobile?'none':`6px solid ${T.rose}`, borderTop:isMobile?`4px solid ${T.rose}`:'none', position:'relative', overflow:'hidden' }}>
+      {/* Subtle organic background blobs */}
+      {!isMobile && (
+        <>
+          <div style={{ position:'absolute', top:-60, right:-60, width:300, height:300, borderRadius:'50%', background:'linear-gradient(135deg, #fff, transparent)', opacity:.4, filter:'blur(40px)' }}/>
+          <div style={{ position:'absolute', bottom:-100, left:200, width:400, height:400, borderRadius:'50%', background:'linear-gradient(135deg, transparent, #fff)', opacity:.3, filter:'blur(60px)' }}/>
+        </>
+      )}
+      
+      <div style={{ maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:isMobile?'1fr':'1.1fr 0.9fr', gap:isMobile?32:64, alignItems:'center', position:'relative', zIndex:2 }}>
         <div>
-          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-            <h2 style={{ fontSize:56, fontWeight:800, color:T.rose, letterSpacing:'-.035em', margin:0, fontFamily:'Fraunces, serif' }}>trav.her</h2>
-            <Ico name="rose" size={40}/>
+          <div style={{ display:'flex', alignItems:'flex-baseline', gap:12 }}>
+            <h2 style={{ fontSize:isMobile?64:96, fontWeight:800, color:T.rose, letterSpacing:'-.04em', margin:0, fontFamily:'Fraunces, serif', lineHeight:0.9 }}>trav.her</h2>
+            <div style={{ transform:'translateY(-12px)' }}><Ico name="rose" size={isMobile?32:48}/></div>
           </div>
-          <div style={{ fontSize:20, color:T.roseSoft, marginTop:6, fontStyle:'italic', fontFamily:'Fraunces, serif' }}>for women who go.</div>
-          <div style={{ marginTop:32, display:'grid', gridTemplateColumns:'1fr 1fr', gap:18 }}>
-            {[{icon:'shield',label:'Verified safe stays'},{icon:'users',label:'Women-only community'},{icon:'star',label:'Creator curated'},{icon:'heart',label:'SOS buddy system'}].map(f => (
-              <div key={f.label} style={{ display:'flex', alignItems:'center', gap:12 }}>
-                <div style={{ width:36, height:36, borderRadius:10, background:'#fff', display:'flex', alignItems:'center', justifyContent:'center', border:`1px solid ${T.rose}33` }}>
-                  <Ico name={f.icon} size={16} color={T.rose}/>
+          <div style={{ fontSize:isMobile?18:24, color:T.roseSoft, marginTop:8, fontStyle:'italic', fontFamily:'Fraunces, serif', opacity:.85 }}>for women who go.</div>
+          
+          <div style={{ marginTop:isMobile?32:48, display:'grid', gridTemplateColumns:isMobile?'1fr':'1fr 1fr', gap:isMobile?16:24 }}>
+            {[
+              {icon:'shield',label:'Verified safe stays'},
+              {icon:'users',label:'Women-only community'},
+              {icon:'star',label:'Creator curated'},
+              {icon:'heart',label:'SOS buddy system'}
+            ].map(f => (
+              <div key={f.label} style={{ display:'flex', alignItems:'center', gap:14, background:'rgba(255,255,255,0.4)', padding:isMobile?'12px 16px':'16px 20px', borderRadius:16, border:'1px solid rgba(255,255,255,0.6)', backdropFilter:'blur(4px)' }}>
+                <div style={{ width:isMobile?32:38, height:isMobile?32:38, borderRadius:12, background:'#fff', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 12px rgba(190,62,42,0.08)' }}>
+                  <Ico name={f.icon} size={isMobile?14:18} color={T.rose}/>
                 </div>
-                <span style={{ fontSize:15, fontWeight:600, color:T.rose }}>{f.label}</span>
+                <span style={{ fontSize:isMobile?14:16, fontWeight:700, color:T.ink, opacity:.9 }}>{f.label}</span>
               </div>
             ))}
           </div>
-          <div style={{ marginTop:28 }}><Btn kind="rose" size="lg" icon="whatsapp">Join trav.her on WhatsApp</Btn></div>
-        </div>
-        <div style={{ position:'relative' }}>
-          <div style={{ aspectRatio:'4/3', borderRadius:18, overflow:'hidden', boxShadow:'0 12px 30px rgba(0,0,0,.18)' }}>
-            <ImgPlaceholder src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=1200&q=80&auto=format&fit=crop" tone="#a07a4a" ink="#3a2614" accent="#f3d39c" label="trav.her · golden hour" radius={18} overlay={false}/>
+          
+          <div style={{ marginTop:isMobile?32:48, display:'flex', gap:14, flexWrap:'wrap' }}>
+            <Btn kind="rose" size="lg" icon="whatsapp" onClick={() => window.open('https://wa.me/919999999999')}>Join on WhatsApp</Btn>
+            <Btn kind="outline" size="lg" style={{ background:'rgba(255,255,255,0.6)', borderColor:T.rose, color:T.rose }} onClick={onOpen}>Explore trav.her trips →</Btn>
           </div>
+        </div>
+        
+        <div style={{ position:'relative' }}>
+          <div style={{ 
+            aspectRatio:'4/5', 
+            borderRadius:isMobile?24:32, 
+            overflow:'hidden', 
+            boxShadow:'0 30px 70px rgba(190,62,42,0.25)',
+            border:'10px solid #fff',
+            transform:isMobile?'none':'rotate(2deg) scale(1.02)',
+            transition:'transform .4s cubic-bezier(0.34, 1.56, 0.64, 1)'
+          }}
+          onMouseEnter={e=>!isMobile && (e.currentTarget.style.transform='rotate(0deg) scale(1.05)')}
+          onMouseLeave={e=>!isMobile && (e.currentTarget.style.transform='rotate(2deg) scale(1.02)')}
+          >
+            <ImgPlaceholder src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=1200&q=80&auto=format&fit=crop" tone="#a07a4a" ink="#3a2614" accent="#f3d39c" label="trav.her · solo exploration" radius={0} overlay={false}/>
+            <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, transparent 60%, rgba(190,62,42,0.3) 100%)' }}/>
+          </div>
+          
+          {/* Floating badge */}
+          {!isMobile && (
+            <div style={{ position:'absolute', bottom:40, left:-30, background:'#fff', padding:'12px 18px', borderRadius:16, boxShadow:'0 15px 35px rgba(0,0,0,0.1)', border:`1px solid ${T.greyLight}`, display:'flex', alignItems:'center', gap:10, animation: 'float-slow 4s ease-in-out infinite' }}>
+              <div style={{ width:8, height:8, borderRadius:'50%', background:T.green, boxShadow:`0 0 10px ${T.green}` }}/>
+              <span style={{ fontSize:13, fontWeight:700, color:T.ink }}>52 women active now</span>
+            </div>
+          )}
+        </div>
+      </div>
+      <style>{`
+        @keyframes float-slow {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function LatestTravelogues({ isMobile, onOpen, onViewAll }) {
+  const latest = TRAVELOGUES.slice(0, 2);
+  const sidePad = isMobile ? 18 : 40;
+  
+  // Journal Decoration: Realistic Paper Clip
+  const PaperClip = ({ style }) => (
+    <svg style={{ position:'absolute', zIndex:20, filter:'drop-shadow(2px 3px 2px rgba(0,0,0,0.2))', ...style }} width="28" height="52" viewBox="0 0 24 48" fill="none">
+      <path d="M18 12V34C18 39.5228 13.5228 44 8 44C2.47715 44 -2 39.5228 -2 34V10C-2 4.47715 2.47715 0 8 0C13.5228 0 18 4.47715 18 10V34C18 39.5147 13.5147 44 8 44" stroke="#2563EB" strokeWidth="4" strokeLinecap="round"/>
+      <path d="M12 12V34C12 36.2091 10.2091 38 8 38C5.79086 38 4 36.2091 4 34V10C4 7.79086 5.79086 6 8 6C10.2091 6 12 7.79086 12 10" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+
+  return (
+    <div style={{ 
+      background:'#F9F6F0', // Aged paper color
+      padding:isMobile?'32px 0':'56px 0', 
+      position:'relative', 
+      overflow:'hidden',
+      backgroundImage: 'radial-gradient(#d1cfc9 1px, transparent 1px)',
+      backgroundSize: '32px 32px' // Subtle dots like a bullet journal
+    }}>
+      {/* Decorative notebook elements */}
+      {!isMobile && (
+        <div style={{ position:'absolute', top:0, left:'50%', bottom:0, width:1, background:'rgba(209,207,201,0.5)', zIndex:1 }}/>
+      )}
+
+      <div style={{ maxWidth:1100, margin:'0 auto', padding:`0 ${sidePad}px`, position:'relative', zIndex:2 }}>
+        <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:isMobile?32:56, flexWrap:'wrap', gap:20 }}>
+          <div style={{ textAlign:'left' }}>
+            <h2 style={{ fontSize:isMobile?28:44, fontWeight:800, color:T.ink, letterSpacing:'-.04em', margin:0, fontFamily:'Fraunces, serif' }}>The Travel Journal</h2>
+            <div style={{ fontSize:isMobile?16:18, color:T.grey, marginTop:4, fontFamily:'Caveat, cursive', opacity:.8 }}>Notes, memories, and discoveries from the road.</div>
+          </div>
+          
+          <button onClick={onViewAll} style={{ 
+            background:'none', border:'none', color:T.ink, fontSize:isMobile?18:22, fontWeight:700, cursor:'pointer', fontFamily:'Caveat, cursive',
+            textDecoration:'underline', textDecorationThickness:2, textUnderlineOffset:6, display:'inline-flex', alignItems:'center', gap:10,
+            padding:0, marginBottom:8
+          }}>
+            Explore the full travelogue <Ico name="arrow-right" size={18}/>
+          </button>
+        </div>
+        
+        <div style={{ display:isMobile?'flex':'grid', flexDirection:isMobile?'column':undefined, gridTemplateColumns:isMobile?undefined:'1fr 1fr', gap:isMobile?32:48 }}>
+          {latest.map((article, i) => {
+            const isEven = i % 2 === 0;
+            return (
+              <div key={article.id} onClick={() => onOpen(article.id)} style={{ 
+                cursor:'pointer', 
+                transform:isMobile?'none':`translateY(${isEven?20:-20}px) rotate(${isEven?1.5:-1.5}deg)`,
+                transition:'transform .3s ease'
+              }}
+              onMouseEnter={e=>!isMobile && (e.currentTarget.style.transform=`translateY(${isEven?20:-20}px) rotate(0deg) scale(1.02)`)}
+              onMouseLeave={e=>!isMobile && (e.currentTarget.style.transform=`translateY(${isEven?20:-20}px) rotate(${isEven?1.5:-1.5}deg) scale(1)`)}
+              >
+                {/* Polaroid Frame */}
+                <div style={{ 
+                  background:'#fff', 
+                  padding:isMobile?'10px 10px 32px':'12px 12px 42px', 
+                  boxShadow:'0 20px 50px rgba(0,0,0,0.12)', 
+                  borderRadius:2, 
+                  position:'relative',
+                  overflow:'hidden'
+                }}>
+                  <PaperClip style={{ top:-10, left:20 }}/>
+                  <div style={{ width:'calc(100% + 40px)', margin:isMobile?'-10px -10px 12px':'-12px -12px 18px', aspectRatio:'4/3', overflow:'hidden', background:'#f8f8f8' }}>
+                    {article.hero.src && (
+                      <img 
+                        src={article.hero.src} 
+                        alt="" 
+                        style={{ width:'100%', height:'100%', display:'block', objectFit:'cover' }}
+                      />
+                    )}
+                  </div>
+                  
+                  {/* Handwritten Caption */}
+                  <div style={{ 
+                    fontFamily:'Caveat, cursive', fontSize:isMobile?16:20, color:T.ink, opacity:0.8,
+                    textAlign:'center'
+                  }}>
+                    {article.category} · {article.date}
+                  </div>
+                </div>
+
+                {/* Entry Content */}
+                <div style={{ marginTop:28, padding:isMobile?'0 8px':'0 12px' }}>
+                  <h3 style={{ fontSize:isMobile?24:32, fontWeight:700, color:T.ink, margin:'0 0 14px', fontFamily:'Fraunces, serif', lineHeight:1.15 }}>{article.title}</h3>
+                  <p style={{ fontSize:isMobile?15:17, color:T.grey, lineHeight:1.6, margin:0, fontFamily:'Caveat, cursive', maxHeight:isMobile?80:120, overflow:'hidden' }}>
+                    "{article.dek}"
+                  </p>
+                  
+                  <div style={{ marginTop:24, display:'flex', alignItems:'center', gap:10 }}>
+                    <Avatar name={article.author.name} size={isMobile?32:36}/>
+                    <div style={{ fontSize:isMobile?14:16, fontWeight:700, color:T.ink, fontFamily:'Poppins, sans-serif' }}>{article.author.name}</div>
+                    <div style={{ height:1, flex:1, background:'rgba(0,0,0,0.05)', marginLeft:10 }}/>
+                    <div style={{ fontSize:13, color:T.grey, fontWeight:600 }}>ENTRY #{i+1}</div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
   );
 }
+
 
 function GoingLonger({ isMobile, onClickDest }) {
   return (
